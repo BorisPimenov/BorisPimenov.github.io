@@ -26,18 +26,14 @@
             width: 100vw;
             height: 100vh;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
         }
 
         .video-container {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             background: #000;
         }
@@ -59,6 +55,9 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
             padding: 20px 0 10px 0;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .buttons-container {
@@ -85,14 +84,18 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
-            text-decoration: none;
         }
 
-        .option-button:hover {
+        .option-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .option-button:hover:not(:disabled) {
             background-color: var(--button-hover);
         }
 
-        .option-button:active {
+        .option-button:active:not(:disabled) {
             transform: scale(0.98);
         }
 
@@ -109,22 +112,11 @@
             color: #999;
         }
 
-        .reset-button {
-            display: none;
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
+        .voted-message {
+            color: #cf6679;
             font-weight: bold;
-            color: #fff;
-            background-color: #cf6679;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .reset-button:hover {
-            background-color: #a63f53;
+            margin-top: 10px;
+            display: none;
         }
     </style>
 </head>
@@ -154,26 +146,22 @@
             </div>
         </div>
         <div class="total-clicks" id="total-clicks">Voti totali: 0</div>
-        <button class="reset-button" id="reset-button">Resetta Votazione</button>
+        <div class="voted-message" id="voted-message">Hai già votato!</div>
     </div>
 </div>
 
 <script>
-    // Inserisci qui l'URL del tuo server TouchDesigner
     const websocket = new WebSocket('ws://localhost:8080');
 
-    let clicks = {
-        option1: 0,
-        option2: 0
-    };
+    let clicks = { option1: 0, option2: 0 };
 
     const option1Btn = document.querySelector('[data-option="1"]');
     const option2Btn = document.querySelector('[data-option="2"]');
     const percent1El = document.getElementById('percent-1');
     const percent2El = document.getElementById('percent-2');
     const totalClicksEl = document.getElementById('total-clicks');
-    const resetButton = document.getElementById('reset-button');
-    const isAdmin = false; // Imposta su 'true' per mostrare il pulsante di reset
+    const votedMessageEl = document.getElementById('voted-message');
+    const allButtons = document.querySelectorAll('.option-button');
 
     function updatePercentages() {
         const total = clicks.option1 + clicks.option2;
@@ -189,43 +177,60 @@
         totalClicksEl.textContent = `Voti totali: ${total}`;
     }
 
-    // Event listener per i pulsanti di voto
-    option1Btn.addEventListener('click', () => {
-        clicks.option1++;
-        updatePercentages();
-        if (websocket.readyState === WebSocket.OPEN) {
-            websocket.send('VOTO_1');
+    function checkAndDisableButtons() {
+        const hasVoted = localStorage.getItem('hasVoted');
+        if (hasVoted) {
+            allButtons.forEach(button => button.disabled = true);
+            votedMessageEl.style.display = 'block';
         }
-    });
-
-    option2Btn.addEventListener('click', () => {
-        clicks.option2++;
-        updatePercentages();
-        if (websocket.readyState === WebSocket.OPEN) {
-            websocket.send('VOTO_2');
-        }
-    });
-
-    // Listener per il pulsante di reset (mostrato solo se isAdmin è true)
-    if (isAdmin) {
-        resetButton.style.display = 'inline-block';
-        resetButton.addEventListener('click', () => {
-            clicks.option1 = 0;
-            clicks.option2 = 0;
-            updatePercentages();
-            if (websocket.readyState === WebSocket.OPEN) {
-                websocket.send('RESET');
-            }
-        });
     }
 
-    // Gestione della connessione WebSocket
-    websocket.onopen = () => {
-        console.log('Connessione WebSocket stabilita con TouchDesigner.');
-    };
+    allButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (localStorage.getItem('hasVoted')) {
+                return;
+            }
+
+            const option = button.dataset.option;
+            if (option === '1') {
+                clicks.option1++;
+            } else if (option === '2') {
+                clicks.option2++;
+            }
+            updatePercentages();
+
+            localStorage.setItem('hasVoted', 'true');
+            checkAndDisableButtons();
+
+            if (websocket.readyState === WebSocket.OPEN) {
+                websocket.send(`VOTO_${option}`);
+            }
+        });
+    });
 
     websocket.onmessage = (event) => {
-        console.log('Messaggio ricevuto da TouchDesigner:', event.data);
+        const message = event.data;
+        try {
+            const data = JSON.parse(message);
+            if (data.type === 'update_counts') {
+                clicks.option1 = data.option1;
+                clicks.option2 = data.option2;
+                updatePercentages();
+            } else if (data.type === 'reset_poll') {
+                localStorage.removeItem('hasVoted');
+                clicks.option1 = 0;
+                clicks.option2 = 0;
+                updatePercentages();
+                allButtons.forEach(button => button.disabled = false);
+                votedMessageEl.style.display = 'none';
+            }
+        } catch (e) {
+            console.log("Messaggio non JSON o sconosciuto:", message);
+        }
+    };
+
+    websocket.onopen = () => {
+        console.log('Connessione WebSocket stabilita con TouchDesigner.');
     };
 
     websocket.onclose = () => {
@@ -235,6 +240,8 @@
     websocket.onerror = (error) => {
         console.error('Errore WebSocket:', error);
     };
+
+    document.addEventListener('DOMContentLoaded', checkAndDisableButtons);
 </script>
 
 </body>
