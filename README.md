@@ -79,8 +79,8 @@
     }
 </style>
 
-<iframe width="560" 
-    height="315"
+<iframe width="1920" 
+    height="1080"
     src="https://www.youtube.com/embed/razZmhRchDQ?si=lG_VMosdokAauq-t" 
     title="YouTube video player" 
     frameborder="0"
