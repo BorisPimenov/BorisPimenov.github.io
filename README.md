@@ -163,7 +163,7 @@
 </div>
 
 <script>
-    const websocket = new WebSocket('ws://localhost:8080');
+   const websocket = new WebSocket('ws://192.168.1.55:8080');
     let clicks = { option1: 0, option2: 0 };
     const isAdmin = false; 
 
