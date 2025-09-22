@@ -32,8 +32,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 50%;
+            height: 50%;
             z-index: 1;
             background: #000;
             display: flex;
@@ -42,14 +42,14 @@
         }
 
         .video-container iframe {
-            width: 100%;
-            height: 100%;
+            width: 50%;
+            height: 50%;
             border: none;
         }
         
         @media (min-aspect-ratio: 16/9) {
             .video-container iframe {
-                height: 100%;
+                height: 70%;
                 width: calc(100vh * 16 / 9);
             }
         }
