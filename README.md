@@ -53,7 +53,7 @@
             background: rgba(30, 30, 30, 0.95);
             border-top: 1px solid var(--border-color);
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-            padding: 20px 0 10px 0;
+            padding: 15px 0 10px 0;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -63,8 +63,7 @@
         .buttons-container {
             display: flex;
             justify-content: center;
-            gap: 40px;
-            margin-top: 10px;
+            gap: 20px; /* Spazio ridotto tra i bottoni */
         }
 
         .option-group {
@@ -107,7 +106,7 @@
         }
 
         .total-clicks {
-            margin-top: 15px;
+            margin-top: 10px; /* Spazio ridotto */
             font-size: 0.9rem;
             color: #999;
         }
@@ -117,6 +116,24 @@
             font-weight: bold;
             margin-top: 10px;
             display: none;
+        }
+
+        .reset-button {
+            display: none; /* Nascosto di default */
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #cf6679;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reset-button:hover {
+            background-color: #a63f53;
         }
     </style>
 </head>
@@ -147,13 +164,16 @@
         </div>
         <div class="total-clicks" id="total-clicks">Voti totali: 0</div>
         <div class="voted-message" id="voted-message">Hai già votato!</div>
+        <button class="reset-button" id="reset-button">Resetta Votazione</button>
     </div>
 </div>
 
 <script>
     const websocket = new WebSocket('ws://localhost:8080');
-
     let clicks = { option1: 0, option2: 0 };
+
+    // Imposta su 'true' per mostrare il pulsante di reset
+    const isAdmin = false; 
 
     const option1Btn = document.querySelector('[data-option="1"]');
     const option2Btn = document.querySelector('[data-option="2"]');
@@ -161,6 +181,7 @@
     const percent2El = document.getElementById('percent-2');
     const totalClicksEl = document.getElementById('total-clicks');
     const votedMessageEl = document.getElementById('voted-message');
+    const resetButton = document.getElementById('reset-button');
     const allButtons = document.querySelectorAll('.option-button');
 
     function updatePercentages() {
@@ -208,6 +229,22 @@
         });
     });
 
+    if (isAdmin) {
+        resetButton.style.display = 'inline-block';
+        resetButton.addEventListener('click', () => {
+            localStorage.removeItem('hasVoted');
+            clicks.option1 = 0;
+            clicks.option2 = 0;
+            updatePercentages();
+            allButtons.forEach(button => button.disabled = false);
+            votedMessageEl.style.display = 'none';
+
+            if (websocket.readyState === WebSocket.OPEN) {
+                websocket.send('RESET');
+            }
+        });
+    }
+
     websocket.onmessage = (event) => {
         const message = event.data;
         try {
@@ -243,6 +280,5 @@
 
     document.addEventListener('DOMContentLoaded', checkAndDisableButtons);
 </script>
-
 </body>
 </html>
