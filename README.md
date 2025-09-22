@@ -36,6 +36,9 @@
             height: 100%;
             z-index: 1;
             background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .video-container iframe {
@@ -43,17 +46,34 @@
             height: 100%;
             border: none;
         }
+        
+        @media (min-aspect-ratio: 16/9) {
+            .video-container iframe {
+                height: 100%;
+                width: calc(100vh * 16 / 9);
+            }
+        }
+        
+        @media (max-aspect-ratio: 16/9) {
+            .video-container iframe {
+                width: 100%;
+                height: calc(100vw * 9 / 16);
+            }
+        }
 
         .interaction-panel {
             position: fixed;
             bottom: 0;
-            left: 0;
-            width: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
             z-index: 2;
             background: rgba(30, 30, 30, 0.95);
             border-top: 1px solid var(--border-color);
+            border-radius: 8px 8px 0 0;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-            padding: 15px 0 10px 0;
+            padding: 15px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -63,7 +83,7 @@
         .buttons-container {
             display: flex;
             justify-content: center;
-            gap: 20px; /* Spazio ridotto tra i bottoni */
+            gap: 20px;
         }
 
         .option-group {
@@ -106,7 +126,7 @@
         }
 
         .total-clicks {
-            margin-top: 10px; /* Spazio ridotto */
+            margin-top: 10px;
             font-size: 0.9rem;
             color: #999;
         }
@@ -119,7 +139,7 @@
         }
 
         .reset-button {
-            display: none; /* Nascosto di default */
+            display: none;
             margin-top: 15px;
             padding: 10px 20px;
             font-size: 0.9rem;
@@ -171,8 +191,6 @@
 <script>
     const websocket = new WebSocket('ws://localhost:8080');
     let clicks = { option1: 0, option2: 0 };
-
-    // Imposta su 'true' per mostrare il pulsante di reset
     const isAdmin = false; 
 
     const option1Btn = document.querySelector('[data-option="1"]');
@@ -241,44 +259,3 @@
 
             if (websocket.readyState === WebSocket.OPEN) {
                 websocket.send('RESET');
-            }
-        });
-    }
-
-    websocket.onmessage = (event) => {
-        const message = event.data;
-        try {
-            const data = JSON.parse(message);
-            if (data.type === 'update_counts') {
-                clicks.option1 = data.option1;
-                clicks.option2 = data.option2;
-                updatePercentages();
-            } else if (data.type === 'reset_poll') {
-                localStorage.removeItem('hasVoted');
-                clicks.option1 = 0;
-                clicks.option2 = 0;
-                updatePercentages();
-                allButtons.forEach(button => button.disabled = false);
-                votedMessageEl.style.display = 'none';
-            }
-        } catch (e) {
-            console.log("Messaggio non JSON o sconosciuto:", message);
-        }
-    };
-
-    websocket.onopen = () => {
-        console.log('Connessione WebSocket stabilita con TouchDesigner.');
-    };
-
-    websocket.onclose = () => {
-        console.log('Connessione WebSocket chiusa.');
-    };
-
-    websocket.onerror = (error) => {
-        console.error('Errore WebSocket:', error);
-    };
-
-    document.addEventListener('DOMContentLoaded', checkAndDisableButtons);
-</script>
-</body>
-</html>
