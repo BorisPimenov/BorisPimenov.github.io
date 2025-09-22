@@ -14,76 +14,59 @@
             --border-color: #333333;
         }
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-        }
-
-        .container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
-
-        .video-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            height: 50%;
-            z-index: 1;
-            background: #000;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* Rapporto 16:9 */
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         .video-container iframe {
-            width: 50%;
-            height: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
-        }
-        
-        @media (min-aspect-ratio: 16/9) {
-            .video-container iframe {
-                height: 70%;
-                width: calc(100vh * 16 / 9);
-            }
-        }
-        
-        @media (max-aspect-ratio: 16/9) {
-            .video-container iframe {
-                width: 100%;
-                height: calc(100vw * 9 / 16);
-            }
         }
 
         .interaction-panel {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
-            z-index: 2;
-            background: rgba(30, 30, 30, 0.95);
-            border-top: 1px solid var(--border-color);
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-            padding: 15px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .buttons-container {
             display: flex;
             justify-content: center;
             gap: 20px;
+            margin-top: 15px;
         }
 
         .option-group {
@@ -104,7 +87,7 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
         }
-
+        
         .option-button:disabled {
             cursor: not-allowed;
             opacity: 0.5;
@@ -130,7 +113,7 @@
             font-size: 0.9rem;
             color: #999;
         }
-
+        
         .voted-message {
             color: #cf6679;
             font-weight: bold;
@@ -259,3 +242,44 @@
 
             if (websocket.readyState === WebSocket.OPEN) {
                 websocket.send('RESET');
+            }
+        });
+    }
+
+    websocket.onmessage = (event) => {
+        const message = event.data;
+        try {
+            const data = JSON.parse(message);
+            if (data.type === 'update_counts') {
+                clicks.option1 = data.option1;
+                clicks.option2 = data.option2;
+                updatePercentages();
+            } else if (data.type === 'reset_poll') {
+                localStorage.removeItem('hasVoted');
+                clicks.option1 = 0;
+                clicks.option2 = 0;
+                updatePercentages();
+                allButtons.forEach(button => button.disabled = false);
+                votedMessageEl.style.display = 'none';
+            }
+        } catch (e) {
+            console.log("Messaggio non JSON o sconosciuto:", message);
+        }
+    };
+
+    websocket.onopen = () => {
+        console.log('Connessione WebSocket stabilita con TouchDesigner.');
+    };
+
+    websocket.onclose = () => {
+        console.log('Connessione WebSocket chiusa.');
+    };
+
+    websocket.onerror = (error) => {
+        console.error('Errore WebSocket:', error);
+    };
+
+    document.addEventListener('DOMContentLoaded', checkAndDisableButtons);
+</script>
+</body>
+</html>
