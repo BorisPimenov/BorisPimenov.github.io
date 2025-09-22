@@ -82,7 +82,7 @@
 <div class="container">
     <div class="video-container">
         <iframe
-            src="URL_DEL_TUO_STREAM_OBS"
+            src="https://youtube.com/live/razZmhRchDQ?feature=share"
             allow="autoplay; encrypted-media"
             allowfullscreen
         ></iframe>
