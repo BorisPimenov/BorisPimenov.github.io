@@ -79,14 +79,22 @@
     }
 </style>
 
-<div class="container">
-    <div class="video-container">
-        <iframe
-            src="https://youtube.com/live/razZmhRchDQ?feature=share"
-            allow="autoplay; encrypted-media"
-            allowfullscreen
-        ></iframe>
-    </div>
+<iframe width="560" 
+    height="315"
+    src="https://www.youtube.com/embed/razZmhRchDQ?si=lG_VMosdokAauq-t" 
+    title="YouTube video player" 
+    frameborder="0"
+    allow="accelerometer; 
+    autoplay;
+    clipboard-write; 
+    encrypted-media;
+    gyroscope; 
+    picture-in-picture; 
+    web-share" 
+    referrerpolicy="strict-origin-when-cross-origin" 
+    allowfullscreen>
+    
+    </iframe>
 
     <div class="interaction-panel">
         <h2>Vota l'Opzione</h2>
