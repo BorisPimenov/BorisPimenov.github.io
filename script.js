@@ -1,4 +1,5 @@
-// File funzionante con Firebase compat su GitHub Pages
+// Funziona sia per index che per admin: il reset è attivo solo se esiste #resetVotes
+
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
@@ -58,3 +59,19 @@ voteBButton.onclick = function() {
   });
   setVoted();
 };
+
+// Bottone reset (solo admin)
+const resetBtn = document.getElementById('resetVotes');
+if (resetBtn) {
+  resetBtn.onclick = function() {
+    if (confirm("Sei sicuro di voler resettare la votazione?")) {
+      votesRef.set({A:0, B:0});
+      // L'admin può votare di nuovo dopo il reset
+      localStorage.removeItem('hasVoted');
+      updateUI(0, 0);
+      voteAButton.disabled = false;
+      voteBButton.disabled = false;
+      votedMsg.style.display = 'none';
+    }
+  };
+}
