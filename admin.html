@@ -8,10 +8,16 @@
 </head>
 <body>
   <script>
-    // Forza layout mobile se c'è il parametro ?mobile=1
-    if (window.location.search.includes('mobile=1')) {
-      document.body.classList.add('force-mobile');
+    // Password semplice lato client
+    const ADMIN_PASSWORD = 'JamesJoyce1984';
+
+    function checkAdmin() {
+      const pass = prompt("Inserisci la password admin:");
+      if (pass !== ADMIN_PASSWORD) {
+        document.body.innerHTML = "<h2>Accesso negato</h2>";
+      }
     }
+    checkAdmin();
   </script>
   <!-- VIDEO DI SFONDO -->
   <div class="video-background">
