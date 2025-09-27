@@ -20,7 +20,13 @@
 <!-- CONTENUTO DEL SONDAGGIO -->
 <div class="container">
   <div class="video-container">
-    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+    <!-- Questo è il video embedding originale, mantenuto identico -->
+    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            width="800"
+            height="450"
+            frameborder="0"
+            allowfullscreen>
+    </iframe>
   </div>
 
   <div class="interaction-panel">
@@ -41,7 +47,7 @@
   </div>
 </div>
 
-<!-- FIREBASE (compat) -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -58,11 +64,9 @@
     measurementId: "G-CH43LTYK55"
   };
 
-  // Inizializza Firebase
   firebase.initializeApp(firebaseConfig);
 </script>
 
-<!-- SCRIPT PRINCIPALE -->
 <script src="script.js"></script>
 </body>
 </html>
