@@ -1,5 +1,3 @@
-// Assicurati che sia inserito nel tuo repo (BorisPimenov.github.io)
-
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
@@ -13,19 +11,15 @@ const votedMsg = document.getElementById('votedMessage');
 // Funzione per aggiornare le percentuali
 function updateUI(a, b) {
   const total = a + b;
-  if (total === 0) {
-    percA.textContent = '0%';
-    percB.textContent = '0%';
-  } else {
-    percA.textContent = Math.round(a / total * 100) + '%';
-    percB.textContent = Math.round(b / total * 100) + '%';
-  }
+  percA.textContent = total > 0 ? Math.round(a / total * 100) + '%' : '0%';
+  percB.textContent = total > 0 ? Math.round(b / total * 100) + '%' : '0%';
   totalClicks.textContent = `${total} voti totali`;
 }
 
 // Aggiorna in tempo reale
 votesRef.on('value', (snapshot) => {
-  const data = snapshot.val() || {A:0,B:0};
+  let data = snapshot.val();
+  if (!data) data = {A: 0, B: 0}; // fallback se non esiste la chiave
   updateUI(data.A, data.B);
 });
 
@@ -40,9 +34,7 @@ function setVoted() {
   voteBButton.disabled = true;
 }
 
-if (hasVoted()) {
-  setVoted();
-}
+if (hasVoted()) setVoted();
 
 // Gestione voto
 voteAButton.onclick = function() {
