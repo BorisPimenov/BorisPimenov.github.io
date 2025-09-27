@@ -11,7 +11,7 @@
 
 body {
     font-family: 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(180deg, #ffffff 0%, #f2f2f2 100%);
+    background: rgba(255, 255, 255, 0.8); /* Bianco trasparente */
     color: var(--text-color);
     margin: 0;
     padding: 20px;
