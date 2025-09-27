@@ -8,6 +8,14 @@
 </head>
 <body>
 
+  <script>
+    // Forza layout mobile se c'è il parametro ?mobile=1
+    if (window.location.search.includes('mobile=1')) {
+      document.body.classList.add('force-mobile');
+    }
+  </script>
+  <!-- ...resto del markup... -->
+</body>
 <!-- VIDEO DI SFONDO -->
 <div class="video-background">
   <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
@@ -22,7 +30,7 @@
 <!-- CONTENUTO PRINCIPALE -->
 <div class="container">
   <div class="video-container">
-    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+    <iframe src="https://youtube.com/live/g9Br3j0fsKc?feature=share"
             allowfullscreen>
     </iframe>
   </div>
