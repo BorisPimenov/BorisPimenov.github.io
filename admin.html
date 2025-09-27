@@ -1,23 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pannello Admin</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container interaction-panel">
     <h1>Pannello Admin</h1>
-    <p>Gestione voti in tempo reale</p>
+    <p>Voti in tempo reale</p>
 
-    <!-- Statistiche aggiornate -->
-    <div id="adminStats" style="margin-top:20px; text-align:left;"></div>
+    <div id="adminStats" style="margin-top:20px; text-align:left;">
+      <p>Opzione A: <span id="adminA">0</span> voti (<span id="adminAperc">0%</span>)</p>
+      <p>Opzione B: <span id="adminB">0</span> voti (<span id="adminBperc">0%</span>)</p>
+      <p>Totale voti: <span id="adminTotal">0</span></p>
+    </div>
 
-    <!-- Pulsante reset -->
-    <button class="reset-button" onclick="resetVotes()">🔄 Reset voti</button>
+    <!-- Pulsante Reset -->
+    <button class="reset-button" style="display:inline-block;" onclick="confirmAndReset()">🔄 Reset voti</button>
   </div>
 
+  <!-- Firebase compat deve essere caricato PRIMA di script.js -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <!-- Configurazione Firebase del tuo progetto -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
+      authDomain: "eburnea-fd632.firebaseapp.com",
+      databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com", 
+      projectId: "eburnea-fd632",
+      storageBucket: "eburnea-fd632.appspot.com",
+      messagingSenderId: "560492313221",
+      appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
+      measurementId: "G-CH43LTYK55"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function updateAdminStats(snapshot) {
+      const data = snapshot.val() || { A: 0, B: 0 };
+      const total = (data.A || 0) + (data.B || 0);
+
+      document.getElementById("adminA").innerText = data.A || 0;
+      document.getElementById("adminB").innerText = data.B || 0;
+      document.getElementById("adminTotal").innerText = total;
+
+      document.getElementById("adminAperc").innerText = total ? ((data.A / total) * 100).toFixed(1) + "%" : "0%";
+      document.getElementById("adminBperc").innerText = total ? ((data.B / total) * 100).toFixed(1) + "%" : "0%";
+    }
+
+    // Ascolta aggiornamenti in tempo reale
+    db.ref("/votes").on("value", updateAdminStats);
+
+    function confirmAndReset() {
+      if (confirm("Sei sicuro di voler resettare tutti i voti?")) {
+        db.ref("/votes").set({ A: 0, B: 0 });
+      }
+    }
+  </script>
+
+  <!-- Il tuo script principale -->
   <script src="script.js"></script>
 </body>
 </html>
