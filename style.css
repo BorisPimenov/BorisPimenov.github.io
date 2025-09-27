@@ -27,15 +27,75 @@ body, html {
   padding: 20px;
 }
 
+.video-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  margin-top: 60px;
+}
+
 .video-container iframe {
-  width: 100%;
-  height: 360px;
+  width: 560px;
+  height: 315px;
 }
 
 .interaction-panel {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.5);
   padding: 20px;
   border-radius: 10px;
   max-width: 500px;
+  margin: 40px auto 0 auto;
+  text-align: center;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
   margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.option-button {
+  font-size: 1.1em;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+}
+.option-button:active,
+.option-button:hover {
+  background: #0056b3;
+}
+
+.percentage-display {
+  font-weight: bold;
+  font-size: 1em;
+  margin-bottom: 6px;
+}
+
+.total-clicks {
+  margin-top: 10px;
+  font-size: 0.95em;
+}
+
+.voted-message {
+  color: #c00;
+  font-weight: bold;
+  font-size: 1em;
+  margin-top: 8px;
+  display: none;
 }
