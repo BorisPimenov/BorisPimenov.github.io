@@ -3,165 +3,67 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sondaggio Live</title>
+  <title>Sondaggio</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
-    }
-    .video-background {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .video-background iframe {
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      border: none;
-    }
-    .main-content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .video-container {
-      margin-top: 60px;
-      margin-bottom: 40px;
-      box-shadow: 0 4px 32px rgba(0,0,0,0.4);
-      border-radius: 16px;
-      overflow: hidden;
-      background: #222c;
-    }
-    .video-container iframe {
-      width: 560px;
-      height: 315px;
-      border: none;
-      border-radius: 16px;
-    }
-    @media (max-width: 600px) {
-      .video-container iframe {
-        width: 90vw;
-        height: 50vw;
-      }
-    }
-    .interaction-panel {
-      background: #fff8;
-      border-radius: 8px;
-      padding: 20px 32px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.2);
-      margin-bottom: 30px;
-      text-align: center;
-      width: 100%;
-      max-width: 400px;
-    }
-    .buttons-container {
-      display: flex;
-      gap: 40px;
-      justify-content: center;
-      margin-top: 12px;
-      margin-bottom: 16px;
-    }
-    .option-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .option-button {
-      font-size: 1.1em;
-      padding: 12px 28px;
-      border: none;
-      border-radius: 8px;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-bottom: 6px;
-    }
-    .option-button:active {
-      background: #0056b3;
-    }
-    .percentage-display {
-      font-weight: bold;
-      font-size: 1em;
-      margin-bottom: 6px;
-    }
-    .total-clicks {
-      margin-top: 10px;
-      font-size: 0.95em;
-    }
-    .voted-message {
-      color: #c00;
-      font-weight: bold;
-      font-size: 1em;
-      margin-top: 8px;
-      display: none;
-    }
-  </style>
 </head>
 <body>
-  <!-- VIDEO DI SFONDO -->
-  <div class="video-background">
-    <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
-            frameborder="0"
-            allow="autoplay; fullscreen"
-            allowfullscreen></iframe>
-  </div>
-  
-  <!-- CONTENUTO PRINCIPALE -->
-  <div class="main-content">
-    <div class="video-container">
-      <!-- Video centrale (live) -->
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1"
-              allow="autoplay; fullscreen"
-              allowfullscreen></iframe>
-    </div>
 
-    <div class="interaction-panel">
-      <h2>Quale opzione preferisci?</h2>
-      <div class="buttons-container">
-        <div class="option-group">
-          <button id="voteA" class="option-button">Opzione A</button>
-          <div class="percentage-display" id="percentage-A">0%</div>
-        </div>
-        <div class="option-group">
-          <button id="voteB" class="option-button">Opzione B</button>
-          <div class="percentage-display" id="percentage-B">0%</div>
-        </div>
+<!-- VIDEO DI SFONDO -->
+<div class="video-background">
+  <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
+          frameborder="0"
+          allow="autoplay; fullscreen"
+          allowfullscreen>
+  </iframe>
+</div>
+   <!-- CONTAINER PRINCIPALE -->
+  <div class="container">
+
+<!-- CONTENUTO PRINCIPALE -->
+<div class="container">
+  <div class="video-container">
+    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            allowfullscreen>
+    </iframe>
+  </div>
+
+  <div class="interaction-panel">
+    <h2>Quale opzione preferisci?</h2>
+    <div class="buttons-container">
+      <div class="option-group">
+        <button id="voteA" class="option-button">Opzione A</button>
+        <div class="percentage-display" id="percentage-A">0%</div>
       </div>
-      <div class="total-clicks" id="totalClicks">0 voti totali</div>
-      <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
+      <div class="option-group">
+        <button id="voteB" class="option-button">Opzione B</button>
+        <div class="percentage-display" id="percentage-B">0%</div>
+      </div>
     </div>
-  </div>
 
-  <!-- FIREBASE -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
-      authDomain: "eburnea-fd632.firebaseapp.com",
-      databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com",
-      projectId: "eburnea-fd632",
-      storageBucket: "eburnea-fd632.appspot.com",
-      messagingSenderId: "560492313221",
-      appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
-      measurementId: "G-CH43LTYK55"
-    };
-    firebase.initializeApp(firebaseConfig);
-  </script>
-  <script src="script.js"></script>
+    <div class="total-clicks" id="totalClicks">0 voti totali</div>
+    <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
+    authDomain: "eburnea-fd632.firebaseapp.com",
+    databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com",
+    projectId: "eburnea-fd632",
+    storageBucket: "eburnea-fd632.appspot.com",
+    messagingSenderId: "560492313221",
+    appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
+    measurementId: "G-CH43LTYK55"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>
