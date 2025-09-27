@@ -3,10 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sondaggio Live - Admin</title>
+  <title>Sondaggio Admin</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <script>
+    // Forza layout mobile se c'è il parametro ?mobile=1
+    if (window.location.search.includes('mobile=1')) {
+      document.body.classList.add('force-mobile');
+    }
+  </script>
   <!-- VIDEO DI SFONDO -->
   <div class="video-background">
     <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
@@ -14,15 +20,15 @@
             allow="autoplay; fullscreen"
             allowfullscreen></iframe>
   </div>
-  
-  <!-- CONTENUTO PRINCIPALE -->
-  <div class="main-content">
+  <!-- CONTAINER PRINCIPALE -->
+  <div class="container">
     <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1"
-              allow="autoplay; fullscreen"
-              allowfullscreen></iframe>
+      <!-- NUOVO VIDEO PRINCIPALE INCORPORATO -->
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/g9Br3j0fsKc?si=zc3_AtA1o1eLZLHL"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </div>
-
     <div class="interaction-panel">
       <h2>Quale opzione preferisci?</h2>
       <div class="buttons-container">
@@ -37,13 +43,13 @@
       </div>
       <div class="total-clicks" id="totalClicks">0 voti totali</div>
       <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
+      <!-- Bottone RESET votazione -->
+      <button id="resetVotes" style="margin-top:24px; background:#fff; color:#c00; padding:12px 32px; border:2px solid #c00; border-radius:12px; font-weight:600; font-family:inherit; cursor:pointer;">
+        Reset votazione
+      </button>
     </div>
-    <!-- Bottone Reset visibile solo qui -->
-    <button id="resetVotes" style="margin-top:20px; background:#e74c3c; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer;">
-      Reset votazione
-    </button>
   </div>
-
+  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
   <script>
