@@ -7,71 +7,61 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <script>
     // Forza layout mobile se c'è il parametro ?mobile=1
     if (window.location.search.includes('mobile=1')) {
       document.body.classList.add('force-mobile');
     }
   </script>
-  <!-- ...resto del markup... -->
-</body>
-<!-- VIDEO DI SFONDO -->
-<div class="video-background">
-  <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
-          frameborder="0"
-          allow="autoplay; fullscreen"
-          allowfullscreen>
-  </iframe>
-</div>
+  <!-- VIDEO DI SFONDO -->
+  <div class="video-background">
+    <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
+            frameborder="0"
+            allow="autoplay; fullscreen"
+            allowfullscreen></iframe>
+  </div>
   <!-- CONTAINER PRINCIPALE -->
   <div class="container">
-
-<!-- CONTENUTO PRINCIPALE -->
-<div class="container">
-  <div class="video-container">
-    <iframe src="https://youtube.com/live/g9Br3j0fsKc?feature=share"
-            allowfullscreen>
-    </iframe>
-  </div>
-
-  <div class="interaction-panel">
-    <h2>Quale opzione preferisci?</h2>
-    <div class="buttons-container">
-      <div class="option-group">
-        <button id="voteA" class="option-button">Opzione A</button>
-        <div class="percentage-display" id="percentage-A">0%</div>
-      </div>
-      <div class="option-group">
-        <button id="voteB" class="option-button">Opzione B</button>
-        <div class="percentage-display" id="percentage-B">0%</div>
-      </div>
+    <div class="video-container">
+      <!-- NUOVO VIDEO PRINCIPALE INCORPORATO -->
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/g9Br3j0fsKc?si=zc3_AtA1o1eLZLHL"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </div>
 
-    <div class="total-clicks" id="totalClicks">0 voti totali</div>
-    <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
+    <div class="interaction-panel">
+      <h2>Quale opzione preferisci?</h2>
+      <div class="buttons-container">
+        <div class="option-group">
+          <button id="voteA" class="option-button">Opzione A</button>
+          <div class="percentage-display" id="percentage-A">0%</div>
+        </div>
+        <div class="option-group">
+          <button id="voteB" class="option-button">Opzione B</button>
+          <div class="percentage-display" id="percentage-B">0%</div>
+        </div>
+      </div>
+      <div class="total-clicks" id="totalClicks">0 voti totali</div>
+      <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
+    </div>
   </div>
-</div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
-    authDomain: "eburnea-fd632.firebaseapp.com",
-    databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com",
-    projectId: "eburnea-fd632",
-    storageBucket: "eburnea-fd632.appspot.com",
-    messagingSenderId: "560492313221",
-    appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
-    measurementId: "G-CH43LTYK55"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-</script>
-
-<script src="script.js"></script>
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
+      authDomain: "eburnea-fd632.firebaseapp.com",
+      databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com",
+      projectId: "eburnea-fd632",
+      storageBucket: "eburnea-fd632.appspot.com",
+      messagingSenderId: "560492313221",
+      appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
+      measurementId: "G-CH43LTYK55"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
