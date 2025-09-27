@@ -1,0 +1,159 @@
+:root {
+    --bg-color: #f9f9f9;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    --accent-color: #555555;
+    --button-hover: #e0e0e0;
+    --success-color: #4caf50;
+    --error-color: #f44336;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, #ffffff 0%, #f2f2f2 100%);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.interaction-panel {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.option-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.option-button {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.option-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.option-button:hover:not(:disabled) {
+    background-color: var(--button-hover);
+}
+
+.percentage-display {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.total-clicks {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #999999;
+}
+
+.status-bar {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--card-bg);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.online-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--success-color);
+    border-radius: 50%;
+}
+
+.voted-message {
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-top: 15px;
+    display: none;
+}
+
+.reset-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    color: #fff;
+    background-color: var(--error-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reset-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Stile admin */
+#adminStats p {
+    font-size: 1rem;
+    margin: 5px 0;
+}
