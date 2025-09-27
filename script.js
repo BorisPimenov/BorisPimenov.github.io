@@ -1,13 +1,20 @@
 // --- INCOLLA QUI IL TUO FIREBASE CONFIG ---
+
 const firebaseConfig = {
-  apiKey: "AIzaSyD*******",
-  authDomain: "nome-progetto.firebaseapp.com",
-  databaseURL: "https://nome-progetto-default-rtdb.firebaseio.com",
-  projectId: "nome-progetto",
-  storageBucket: "nome-progetto.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abcdef123456"
+  apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
+  authDomain: "eburnea-fd632.firebaseapp.com",
+  databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com", 
+  projectId: "eburnea-fd632",
+  storageBucket: "eburnea-fd632.firebasestorage.app",
+  messagingSenderId: "560492313221",
+  appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
+  measurementId: "G-CH43LTYK55"
 };
+
+// Inizializza Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 
 
 if (typeof firebase === 'undefined') {
