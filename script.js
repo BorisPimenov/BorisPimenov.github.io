@@ -1,4 +1,4 @@
-// Usa Firebase compat: NON sono necessari import!
+// File funzionante con Firebase compat su GitHub Pages
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
@@ -9,7 +9,7 @@ const percB = document.getElementById('percentage-B');
 const totalClicks = document.getElementById('totalClicks');
 const votedMsg = document.getElementById('votedMessage');
 
-// Funzione per aggiornare le percentuali
+// Aggiorna la UI con i dati
 function updateUI(a, b) {
   const total = a + b;
   percA.textContent = total > 0 ? Math.round(a / total * 100) + '%' : '0%';
@@ -17,14 +17,14 @@ function updateUI(a, b) {
   totalClicks.textContent = `${total} voti totali`;
 }
 
-// Aggiorna in tempo reale
+// Ascolta cambiamenti in tempo reale
 votesRef.on('value', (snapshot) => {
   let data = snapshot.val();
-  if (!data) data = {A: 0, B: 0}; // fallback se non esiste la chiave
+  if (!data) data = {A: 0, B: 0};
   updateUI(data.A, data.B);
 });
 
-// Blocca doppio voto da sessione utente (locale)
+// Blocca doppio voto da sessione utente
 function hasVoted() {
   return localStorage.getItem('hasVoted') === 'yes';
 }
