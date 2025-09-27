@@ -1,3 +1,18 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
+  authDomain: "eburnea-fd632.firebaseapp.com",
+  databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com", 
+  projectId: "eburnea-fd632",
+  storageBucket: "eburnea-fd632.firebasestorage.app",
+  messagingSenderId: "560492313221",
+  appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
+  measurementId: "G-CH43LTYK55"
+};
+
+// Inizializza Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 const votesUrl = "https://borispimenov.github.io/votes.json";
 const resetUrl = "https://borispimenov.github.io/reset-votes"; 
 // (oppure un endpoint appropriato che tu configurerai)
