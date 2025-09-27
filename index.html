@@ -19,6 +19,10 @@
 
 <!-- CONTENUTO DEL SONDAGGIO -->
 <div class="container">
+  <div class="video-container">
+    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+  </div>
+
   <div class="interaction-panel">
     <h2>Quale opzione preferisci?</h2>
     <div class="buttons-container">
@@ -37,9 +41,11 @@
   </div>
 </div>
 
-<!-- FIREBASE -->
+<!-- FIREBASE (compat) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<!-- CONFIGURAZIONE FIREBASE -->
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
@@ -52,9 +58,11 @@
     measurementId: "G-CH43LTYK55"
   };
 
+  // Inizializza Firebase
   firebase.initializeApp(firebaseConfig);
 </script>
 
+<!-- SCRIPT PRINCIPALE -->
 <script src="script.js"></script>
 </body>
 </html>
