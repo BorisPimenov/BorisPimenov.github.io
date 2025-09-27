@@ -1,5 +1,3 @@
-// Funziona sia per index che per admin: il reset è attivo solo se esiste #resetVotes
-
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
@@ -10,7 +8,7 @@ const percB = document.getElementById('percentage-B');
 const totalClicks = document.getElementById('totalClicks');
 const votedMsg = document.getElementById('votedMessage');
 
-// Aggiorna la UI con i dati
+// Funzione per aggiornare le percentuali
 function updateUI(a, b) {
   const total = a + b;
   percA.textContent = total > 0 ? Math.round(a / total * 100) + '%' : '0%';
@@ -18,14 +16,22 @@ function updateUI(a, b) {
   totalClicks.textContent = `${total} voti totali`;
 }
 
-// Ascolta cambiamenti in tempo reale
+// Aggiorna in tempo reale
 votesRef.on('value', (snapshot) => {
   let data = snapshot.val();
-  if (!data) data = {A: 0, B: 0};
+  if (!data) data = {A: 0, B: 0}; // fallback se non esiste la chiave
   updateUI(data.A, data.B);
+
+  // Se la votazione è stata resettata, riabilita il voto per tutti
+  if (data.A === 0 && data.B === 0) {
+    localStorage.removeItem('hasVoted');
+    voteAButton.disabled = false;
+    voteBButton.disabled = false;
+    votedMsg.style.display = 'none';
+  }
 });
 
-// Blocca doppio voto da sessione utente
+// Blocca doppio voto da sessione utente (locale)
 function hasVoted() {
   return localStorage.getItem('hasVoted') === 'yes';
 }
@@ -60,13 +66,13 @@ voteBButton.onclick = function() {
   setVoted();
 };
 
-// Bottone reset (solo admin)
+// Bottone reset (solo admin.html)
 const resetBtn = document.getElementById('resetVotes');
 if (resetBtn) {
   resetBtn.onclick = function() {
     if (confirm("Sei sicuro di voler resettare la votazione?")) {
       votesRef.set({A:0, B:0});
-      // L'admin può votare di nuovo dopo il reset
+      // Anche l'admin può votare di nuovo dopo il reset
       localStorage.removeItem('hasVoted');
       updateUI(0, 0);
       voteAButton.disabled = false;
