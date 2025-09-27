@@ -1,17 +1,18 @@
-<EBURNEA>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Poll Interface</title>
+    <title>Sondaggio Interattivo</title>
     <style>
+        /* CSS Fornito dall'utente + variabili di base */
         :root {
             --bg-color: #121212;
-            --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
-            --accent-color: #bb86fc;
-            --button-hover: #373737;
-            --border-color: #333333;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --accent-color: #03dac6;
+            --button-hover: #2a2a2a;
         }
 
         body {
@@ -33,25 +34,6 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* Rapporto 16:9 */
-            background-color: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
         }
 
         .interaction-panel {
@@ -106,6 +88,8 @@
             font-size: 1.3rem;
             font-weight: bold;
             color: var(--accent-color);
+            /* Aggiunta transizione per un effetto più fluido */
+            transition: all 0.3s ease;
         }
 
         .total-clicks {
@@ -113,164 +97,73 @@
             font-size: 0.9rem;
             color: #999;
         }
-        
-        .voted-message {
-            color: #cf6679;
-            font-weight: bold;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .reset-button {
-            display: none;
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #fff;
-            background-color: #cf6679;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .reset-button:hover {
-            background-color: #a63f53;
-        }
     </style>
 </head>
 <body>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/AYd15BRGIIA?si=TD5JGSSLgBCLWbz0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
+<div class="container">
     <div class="interaction-panel">
-        <h2>Vota l'Opzione</h2>
+        <h2>Quale opzione preferisci?</h2>
         <div class="buttons-container">
             <div class="option-group">
-                <button class="option-button" data-option="1">Opzione 1</button>
-                <div class="percentage-display" id="percent-1">0%</div>
+                <button class="option-button" id="buttonA">Opzione A</button>
+                <div class="percentage-display" id="percentageA">0%</div>
             </div>
             <div class="option-group">
-                <button class="option-button" data-option="2">Opzione 2</button>
-                <div class="percentage-display" id="percent-2">0%</div>
+                <button class="option-button" id="buttonB">Opzione B</button>
+                <div class="percentage-display" id="percentageB">0%</div>
             </div>
         </div>
-        <div class="total-clicks" id="total-clicks">Voti totali: 0</div>
-        <div class="voted-message" id="voted-message">Hai già votato!</div>
-        <button class="reset-button" id="reset-button">Resetta Votazione</button>
+        <div class="total-clicks" id="totalClicks">Totale voti: 0</div>
     </div>
 </div>
 
 <script>
-   const websocket = new WebSocket('ws://192.168.1.55:8080');
-    let clicks = { option1: 0, option2: 0 };
-    const isAdmin = false; 
+    // 1. Selezioniamo gli elementi HTML con cui interagire
+    const buttonA = document.getElementById('buttonA');
+    const buttonB = document.getElementById('buttonB');
+    const percentageA_display = document.getElementById('percentageA');
+    const percentageB_display = document.getElementById('percentageB');
+    const totalClicks_display = document.getElementById('totalClicks');
 
-    const option1Btn = document.querySelector('[data-option="1"]');
-    const option2Btn = document.querySelector('[data-option="2"]');
-    const percent1El = document.getElementById('percent-1');
-    const percent2El = document.getElementById('percent-2');
-    const totalClicksEl = document.getElementById('total-clicks');
-    const votedMessageEl = document.getElementById('voted-message');
-    const resetButton = document.getElementById('reset-button');
-    const allButtons = document.querySelectorAll('.option-button');
+    // 2. Inizializziamo le variabili per tenere traccia dei voti
+    let clicksA = 0;
+    let clicksB = 0;
+    let totalClicks = 0;
 
-    function updatePercentages() {
-        const total = clicks.option1 + clicks.option2;
-        if (total === 0) {
-            percent1El.textContent = '0%';
-            percent2El.textContent = '0%';
-        } else {
-            const percent1 = ((clicks.option1 / total) * 100).toFixed(0);
-            const percent2 = ((clicks.option2 / total) * 100).toFixed(0);
-            percent1El.textContent = `${percent1}%`;
-            percent2El.textContent = `${percent2}%`;
-        }
-        totalClicksEl.textContent = `Voti totali: ${total}`;
-    }
-
-    function checkAndDisableButtons() {
-        const hasVoted = localStorage.getItem('hasVoted');
-        if (hasVoted) {
-            allButtons.forEach(button => button.disabled = true);
-            votedMessageEl.style.display = 'block';
-        }
-    }
-
-    allButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (localStorage.getItem('hasVoted')) {
-                return;
-            }
-
-            const option = button.dataset.option;
-            if (option === '1') {
-                clicks.option1++;
-            } else if (option === '2') {
-                clicks.option2++;
-            }
-            updatePercentages();
-
-            localStorage.setItem('hasVoted', 'true');
-            checkAndDisableButtons();
-
-            if (websocket.readyState === WebSocket.OPEN) {
-                websocket.send(`VOTO_${option}`);
-            }
-        });
+    // 3. Aggiungiamo gli "ascoltatori di eventi" ai pulsanti
+    buttonA.addEventListener('click', () => {
+        // Quando il pulsante A viene cliccato:
+        clicksA++; // Incrementa il contatore per A
+        totalClicks++; // Incrementa il contatore totale
+        updateDisplay(); // Chiama la funzione per aggiornare la visualizzazione
     });
 
-    if (isAdmin) {
-        resetButton.style.display = 'inline-block';
-        resetButton.addEventListener('click', () => {
-            localStorage.removeItem('hasVoted');
-            clicks.option1 = 0;
-            clicks.option2 = 0;
-            updatePercentages();
-            allButtons.forEach(button => button.disabled = false);
-            votedMessageEl.style.display = 'none';
+    buttonB.addEventListener('click', () => {
+        // Quando il pulsante B viene cliccato:
+        clicksB++; // Incrementa il contatore per B
+        totalClicks++; // Incrementa il contatore totale
+        updateDisplay(); // Chiama la funzione per aggiornare la visualizzazione
+    });
 
-            if (websocket.readyState === WebSocket.OPEN) {
-                websocket.send('RESET');
-            }
-        });
-    }
+    // 4. Creiamo la funzione che aggiorna l'interfaccia
+    function updateDisplay() {
+        let percentA = 0;
+        let percentB = 0;
 
-    websocket.onmessage = (event) => {
-        const message = event.data;
-        try {
-            const data = JSON.parse(message);
-            if (data.type === 'update_counts') {
-                clicks.option1 = data.option1;
-                clicks.option2 = data.option2;
-                updatePercentages();
-            } else if (data.type === 'reset_poll') {
-                localStorage.removeItem('hasVoted');
-                clicks.option1 = 0;
-                clicks.option2 = 0;
-                updatePercentages();
-                allButtons.forEach(button => button.disabled = false);
-                votedMessageEl.style.display = 'none';
-            }
-        } catch (e) {
-            console.log("Messaggio non JSON o sconosciuto:", message);
+        // Calcoliamo le percentuali solo se ci sono voti, per evitare divisione per zero
+        if (totalClicks > 0) {
+            percentA = (clicksA / totalClicks) * 100;
+            percentB = (clicksB / totalClicks) * 100;
         }
-    };
 
-    websocket.onopen = () => {
-        console.log('Connessione WebSocket stabilita con TouchDesigner.');
-    };
-
-    websocket.onclose = () => {
-        console.log('Connessione WebSocket chiusa.');
-    };
-
-    websocket.onerror = (error) => {
-        console.error('Errore WebSocket:', error);
-    };
-
-    document.addEventListener('DOMContentLoaded', checkAndDisableButtons);
+        // Aggiorniamo il testo degli elementi HTML
+        // .toFixed(1) limita il numero a una cifra decimale (es. 33.3%)
+        percentageA_display.textContent = `${percentA.toFixed(1)}%`;
+        percentageB_display.textContent = `${percentB.toFixed(1)}%`;
+        totalClicks_display.textContent = `Totale voti: ${totalClicks}`;
+    }
 </script>
+
 </body>
 </html>
