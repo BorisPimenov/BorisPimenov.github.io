@@ -8,14 +8,12 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function incoming(message) {
     console.log('Messaggio ricevuto:', message.toString());
-    // Inoltra il messaggio ricevuto a tutti i client connessi
+    // Invia il messaggio a tutti i client connessi (broadcast)
     wss.clients.forEach(function each(client) {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(message.toString());
       }
     });
-    // Rispondi anche al mittente (echo)
-    ws.send(`Echo: ${message}`);
   });
 
   ws.on('close', function() {
