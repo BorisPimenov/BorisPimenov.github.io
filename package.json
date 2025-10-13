@@ -1,5 +1,5 @@
 {
-  "name": "eburneawebinterface",
+  "name": "websocket-server",
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
