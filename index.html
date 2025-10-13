@@ -45,6 +45,20 @@
       <div class="total-clicks" id="totalClicks">0 voti totali</div>
       <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
     </div>
+
+    <!-- SLIDER INTEGRATI -->
+    <div class="sliders-panel" style="margin-top:30px;">
+      <h3>Controlla i parametri:</h3>
+      <label for="slider1">Slider 1:</label>
+      <input type="range" id="slider1" min="0" max="100" value="50">
+      <span id="slider1Value">50</span>
+      <br>
+      <label for="slider2">Slider 2:</label>
+      <input type="range" id="slider2" min="0" max="100" value="25">
+      <span id="slider2Value">25</span>
+      <br>
+    </div>
+    <!-- FINE SLIDER -->
   </div>
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -61,6 +75,38 @@
       measurementId: "G-CH43LTYK55"
     };
     firebase.initializeApp(firebaseConfig);
+  </script>
+  <!-- SLIDER WEBSOCKET SCRIPT -->
+  <script>
+    // Sostituisci con l'URL del tuo server WebSocket!
+    const ws = new WebSocket('wss://eburneawebinterface.herokuapp.com');
+
+    ws.onopen = function() {
+      console.log('WebSocket connesso!');
+    };
+
+    ws.onclose = function() {
+      console.log('WebSocket disconnesso!');
+    };
+
+    ws.onmessage = function(event) {
+      console.log('Messaggio dal server:', event.data);
+    };
+
+    function handleSlider(sliderId, valueId) {
+      const slider = document.getElementById(sliderId);
+      const value = document.getElementById(valueId);
+
+      slider.addEventListener('input', function() {
+        value.textContent = slider.value;
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ slider: sliderId, value: slider.value }));
+        }
+      });
+    }
+
+    handleSlider('slider1', 'slider1Value');
+    handleSlider('slider2', 'slider2Value');
   </script>
   <script src="script.js"></script>
 </body>
