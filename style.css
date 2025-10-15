@@ -44,19 +44,20 @@ body, html {
   height: 315px;
 }
 
-/* PANEL AFFIANCATI E ALLINEATI */
+/* PANEL AFFIANCATI A SINISTRA E DESTRA */
 .control-panels {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Allinea in alto */
-  gap: 40px;
-  max-width: 900px;
+  justify-content: space-between; /* Spinge uno a sinistra e uno a destra */
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1000px; /* Larghezza massima totale */
   margin: 0 auto;
+  gap: 40px;
 }
 
 /* PANEL VOTAZIONI (SINISTRA) */
 .voting-panel {
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.85); /* Trasparenza mantenuta */
   padding: 25px;
   border-radius: 2px;
   width: 280px;
@@ -135,12 +136,11 @@ body, html {
 
 /* PANEL PARAMETRI (DESTRA) */
 .parameters-panel {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.85); /* Stessa trasparenza */
   padding: 25px;
   border-radius: 2px;
   width: 400px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  /* Assicura lo stesso allineamento */
   margin-top: 0;
 }
 
@@ -245,11 +245,12 @@ body, html {
   
   .control-panels {
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
     max-width: 100vw;
     margin-top: 30vh;
     padding: 0 10px;
-    align-items: center; /* Centra su mobile */
   }
   
   .voting-panel,
