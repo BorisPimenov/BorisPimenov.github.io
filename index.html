@@ -3,16 +3,142 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sondaggio</title>
+  <title>Control Panel</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* STILI PER GLI SLIDER MIGLIORATI */
+    .sliders-panel {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 30px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .sliders-panel h3 {
+      color: #2c3e50;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 1.4em;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    .slider-container {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #3498db;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .slider-label {
+      font-weight: bold;
+      color: #2c3e50;
+      font-size: 1.1em;
+    }
+
+    .slider-value {
+      background: #3498db;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .slider-input {
+      width: 100%;
+      height: 12px;
+      border-radius: 6px;
+      background: #ddd;
+      outline: none;
+      opacity: 0.9;
+      transition: opacity .2s;
+      -webkit-appearance: none;
+    }
+
+    .slider-input:hover {
+      opacity: 1;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #3498db;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border: 3px solid white;
+    }
+
+    .slider-input::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #3498db;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border: 3px solid white;
+    }
+
+    .slider-input::-webkit-slider-track {
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #3498db, #2ecc71);
+    }
+
+    .connection-status {
+      text-align: center;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .connected {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .disconnected {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .sliders-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .sliders-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   <script>
-    // Forza layout mobile se c'è il parametro ?mobile=1
     if (window.location.search.includes('mobile=1')) {
       document.body.classList.add('force-mobile');
     }
   </script>
+  
   <!-- VIDEO DI SFONDO -->
   <div class="video-background">
     <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
@@ -20,10 +146,10 @@
             allow="autoplay; fullscreen"
             allowfullscreen></iframe>
   </div>
+  
   <!-- CONTAINER PRINCIPALE -->
   <div class="container">
     <div class="video-container">
-      <!-- NUOVO VIDEO PRINCIPALE INCORPORATO -->
       <iframe width="560" height="315" src="https://www.youtube.com/embed/g9Br3j0fsKc?si=zc3_AtA1o1eLZLHL"
         title="YouTube video player" frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -46,20 +172,55 @@
       <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
     </div>
 
-    <!-- SLIDER INTEGRATI -->
-    <div class="sliders-panel" style="margin-top:30px;">
-      <h3>Controlla i parametri:</h3>
-      <label for="slider1">Slider 1:</label>
-      <input type="range" id="slider1" min="0" max="100" value="50">
-      <span id="slider1Value">50</span>
-      <br>
-      <label for="slider2">Slider 2:</label>
-      <input type="range" id="slider2" min="0" max="100" value="25">
-      <span id="slider2Value">25</span>
-      <br>
+    <!-- SLIDER AGGIORNATI CON 4 CONTROLLI -->
+    <div class="sliders-panel">
+      <h3>🎛️ CONTROLLO PARAMETRI</h3>
+      
+      <div class="sliders-grid">
+        <!-- Slider 1 -->
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">🔴 Luminosità</span>
+            <span class="slider-value" id="slider1Value">50</span>
+          </div>
+          <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
+        </div>
+
+        <!-- Slider 2 -->
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">🟢 Contrasto</span>
+            <span class="slider-value" id="slider2Value">25</span>
+          </div>
+          <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
+        </div>
+
+        <!-- Slider 3 -->
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">🔵 Saturazione</span>
+            <span class="slider-value" id="slider3Value">75</span>
+          </div>
+          <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
+        </div>
+
+        <!-- Slider 4 -->
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">🟣 Tonalità</span>
+            <span class="slider-value" id="slider4Value">10</span>
+          </div>
+          <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
+        </div>
+      </div>
+
+      <!-- Stato connessione -->
+      <div class="connection-status" id="connectionStatus">
+        🔌 Connettendo al server...
+      </div>
     </div>
-    <!-- FINE SLIDER -->
   </div>
+
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -76,50 +237,82 @@
     };
     firebase.initializeApp(firebaseConfig);
   </script>
-  <!-- SLIDER WEBSOCKET SCRIPT -->
-// SLIDER WEBSOCKET SCRIPT - VERSIONE CORRETTA
-<script>
-    // Sostituisci con l'URL del tuo server WebSocket!
-    const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+
+  <!-- WEBSOCKET SCRIPT AGGIORNATO -->
+  <script>
+    // MODIFICA QUESTA RIGA CON IL TUO INDIRIZZO WEBSOCKET
+    const ws = new WebSocket('ws://localhost:8080');
+    const connectionStatus = document.getElementById('connectionStatus');
 
     ws.onopen = function() {
-      console.log('WebSocket connesso!');
+      console.log('✅ WebSocket connesso!');
+      connectionStatus.textContent = '✅ Connesso al server';
+      connectionStatus.className = 'connection-status connected';
     };
 
     ws.onclose = function() {
-      console.log('WebSocket disconnesso!');
+      console.log('❌ WebSocket disconnesso!');
+      connectionStatus.textContent = '❌ Disconnesso dal server';
+      connectionStatus.className = 'connection-status disconnected';
     };
 
-    ws.onmessage = function(event) {
-      console.log('Messaggio dal server:', event.data);
+    ws.onerror = function(error) {
+      console.log('💥 Errore WebSocket:', error);
+      connectionStatus.textContent = '💥 Errore di connessione';
+      connectionStatus.className = 'connection-status disconnected';
     };
 
-    function handleSlider(sliderId, index) {
+    function handleSlider(sliderId, index, label) {
       const slider = document.getElementById(sliderId);
-      const value = document.getElementById(sliderId + 'Value');
+      const valueDisplay = document.getElementById(sliderId + 'Value');
 
       slider.addEventListener('input', function() {
-        // Aggiorna il valore visualizzato
-        value.textContent = slider.value;
+        // Aggiorna display
+        valueDisplay.textContent = slider.value;
         
-        // Invia il messaggio nel formato richiesto
+        // Invia via WebSocket
         if (ws.readyState === WebSocket.OPEN) {
           const message = {
             type: "slider",
-            index: index,  // Usa l'indice numerico
-            value: parseFloat(slider.value) / 100  // Converti in float tra 0-1
+            index: index,
+            value: parseFloat(slider.value) / 100  // Normalizza a 0-1
           };
           ws.send(JSON.stringify(message));
-          console.log('Inviato:', message);
+          console.log(`📤 ${label}:`, message);
         }
+      });
+
+      // Animazione al cambiamento
+      slider.addEventListener('change', function() {
+        valueDisplay.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          valueDisplay.style.transform = 'scale(1)';
+        }, 200);
       });
     }
 
-    // Configura gli slider con i loro indici
-    handleSlider('slider1', 0);  // slider1 -> index 0
-    handleSlider('slider2', 1);  // slider2 -> index 1
+    // Inizializza i 4 slider
+    handleSlider('slider1', 0, 'Luminosità');
+    handleSlider('slider2', 1, 'Contrasto');
+    handleSlider('slider3', 2, 'Saturazione');
+    handleSlider('slider4', 3, 'Tonalità');
 
-    // Aggiungi più slider se necessario
-    // handleSlider('slider3', 2);
-    // handleSlider('slider4', 3);
-</script>
+    // Invio iniziale dei valori
+    setTimeout(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        document.querySelectorAll('.slider-input').forEach((slider, index) => {
+          const message = {
+            type: "slider",
+            index: index,
+            value: parseFloat(slider.value) / 100
+          };
+          ws.send(JSON.stringify(message));
+          console.log(`📤 Valore iniziale ${index}:`, message);
+        });
+      }
+    }, 1000);
+  </script>
+  
+  <script src="script.js"></script>
+</body>
+</html>
