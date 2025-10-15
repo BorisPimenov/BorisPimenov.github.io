@@ -77,9 +77,10 @@
     firebase.initializeApp(firebaseConfig);
   </script>
   <!-- SLIDER WEBSOCKET SCRIPT -->
-  <script>
+// SLIDER WEBSOCKET SCRIPT - VERSIONE CORRETTA
+<script>
     // Sostituisci con l'URL del tuo server WebSocket!
-    const ws = new WebSocket('wss://eburneawebinterface.herokuapp.com');
+    const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
 
     ws.onopen = function() {
       console.log('WebSocket connesso!');
@@ -93,21 +94,32 @@
       console.log('Messaggio dal server:', event.data);
     };
 
-    function handleSlider(sliderId, valueId) {
+    function handleSlider(sliderId, index) {
       const slider = document.getElementById(sliderId);
-      const value = document.getElementById(valueId);
+      const value = document.getElementById(sliderId + 'Value');
 
       slider.addEventListener('input', function() {
+        // Aggiorna il valore visualizzato
         value.textContent = slider.value;
+        
+        // Invia il messaggio nel formato richiesto
         if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ slider: sliderId, value: slider.value }));
+          const message = {
+            type: "slider",
+            index: index,  // Usa l'indice numerico
+            value: parseFloat(slider.value) / 100  // Converti in float tra 0-1
+          };
+          ws.send(JSON.stringify(message));
+          console.log('Inviato:', message);
         }
       });
     }
 
-    handleSlider('slider1', 'slider1Value');
-    handleSlider('slider2', 'slider2Value');
-  </script>
-  <script src="script.js"></script>
-</body>
-</html>
+    // Configura gli slider con i loro indici
+    handleSlider('slider1', 0);  // slider1 -> index 0
+    handleSlider('slider2', 1);  // slider2 -> index 1
+
+    // Aggiungi più slider se necessario
+    // handleSlider('slider3', 2);
+    // handleSlider('slider4', 3);
+</script>
