@@ -142,8 +142,7 @@
             allowfullscreen></iframe>
   </div>
   
-  <!-- CONTAINER PRINCIPALE -->
-  <div class="container">
+<div class="container">
   <div class="video-container">
     <iframe width="560" height="315" src="https://www.youtube.com/embed/g9Br3j0fsKc?si=zc3_AtA1o1eLZLHL"
       title="YouTube video player" frameborder="0"
@@ -151,9 +150,11 @@
       referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   </div>
 
-    <div class="main-control-panel">
-    <!-- BOTTONI DI VOTO -->
-    <div class="interaction-panel">
+   
+     <!-- PANEL AFFIANCATI SOTTO IL VIDEO -->
+  <div class="control-panels">
+    <!-- PANEL VOTAZIONI (SINISTRA) -->
+    <div class="voting-panel">
       <h2>Preferenza</h2>
       <div class="buttons-container">
         <div class="option-group">
@@ -169,54 +170,48 @@
       <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
     </div>
 
-    <!-- SLIDER MINIMALISTI -->
-    <div class="sliders-panel">
-      <h3>Control Parameters</h3>
+    <!-- PANEL PARAMETRI (DESTRA) -->
+    <div class="parameters-panel">
+      <h3>Parametri</h3>
       
-      <div class="sliders-grid">
-        <!-- Slider 1 -->
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Luminosità</span>
-            <span class="slider-value" id="slider1Value">50</span>
-          </div>
-          <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
+      <div class="slider-container">
+        <div class="slider-header">
+          <span class="slider-label">Luminosità</span>
+          <span class="slider-value" id="slider1Value">50</span>
         </div>
-
-        <!-- Slider 2 -->
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Contrasto</span>
-            <span class="slider-value" id="slider2Value">25</span>
-          </div>
-          <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
-        </div>
-
-        <!-- Slider 3 -->
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Saturazione</span>
-            <span class="slider-value" id="slider3Value">75</span>
-          </div>
-          <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
-        </div>
-
-        <!-- Slider 4 -->
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Tonalità</span>
-            <span class="slider-value" id="slider4Value">10</span>
-          </div>
-          <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
-        </div>
+        <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
       </div>
 
-      <!-- Stato connessione -->
+      <div class="slider-container">
+        <div class="slider-header">
+          <span class="slider-label">Contrasto</span>
+          <span class="slider-value" id="slider2Value">25</span>
+        </div>
+        <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
+      </div>
+
+      <div class="slider-container">
+        <div class="slider-header">
+          <span class="slider-label">Saturazione</span>
+          <span class="slider-value" id="slider3Value">75</span>
+        </div>
+        <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
+      </div>
+
+      <div class="slider-container">
+        <div class="slider-header">
+          <span class="slider-label">Tonalità</span>
+          <span class="slider-value" id="slider4Value">10</span>
+        </div>
+        <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
+      </div>
+
       <div class="connection-status" id="connectionStatus">
         Connecting to server...
       </div>
     </div>
   </div>
+</div>
 
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
