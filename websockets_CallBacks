@@ -1,0 +1,124 @@
+# me - this DAT
+# dat - the WebSocket DAT
+
+def onConnect(dat):
+	print("connected")
+	return
+
+# me - this DAT
+# dat - the WebSocket DAT
+
+def onDisconnect(dat):
+	print("disconnected")
+	return
+
+# me - this DAT
+# dat - the DAT that received a message
+# rowIndex - the row number the message was placed into
+# message - a unicode representation of the text
+# 
+# Only text frame messages will be handled in this function.
+
+import json
+
+def onReceiveText(dat, rowIndex, message):
+    print(f"🎯 WEB SOCKET - Messaggio ricevuto: {message}")
+    
+    if not message or not message.strip():
+        return
+
+    try:
+        data = json.loads(message)
+    except json.JSONDecodeError:
+        print(f"⚠️ Messaggio non in formato JSON: {message}")
+        return
+
+    if data.get('type') != 'slider':
+        return
+
+    idx = data.get('index')
+    val = data.get('value')
+
+    if idx is None or val is None:
+        return
+
+    chan_name = f"slider{idx}"
+    try:
+        val = float(val)
+    except (ValueError, TypeError):
+        print(f"⚠️ Valore non valido per {chan_name}: {val}")
+        return
+    
+    table = op('slider_data')
+    if table is None:
+        print("❌ ERRORE: Table 'slider_data' non trovata!")
+        return
+    
+    # SE LA TABLE È VUOTA, AGGIUNGI L'HEADER
+    if table.numRows == 0:
+        table.appendRow(["name", "value"])
+        print("➕ Aggiunta riga di intestazione")
+    
+    # CERCA LA RIGA ESISTENTE
+    found_row = -1
+    for i in range(table.numRows):
+        if table[i, 0] == chan_name:  # Confronta direttamente il valore
+            found_row = i
+            break
+    
+    if found_row != -1:
+        # Aggiorna riga esistente
+        table[found_row, 1] = str(val)
+        print(f"✏️ Aggiornato: {chan_name} = {val} (riga {found_row})")
+    else:
+        # Aggiungi nuova riga
+        table.appendRow([chan_name, str(val)])
+        print(f"➕ Nuovo: {chan_name} = {val} (riga {table.numRows-1})")
+    
+    # VERIFICA
+    print(f"✅ Table ora ha {table.numRows} righe")
+    return
+    
+    
+
+        
+       
+# me - this DAT
+# dat - the DAT that received a message
+# contents - a byte array of the message contents
+# 
+# Only binary frame messages will be handled in this function.
+
+def onReceiveBinary(dat, contents):
+	return
+
+# me - this DAT
+# dat - the DAT that received a message
+# contents - a byte array of the message contents
+# 
+# Only ping messages will be handled in this function.
+
+def onReceivePing(dat, contents):
+	dat.sendPong(contents) # send a reply with same message
+	return
+
+# me - this DAT
+# dat - the DAT that received a message
+# contents - a byte array of the message content
+# 
+# Only pong messages will be handled in this function.
+
+def onReceivePong(dat, contents):
+	return
+
+
+# me - this DAT
+# dat - the DAT that received a message
+# message - a unicode representation of the message
+#
+# Use this method to monitor the websocket status messages
+
+def onMonitorMessage(dat, message):
+	return
+
+	
