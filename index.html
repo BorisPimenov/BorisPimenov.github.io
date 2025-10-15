@@ -169,7 +169,74 @@
       <div class="total-clicks" id="totalClicks">0 voti totali</div>
       <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
     </div>
+// CONFIGURAZIONE WEBRTC
+    const rtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' }
+        // Aggiungi TURN server se necessario:
+        // {
+        //   urls: 'turn:your-turn-server.com:3478',
+        //   username: 'your-username',
+        //   credential: 'your-password'
+        // }
+      ]
+    };
 
+    // SIGNALING WEBRTC
+    signalingWs.onopen = function() {
+      console.log('✅ Connesso al signaling server');
+      streamStatus.textContent = '🟡 Negoziazione WebRTC...';
+    };
+
+    signalingWs.onmessage = async function(event) {
+      const message = JSON.parse(event.data);
+      
+      if (message.type === 'offer') {
+        await handleOffer(message.offer);
+      } else if (message.type === 'ice-candidate') {
+        await handleIceCandidate(message.candidate);
+      } else if (message.type === 'stream-ready') {
+        createAnswer();
+      }
+    };
+
+    async function handleOffer(offer) {
+      if (!peerConnection) {
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        
+        peerConnection.ontrack = (event) => {
+          console.log('🎥 Stream video ricevuto!');
+          video.srcObject = event.streams[0];
+          streamStatus.textContent = '🟢 Stream live attivo';
+          streamStatus.style.color = '#2e7d32';
+        };
+
+        peerConnection.oniceconnectionstatechange = () => {
+          console.log('ICE connection state:', peerConnection.iceConnectionState);
+          if (peerConnection.iceConnectionState === 'connected') {
+            streamStatus.textContent = '🟢 Stream live - Connessione stabile';
+          }
+        };
+      }
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    }
+
+    async function createAnswer() {
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      
+      signalingWs.send(JSON.stringify({
+        type: 'answer',
+        answer: answer
+      }));
+    }
+
+    async function handleIceCandidate(candidate) {
+      if (peerConnection) {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    }
     <!-- PANEL PARAMETRI (DESTRA) -->
     <div class="parameters-panel">
       <h3>Parametri</h3>
