@@ -1,63 +1,113 @@
-// UNICA CONNESSIONE WEBSOCKET
-window.appWs = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+// CONNESSIONE WEBSOCKET 
+const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+const connectionStatus = document.getElementById('connectionStatus');
 
-// STATO APPLICAZIONE
-window.appState = {
-    questionnaireCompleted: false,
-    websocketConnected: false
+ws.onopen = function() {
+    console.log('✅ WebSocket connected');
+    connectionStatus.textContent = 'Connected';
+    connectionStatus.className = 'connection-status connected';
 };
 
-function initializeApp() {
-    console.log('🚀 Inizializzazione applicazione');
-    setupWebSocket();
-    document.querySelector('.container').style.display = 'none';
-    document.querySelector('.touch-panel').style.display = 'none';
-    checkPreviousSession();
+ws.onclose = function() {
+    console.log('❌ WebSocket disconnected');
+    connectionStatus.textContent = 'Disconnected';
+    connectionStatus.className = 'connection-status disconnected';
+};
+
+ws.onerror = function(error) {
+    console.log('💥 WebSocket error:', error);
+    connectionStatus.textContent = 'Connection error';
+    connectionStatus.className = 'connection-status disconnected';
+};
+
+// FUNZIONE SLIDER SEMPLICE
+function handleSlider(sliderId, index) {
+    const slider = document.getElementById(sliderId);
+    const valueDisplay = document.getElementById(sliderId + 'Value');
+
+    slider.addEventListener('input', function() {
+        valueDisplay.textContent = slider.value;
+        
+        if (ws.readyState === WebSocket.OPEN) {
+            const message = {
+                type: "slider",
+                index: index,
+                value: parseFloat(slider.value) / 100
+            };
+            ws.send(JSON.stringify(message));
+            console.log('📤 Sent:', message);
+        }
+    });
 }
 
-function setupWebSocket() {
-    appWs.onopen = function() {
-        console.log('✅ WebSocket connesso');
-        window.appState.websocketConnected = true;
-        updateConnectionStatus();
-        sendPendingData();
-    };
+// INIZIALIZZA SLIDER
+handleSlider('slider1', 0);
+handleSlider('slider2', 1);
+handleSlider('slider3', 2);
+handleSlider('slider4', 3);
 
-    appWs.onclose = function() {
-        console.log('❌ WebSocket disconnesso');
-        window.appState.websocketConnected = false;
-        updateConnectionStatus();
-    };
+// FIREBASE VOTING (mantieni questo)
+const db = firebase.database();
+const votesRef = db.ref('votes');
 
-    appWs.onerror = function(error) {
-        console.error('💥 Errore WebSocket:', error);
-        window.appState.websocketConnected = false;
-        updateConnectionStatus();
-    };
+const voteAButton = document.getElementById('voteA');
+const voteBButton = document.getElementById('voteB');
+const percA = document.getElementById('percentage-A');
+const percB = document.getElementById('percentage-B');
+const totalClicks = document.getElementById('totalClicks');
+const votedMsg = document.getElementById('votedMessage');
+
+function updateUI(a, b) {
+    const total = a + b;
+    percA.textContent = total > 0 ? Math.round(a / total * 100) + '%' : '0%';
+    percB.textContent = total > 0 ? Math.round(b / total * 100) + '%' : '0%';
+    totalClicks.textContent = `${total} voti totali`;
 }
 
-function updateConnectionStatus() {
-    const statusElement = document.getElementById('connectionStatus');
-    if (!statusElement) return;
-    
-    if (window.appState.websocketConnected) {
-        statusElement.textContent = 'Connesso';
-        statusElement.className = 'connection-status connected';
-    } else {
-        statusElement.textContent = 'Disconnesso';
-        statusElement.className = 'connection-status disconnected';
+votesRef.on('value', (snapshot) => {
+    let data = snapshot.val();
+    if (!data) data = {A: 0, B: 0};
+    updateUI(data.A, data.B);
+
+    if (data.A === 0 && data.B === 0) {
+        localStorage.removeItem('hasVoted');
+        voteAButton.disabled = false;
+        voteBButton.disabled = false;
+        votedMsg.style.display = 'none';
     }
+});
+
+function hasVoted() {
+    return localStorage.getItem('hasVoted') === 'yes';
 }
 
-// FUNZIONE UNICA PER INVIO DATI
-function sendToTouchDesigner(data) {
-    if (window.appState.websocketConnected && appWs.readyState === WebSocket.OPEN) {
-        appWs.send(JSON.stringify(data));
-        console.log('📤 Inviati:', data.type);
-    } else {
-        // Salva in localStorage
-        const pendingKey = data.type === 'questionnaire' ? 'pendingQuestionnaire' : 'pendingControl';
-        localStorage.setItem(pendingKey, JSON.stringify(data));
-        console.log('💾 Dati salvati:', data.type);
-    }
+function setVoted() {
+    localStorage.setItem('hasVoted', 'yes');
+    votedMsg.style.display = 'block';
+    voteAButton.disabled = true;
+    voteBButton.disabled = true;
 }
+
+if (hasVoted()) setVoted();
+
+voteAButton.onclick = function() {
+    if (hasVoted()) return;
+    votesRef.transaction(current => {
+        return {
+            A: (current && current.A ? current.A : 0) + 1,
+            B: (current && current.B ? current.B : 0)
+        };
+    });
+    setVoted();
+};
+
+voteBButton.onclick = function() {
+    if (hasVoted()) return;
+    votesRef.transaction(current => {
+        return {
+            A: (current && current.A ? current.A : 0),
+            B: (current && current.B ? current.B : 0) + 1
+        };
+    });
+    setVoted();
+};
