@@ -29,7 +29,7 @@ class QuestionnaireManager {
             this.sendAnswers(answers);
             this.completeQuestionnaire();
         } else {
-            this.showError('Per favore, compila tutte le domande con risposte valide');
+            this.showError('Per favore, compila tutte le domande con risposte valide (almeno 2 caratteri)');
         }
     }
     
@@ -52,7 +52,11 @@ class QuestionnaireManager {
         };
         
         // Usa la funzione utility globale
-        sendToTouchDesigner(message);
+        if (window.sendToTouchDesigner) {
+            sendToTouchDesigner(message);
+        } else {
+            console.log('Funzione sendToTouchDesigner non disponibile');
+        }
         
         // Salva anche localmente per backup
         localStorage.setItem('userQuestionnaire', JSON.stringify(answers));
@@ -68,29 +72,69 @@ class QuestionnaireManager {
         
         // Segna come completato
         localStorage.setItem('questionnaireCompleted', 'true');
-        window.appState.questionnaireCompleted = true;
+        if (window.appState) {
+            window.appState.questionnaireCompleted = true;
+        }
         
         // Mostra contenuto principale
-        document.querySelector('.container').style.display = 'block';
+        const container = document.querySelector('.container');
+        const touchPanel = document.querySelector('.touch-panel');
         
-        console.log('✅ Questionario completato');
+        if (container) container.style.display = 'block';
+        if (touchPanel) touchPanel.style.display = 'block';
+        
+        console.log('✅ Questionario completato e nascosto');
     }
     
     hideQuestionnaire() {
-        this.questionnaire.classList.add('hidden');
+        if (this.questionnaire) {
+            this.questionnaire.classList.add('hidden');
+            console.log('🎭 Questionario nascosto');
+        } else {
+            console.error('❌ Elemento questionario non trovato');
+        }
     }
     
     showQuestionnaire() {
-        this.questionnaire.classList.remove('hidden');
-        document.querySelector('.container').style.display = 'none';
+        if (this.questionnaire) {
+            this.questionnaire.classList.remove('hidden');
+            const container = document.querySelector('.container');
+            const touchPanel = document.querySelector('.touch-panel');
+            if (container) container.style.display = 'none';
+            if (touchPanel) touchPanel.style.display = 'none';
+        }
     }
     
     showError(message) {
-        alert(message); // Puoi sostituire con un modal più elegante
+        // Creare un messaggio di errore più elegante
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f44336;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            z-index: 10001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `;
+        errorDiv.textContent = message;
+        document.body.appendChild(errorDiv);
+        
+        // Rimuovi dopo 5 secondi
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
     }
     
     resetQuestionnaire() {
-        this.questionsForm.reset();
+        if (this.questionsForm) {
+            this.questionsForm.reset();
+        }
         this.hasSubmitted = false;
         localStorage.removeItem('questionnaireCompleted');
         localStorage.removeItem('userQuestionnaire');
@@ -103,4 +147,8 @@ let questionnaireManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     questionnaireManager = new QuestionnaireManager();
+    console.log('✅ QuestionnaireManager inizializzato');
 });
+
+// Debug: rendi globale per testing
+window.questionnaireManager = questionnaireManager;
