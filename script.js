@@ -1,26 +1,47 @@
-// CONNESSIONE WEBSOCKET 
+// CONNESSIONE WEBSOCKET CON DEBUG ESTESO
+console.log('🔄 Tentativo di connessione WebSocket...');
 const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
 const connectionStatus = document.getElementById('connectionStatus');
 
-ws.onopen = function() {
-    console.log('✅ WebSocket connected');
+ws.onopen = function(event) {
+    console.log('✅✅✅ WEB SOCKET CONNESSO!');
+    console.log('Event:', event);
     connectionStatus.textContent = 'Connected';
     connectionStatus.className = 'connection-status connected';
+    
+    // Test invio immediato
+    ws.send(JSON.stringify({
+        type: "test",
+        message: "Connessione test",
+        timestamp: Date.now()
+    }));
 };
 
-ws.onclose = function() {
-    console.log('❌ WebSocket disconnected');
-    connectionStatus.textContent = 'Disconnected';
+ws.onclose = function(event) {
+    console.log('❌❌❌ WEB SOCKET DISCONNESSO');
+    console.log('Event:', event);
+    connectionStatus.textContent = 'Disconnected - Code: ' + event.code;
     connectionStatus.className = 'connection-status disconnected';
+    
+    // Tentativo riconnessione dopo 5 secondi
+    setTimeout(() => {
+        console.log('🔄 Tentativo riconnessione...');
+        location.reload();
+    }, 5000);
 };
 
 ws.onerror = function(error) {
-    console.log('💥 WebSocket error:', error);
-    connectionStatus.textContent = 'Connection error';
+    console.log('💥💥💥 WEB SOCKET ERROR');
+    console.log('Error:', error);
+    connectionStatus.textContent = 'Connection Error';
     connectionStatus.className = 'connection-status disconnected';
 };
 
-// FUNZIONE SLIDER SEMPLICE
+ws.onmessage = function(event) {
+    console.log('📩 Messaggio dal server:', event.data);
+};
+
+// SLIDER (solo quando connesso)
 function handleSlider(sliderId, index) {
     const slider = document.getElementById(sliderId);
     const valueDisplay = document.getElementById(sliderId + 'Value');
@@ -35,18 +56,23 @@ function handleSlider(sliderId, index) {
                 value: parseFloat(slider.value) / 100
             };
             ws.send(JSON.stringify(message));
-            console.log('📤 Sent:', message);
+            console.log('📤 Slider inviato:', message);
+        } else {
+            console.log('⚠️ WebSocket non connesso, messaggio non inviato');
         }
     });
 }
 
-// INIZIALIZZA SLIDER
-handleSlider('slider1', 0);
-handleSlider('slider2', 1);
-handleSlider('slider3', 2);
-handleSlider('slider4', 3);
+// Inizializza slider quando la pagina è pronta
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 Pagina caricata, inizializzo slider...');
+    handleSlider('slider1', 0);
+    handleSlider('slider2', 1);
+    handleSlider('slider3', 2);
+    handleSlider('slider4', 3);
+});
 
-// FIREBASE VOTING (mantieni questo)
+// FIREBASE (mantieni questo)
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
@@ -64,18 +90,20 @@ function updateUI(a, b) {
     totalClicks.textContent = `${total} voti totali`;
 }
 
-votesRef.on('value', (snapshot) => {
-    let data = snapshot.val();
-    if (!data) data = {A: 0, B: 0};
-    updateUI(data.A, data.B);
+if (votesRef) {
+    votesRef.on('value', (snapshot) => {
+        let data = snapshot.val();
+        if (!data) data = {A: 0, B: 0};
+        updateUI(data.A, data.B);
 
-    if (data.A === 0 && data.B === 0) {
-        localStorage.removeItem('hasVoted');
-        voteAButton.disabled = false;
-        voteBButton.disabled = false;
-        votedMsg.style.display = 'none';
-    }
-});
+        if (data.A === 0 && data.B === 0) {
+            localStorage.removeItem('hasVoted');
+            if (voteAButton) voteAButton.disabled = false;
+            if (voteBButton) voteBButton.disabled = false;
+            if (votedMsg) votedMsg.style.display = 'none';
+        }
+    });
+}
 
 function hasVoted() {
     return localStorage.getItem('hasVoted') === 'yes';
@@ -83,31 +111,35 @@ function hasVoted() {
 
 function setVoted() {
     localStorage.setItem('hasVoted', 'yes');
-    votedMsg.style.display = 'block';
-    voteAButton.disabled = true;
-    voteBButton.disabled = true;
+    if (votedMsg) votedMsg.style.display = 'block';
+    if (voteAButton) voteAButton.disabled = true;
+    if (voteBButton) voteBButton.disabled = true;
 }
 
 if (hasVoted()) setVoted();
 
-voteAButton.onclick = function() {
-    if (hasVoted()) return;
-    votesRef.transaction(current => {
-        return {
-            A: (current && current.A ? current.A : 0) + 1,
-            B: (current && current.B ? current.B : 0)
-        };
-    });
-    setVoted();
-};
+if (voteAButton) {
+    voteAButton.onclick = function() {
+        if (hasVoted()) return;
+        votesRef.transaction(current => {
+            return {
+                A: (current && current.A ? current.A : 0) + 1,
+                B: (current && current.B ? current.B : 0)
+            };
+        });
+        setVoted();
+    };
+}
 
-voteBButton.onclick = function() {
-    if (hasVoted()) return;
-    votesRef.transaction(current => {
-        return {
-            A: (current && current.A ? current.A : 0),
-            B: (current && current.B ? current.B : 0) + 1
-        };
-    });
-    setVoted();
-};
+if (voteBButton) {
+    voteBButton.onclick = function() {
+        if (hasVoted()) return;
+        votesRef.transaction(current => {
+            return {
+                A: (current && current.A ? current.A : 0),
+                B: (current && current.B ? current.B : 0) + 1
+            };
+        });
+        setVoted();
+    };
+}
