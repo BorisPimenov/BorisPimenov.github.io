@@ -1,5 +1,5 @@
 // CONNESSIONE WEBSOCKET GLOBALE
-window.controlWs = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com:443');
+window.controlWs = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
 
 // STATO APPLICAZIONE
 window.appState = {
@@ -21,6 +21,7 @@ function initializeApp() {
     
     // Nascondi contenuto principale inizialmente
     document.querySelector('.container').style.display = 'none';
+    document.querySelector('.touch-panel').style.display = 'none';
     
     // Controlla se l'utente ha già completato il questionario
     checkPreviousSession();
@@ -30,7 +31,10 @@ function setupWebSocket() {
     controlWs.onopen = function() {
         console.log('✅ WebSocket connesso');
         window.appState.websocketConnected = true;
-        document.getElementById('connectionStatus').textContent = 'Connesso';
+        if (document.getElementById('connectionStatus')) {
+            document.getElementById('connectionStatus').textContent = 'Connesso';
+            document.getElementById('connectionStatus').className = 'connection-status connected';
+        }
         
         // Invia dati pendenti
         sendPendingData();
@@ -39,11 +43,18 @@ function setupWebSocket() {
     controlWs.onclose = function() {
         console.log('❌ WebSocket disconnesso');
         window.appState.websocketConnected = false;
-        document.getElementById('connectionStatus').textContent = 'Disconnesso';
+        if (document.getElementById('connectionStatus')) {
+            document.getElementById('connectionStatus').textContent = 'Disconnesso';
+            document.getElementById('connectionStatus').className = 'connection-status disconnected';
+        }
     };
 
     controlWs.onerror = function(error) {
         console.error('💥 Errore WebSocket:', error);
+        if (document.getElementById('connectionStatus')) {
+            document.getElementById('connectionStatus').textContent = 'Errore di connessione';
+            document.getElementById('connectionStatus').className = 'connection-status disconnected';
+        }
     };
 }
 
@@ -51,8 +62,12 @@ function checkPreviousSession() {
     const hasCompleted = localStorage.getItem('questionnaireCompleted');
     if (hasCompleted) {
         // Se ha già completato, nascondi questionario
-        document.getElementById('questionnaire').classList.add('hidden');
+        const questionnaire = document.getElementById('questionnaire');
+        if (questionnaire) {
+            questionnaire.classList.add('hidden');
+        }
         document.querySelector('.container').style.display = 'block';
+        document.querySelector('.touch-panel').style.display = 'block';
         window.appState.questionnaireCompleted = true;
     }
 }
@@ -66,12 +81,22 @@ function sendPendingData() {
         localStorage.removeItem('pendingQuestionnaire');
         console.log('📤 Dati pendenti inviati');
     }
+    
+    // Invia altri dati pendenti
+    const pendingData = localStorage.getItem('pendingData');
+    if (pendingData && window.appState.websocketConnected) {
+        const data = JSON.parse(pendingData);
+        controlWs.send(JSON.stringify(data));
+        localStorage.removeItem('pendingData');
+        console.log('📤 Altri dati pendenti inviati');
+    }
 }
 
 // Utility per inviare dati
 function sendToTouchDesigner(data) {
     if (window.appState.websocketConnected && controlWs.readyState === WebSocket.OPEN) {
         controlWs.send(JSON.stringify(data));
+        console.log('📤 Inviati a TD:', data);
     } else {
         // Salva in localStorage e ritenta dopo
         localStorage.setItem('pendingData', JSON.stringify(data));
@@ -79,9 +104,7 @@ function sendToTouchDesigner(data) {
     }
 }
 
-
-
-
+// FIREBASE VOTING SYSTEM
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
@@ -101,67 +124,59 @@ function updateUI(a, b) {
 }
 
 // Aggiorna in tempo reale
-votesRef.on('value', (snapshot) => {
-  let data = snapshot.val();
-  if (!data) data = {A: 0, B: 0}; // fallback se non esiste la chiave
-  updateUI(data.A, data.B);
+if (votesRef) {
+    votesRef.on('value', (snapshot) => {
+      let data = snapshot.val();
+      if (!data) data = {A: 0, B: 0}; // fallback se non esiste la chiave
+      updateUI(data.A, data.B);
 
-  // Se la votazione è stata resettata, riabilita il voto per tutti
-  if (data.A === 0 && data.B === 0) {
-    localStorage.removeItem('hasVoted');
-    voteAButton.disabled = false;
-    voteBButton.disabled = false;
-    votedMsg.style.display = 'none';
-  }
-});
+      // Se la votazione è stata resettata, riabilita il voto per tutti
+      if (data.A === 0 && data.B === 0) {
+        localStorage.removeItem('hasVoted');
+        if (voteAButton) voteAButton.disabled = false;
+        if (voteBButton) voteBButton.disabled = false;
+        if (votedMsg) votedMsg.style.display = 'none';
+      }
+    });
+}
 
 // Blocca doppio voto da sessione utente (locale)
 function hasVoted() {
   return localStorage.getItem('hasVoted') === 'yes';
 }
+
 function setVoted() {
   localStorage.setItem('hasVoted', 'yes');
-  votedMsg.style.display = 'block';
-  voteAButton.disabled = true;
-  voteBButton.disabled = true;
+  if (votedMsg) votedMsg.style.display = 'block';
+  if (voteAButton) voteAButton.disabled = true;
+  if (voteBButton) voteBButton.disabled = true;
 }
 
 if (hasVoted()) setVoted();
 
 // Gestione voto
-voteAButton.onclick = function() {
-  if (hasVoted()) return;
-  votesRef.transaction(current => {
-    return {
-      A: (current && typeof current.A === 'number' ? current.A : 0) + 1,
-      B: (current && typeof current.B === 'number' ? current.B : 0)
+if (voteAButton) {
+    voteAButton.onclick = function() {
+      if (hasVoted()) return;
+      votesRef.transaction(current => {
+        return {
+          A: (current && typeof current.A === 'number' ? current.A : 0) + 1,
+          B: (current && typeof current.B === 'number' ? current.B : 0)
+        };
+      });
+      setVoted();
     };
-  });
-  setVoted();
-};
-voteBButton.onclick = function() {
-  if (hasVoted()) return;
-  votesRef.transaction(current => {
-    return {
-      A: (current && typeof current.A === 'number' ? current.A : 0),
-      B: (current && typeof current.B === 'number' ? current.B : 0) + 1
-    };
-  });
-  setVoted();
-};
+}
 
-// Bottone reset (solo admin.html)
-const resetBtn = document.getElementById('resetVotes');
-if (resetBtn) {
-  resetBtn.onclick = function() {
-    if (confirm("Sei sicuro di voler resettare la votazione?")) {
-      votesRef.set({A:0, B:0});
-      // Anche l'admin può votare di nuovo dopo il reset
-      localStorage.removeItem('hasVoted');
-      updateUI(0, 0);
-      voteAButton.disabled = false;
-      voteBButton.disabled = false;
-      votedMsg.style.display = 'none';
-    }
-  };
+if (voteBButton) {
+    voteBButton.onclick = function() {
+      if (hasVoted()) return;
+      votesRef.transaction(current => {
+        return {
+          A: (current && typeof current.A === 'number' ? current.A : 0),
+          B: (current && typeof current.B === 'number' ? current.B : 0) + 1
+        };
+      });
+      setVoted();
+    };
 }
