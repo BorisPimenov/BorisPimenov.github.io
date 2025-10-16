@@ -134,7 +134,168 @@
       document.body.classList.add('force-mobile');
     }
   </script>
-  
+  <!-- QUESTIONARIO INIZIALE -->
+<div id="questionnaire" class="questionnaire-overlay">
+  <div class="questionnaire-container">
+    <h2>Questionario Pre-Performance</h2>
+    <p class="questionnaire-subtitle">Le tue parole daranno forma alla scenografia</p>
+    
+    <form id="questionsForm" class="questions-form">
+      <!-- Domanda 1 -->
+      <div class="question-group">
+        <label class="question-label">1. Descrivi con una parola l'emozione che provi in questo momento:</label>
+        <input type="text" class="question-input" name="emotion" 
+               placeholder="Es: gioia, curiosità, attesa..." 
+               maxlength="30" required>
+      </div>
+
+      <!-- Domanda 2 -->
+      <div class="question-group">
+        <label class="question-label">2. Quale colore associ a questa esperienza e perché? (max 2 parole):</label>
+        <input type="text" class="question-input" name="color" 
+               placeholder="Es: rosso passione, blu profondo..." 
+               maxlength="40" required>
+      </div>
+
+      <!-- Domanda 3 -->
+      <div class="question-group">
+        <label class="question-label">3. Quale elemento della natura ti rappresenta oggi?:</label>
+        <input type="text" class="question-input" name="element" 
+               placeholder="Es: fuoco, acqua, vento, terra..." 
+               maxlength="20" required>
+      </div>
+
+      <!-- Domanda 4 -->
+      <div class="question-group">
+        <label class="question-label">4. Scrivi una parola che descriva le tue aspettative:</label>
+        <input type="text" class="question-input" name="expectation" 
+               placeholder="Es: sorpresa, scoperta, emozione..." 
+               maxlength="25" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-questions">🎭 Invia Risposte e Inizia lo Spettacolo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+/* STILE QUESTIONARIO */
+.questionnaire-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: Arial, sans-serif;
+}
+
+.questionnaire-container {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 40px;
+  border-radius: 4px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.questionnaire-container h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 500;
+  font-size: 1.8em;
+  letter-spacing: 0.5px;
+}
+
+.questionnaire-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 1em;
+  font-style: italic;
+}
+
+.questions-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.question-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.question-label {
+  font-weight: 500;
+  color: #333;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+.question-input {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  font-size: 1em;
+  background: #fff;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.question-input:focus {
+  outline: none;
+  border-color: #333;
+  background: #fafafa;
+}
+
+.question-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.submit-questions {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.submit-questions:hover {
+  background: #555;
+  transform: translateY(-1px);
+}
+
+.submit-questions:active {
+  transform: translateY(0);
+}
+
+/* Nascondi il questionario dopo l'invio */
+.questionnaire-overlay.hidden {
+  display: none;
+}
+</style>
   <!-- VIDEO DI SFONDO -->
   <div class="video-background">
     <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
