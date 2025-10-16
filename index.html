@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Control Panel</title>
   <link rel="stylesheet" href="style.css">
+  
+  <!-- STILI PER SLIDER (mantieni questi) -->
   <style>
-    /* STILI MINIMALISTI PER GLI SLIDER */
     .sliders-panel {
       background: rgba(255, 255, 255, 0.98);
       padding: 30px;
@@ -142,76 +143,84 @@
             allowfullscreen></iframe>
   </div>
   
-<div class="container">
-  <div class="video-container">
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/d9UucZDzBY4?si=THYZAMCHGG4mxvwB"
-      title="YouTube video player" frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-  </div>
-
-   
-     <!-- PANEL AFFIANCATI SOTTO IL VIDEO -->
-  <div class="control-panels">
-    <!-- PANEL VOTAZIONI (SINISTRA) -->
-    <div class="voting-panel">
-      <h2>Preferenza</h2>
-      <div class="buttons-container">
-        <div class="option-group">
-          <button id="voteA" class="option-button">Opzione A</button>
-          <div class="percentage-display" id="percentage-A">0%</div>
-        </div>
-        <div class="option-group">
-          <button id="voteB" class="option-button">Opzione B</button>
-          <div class="percentage-display" id="percentage-B">0%</div>
-        </div>
-      </div>
-      <div class="total-clicks" id="totalClicks">0 voti totali</div>
-      <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
+  <div class="container">
+    <div class="video-container">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/d9UucZDzBY4?si=THYZAMCHGG4mxvwB"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </div>
 
-    <!-- PANEL PARAMETRI (DESTRA) -->
-    <div class="parameters-panel">
-      <h3>Parametri</h3>
-      
-      <div class="slider-container">
-        <div class="slider-header">
-          <span class="slider-label">Luminosità</span>
-          <span class="slider-value" id="slider1Value">50</span>
+    <!-- PANEL AFFIANCATI SOTTO IL VIDEO -->
+    <div class="control-panels">
+      <!-- PANEL VOTAZIONI (SINISTRA) -->
+      <div class="voting-panel">
+        <h2>Preferenza</h2>
+        <div class="buttons-container">
+          <div class="option-group">
+            <button id="voteA" class="option-button">Opzione A</button>
+            <div class="percentage-display" id="percentage-A">0%</div>
+          </div>
+          <div class="option-group">
+            <button id="voteB" class="option-button">Opzione B</button>
+            <div class="percentage-display" id="percentage-B">0%</div>
+          </div>
         </div>
-        <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
+        <div class="total-clicks" id="totalClicks">0 voti totali</div>
+        <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
       </div>
 
-      <div class="slider-container">
-        <div class="slider-header">
-          <span class="slider-label">Contrasto</span>
-          <span class="slider-value" id="slider2Value">25</span>
+      <!-- PANEL PARAMETRI (DESTRA) -->
+      <div class="parameters-panel">
+        <h3>Parametri</h3>
+        
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">Luminosità</span>
+            <span class="slider-value" id="slider1Value">50</span>
+          </div>
+          <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
         </div>
-        <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
-      </div>
 
-      <div class="slider-container">
-        <div class="slider-header">
-          <span class="slider-label">Saturazione</span>
-          <span class="slider-value" id="slider3Value">75</span>
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">Contrasto</span>
+            <span class="slider-value" id="slider2Value">25</span>
+          </div>
+          <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
         </div>
-        <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
-      </div>
 
-      <div class="slider-container">
-        <div class="slider-header">
-          <span class="slider-label">Tonalità</span>
-          <span class="slider-value" id="slider4Value">10</span>
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">Saturazione</span>
+            <span class="slider-value" id="slider3Value">75</span>
+          </div>
+          <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
         </div>
-        <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
-      </div>
 
-      <div class="connection-status" id="connectionStatus">
-        Connecting to server...
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">Tonalità</span>
+            <span class="slider-value" id="slider4Value">10</span>
+          </div>
+          <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
+        </div>
+
+        <div class="connection-status" id="connectionStatus">
+          Connecting to server...
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- TOUCH PANEL (mantieni solo l'HTML, non lo style/script) -->
+  <div class="touch-panel">
+    <h3>Touch Controller</h3>
+    <div class="touch-area" id="touchArea">
+      <div class="touch-cursor" id="touchCursor"></div>
+    </div>
+    <div class="touch-info" id="touchInfo">Tocca per interagire</div>
+  </div>
 
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -230,188 +239,10 @@
     firebase.initializeApp(firebaseConfig);
   </script>
 
-  <!-- WEBSOCKET SCRIPT MINIMALISTA -->
-  <script>
-    const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
-    const connectionStatus = document.getElementById('connectionStatus');
-
-    ws.onopen = function() {
-      console.log('WebSocket connected');
-      connectionStatus.textContent = 'Connected';
-      connectionStatus.className = 'connection-status connected';
-    };
-
-    ws.onclose = function() {
-      console.log('WebSocket disconnected');
-      connectionStatus.textContent = 'Disconnected';
-      connectionStatus.className = 'connection-status disconnected';
-    };
-
-    ws.onerror = function(error) {
-      console.log('WebSocket error:', error);
-      connectionStatus.textContent = 'Connection error';
-      connectionStatus.className = 'connection-status disconnected';
-    };
-
-    function handleSlider(sliderId, index) {
-      const slider = document.getElementById(sliderId);
-      const valueDisplay = document.getElementById(sliderId + 'Value');
-
-      slider.addEventListener('input', function() {
-        valueDisplay.textContent = slider.value;
-        
-        if (ws.readyState === WebSocket.OPEN) {
-          const message = {
-            type: "slider",
-            index: index,
-            value: parseFloat(slider.value) / 100
-          };
-          ws.send(JSON.stringify(message));
-          console.log('Sent:', message);
-        }
-      });
-    }
-
-    // Inizializza i 4 slider
-    handleSlider('slider1', 0);
-    handleSlider('slider2', 1);
-    handleSlider('slider3', 2);
-    handleSlider('slider4', 3);
-  </script>
-  
+  <!-- FILE JAVASCRIPT SEPARATI -->
   <script src="script.js"></script>
+  <script src="slider-controller.js"></script>
+  <script src="touch-controller.js"></script>
+  <!-- Aggiungi poi: <script src="questionnaire.js"></script> -->
 </body>
-  <div class="touch-panel">
-  <h3>Touch Controller</h3>
-  <div class="touch-area" id="touchArea">
-    <div class="touch-cursor" id="touchCursor"></div>
-  </div>
-  <div class="touch-info" id="touchInfo">Tocca per interagire</div>
-</div>
-
-<style>
-.touch-panel {
-  background: rgba(255,255,255,0.9);
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 500px;
-  border-radius: 8px;
-}
-
-.touch-area {
-  width: 100%;
-  height: 300px;
-  background: 
-    linear-gradient(90deg, transparent 49%, #000 50%, transparent 51%),
-    linear-gradient(transparent 49%, #000 50%, transparent 51%),
-    #f0f0f0;
-  background-size: 10% 10%;
-  position: relative;
-  border: 2px solid #333;
-  border-radius: 4px;
-  touch-action: none;
-}
-
-.touch-cursor {
-  width: 20px;
-  height: 20px;
-  background: #ff4444;
-  border-radius: 50%;
-  position: absolute;
-  display: none;
-  pointer-events: none;
-  box-shadow: 0 0 10px rgba(255,0,0,0.5);
-}
-
-.touch-info {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 0.9em;
-  color: #666;
-}
-</style>
-
-<script>
-class TouchController {
-  constructor() {
-    this.area = document.getElementById('touchArea');
-    this.cursor = document.getElementById('touchCursor');
-    this.info = document.getElementById('touchInfo');
-    this.isTouching = false;
-    
-    this.initEvents();
-  }
-  
-  initEvents() {
-    // Mouse events
-    this.area.addEventListener('mousedown', (e) => this.handleStart(e));
-    this.area.addEventListener('mousemove', (e) => this.handleMove(e));
-    this.area.addEventListener('mouseup', () => this.handleEnd());
-    this.area.addEventListener('mouseleave', () => this.handleEnd());
-    
-    // Touch events
-    this.area.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      this.handleStart(e.touches[0]);
-    });
-    this.area.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      this.handleMove(e.touches[0]);
-    });
-    this.area.addEventListener('touchend', () => this.handleEnd());
-  }
-  
-  handleStart(e) {
-    this.isTouching = true;
-    this.updatePosition(e);
-    this.sendTouchEvent('down');
-  }
-  
-  handleMove(e) {
-    if (!this.isTouching) return;
-    this.updatePosition(e);
-    this.sendTouchEvent('move');
-  }
-  
-  handleEnd() {
-    this.isTouching = false;
-    this.cursor.style.display = 'none';
-    this.info.textContent = 'Tocca per interagire';
-    this.sendTouchEvent('up');
-  }
-  
-  updatePosition(e) {
-    const rect = this.area.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    
-    // Mostra cursore
-    this.cursor.style.display = 'block';
-    this.cursor.style.left = (x * 100) + '%';
-    this.cursor.style.top = (y * 100) + '%';
-    
-    this.currentX = Math.max(0, Math.min(1, x));
-    this.currentY = Math.max(0, Math.min(1, y));
-    
-    this.info.textContent = `X: ${this.currentX.toFixed(2)} Y: ${this.currentY.toFixed(2)}`;
-  }
-  
-  sendTouchEvent(eventType) {
-    if (controlWs.readyState === WebSocket.OPEN) {
-      const message = {
-        type: "touch",
-        x: this.currentX,
-        y: this.currentY,
-        pressure: 0.5, // Simulato - su device reali sarebbe reale
-        event: eventType,
-        timestamp: Date.now()
-      };
-      controlWs.send(JSON.stringify(message));
-    }
-  }
-}
-
-// Inizializza
-const touchController = new TouchController();
-</script>
 </html>
