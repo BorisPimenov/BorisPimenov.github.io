@@ -275,3 +275,12 @@ body, html {
 body.force-mobile .video-container {
   display: none !important;
 }
+
+.questionnaire-overlay.hidden {
+    display: none !important;
+}
+
+/* O in alternativa */
+.questionnaire-overlay[style*="display: none"] {
+    display: none !important;
+}
