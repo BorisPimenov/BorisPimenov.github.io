@@ -1,3 +1,87 @@
+// CONNESSIONE WEBSOCKET GLOBALE
+window.controlWs = new WebSocket('ws://wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+
+// STATO APPLICAZIONE
+window.appState = {
+    questionnaireCompleted: false,
+    websocketConnected: false,
+    currentUser: null
+};
+
+// INIZIALIZZAZIONE
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
+    console.log('🚀 Inizializzazione applicazione');
+    
+    // Configura WebSocket
+    setupWebSocket();
+    
+    // Nascondi contenuto principale inizialmente
+    document.querySelector('.container').style.display = 'none';
+    
+    // Controlla se l'utente ha già completato il questionario
+    checkPreviousSession();
+}
+
+function setupWebSocket() {
+    controlWs.onopen = function() {
+        console.log('✅ WebSocket connesso');
+        window.appState.websocketConnected = true;
+        document.getElementById('connectionStatus').textContent = 'Connesso';
+        
+        // Invia dati pendenti
+        sendPendingData();
+    };
+
+    controlWs.onclose = function() {
+        console.log('❌ WebSocket disconnesso');
+        window.appState.websocketConnected = false;
+        document.getElementById('connectionStatus').textContent = 'Disconnesso';
+    };
+
+    controlWs.onerror = function(error) {
+        console.error('💥 Errore WebSocket:', error);
+    };
+}
+
+function checkPreviousSession() {
+    const hasCompleted = localStorage.getItem('questionnaireCompleted');
+    if (hasCompleted) {
+        // Se ha già completato, nascondi questionario
+        document.getElementById('questionnaire').classList.add('hidden');
+        document.querySelector('.container').style.display = 'block';
+        window.appState.questionnaireCompleted = true;
+    }
+}
+
+function sendPendingData() {
+    // Invia questionario pendente
+    const pendingQuestionnaire = localStorage.getItem('pendingQuestionnaire');
+    if (pendingQuestionnaire && window.appState.websocketConnected) {
+        const data = JSON.parse(pendingQuestionnaire);
+        controlWs.send(JSON.stringify(data));
+        localStorage.removeItem('pendingQuestionnaire');
+        console.log('📤 Dati pendenti inviati');
+    }
+}
+
+// Utility per inviare dati
+function sendToTouchDesigner(data) {
+    if (window.appState.websocketConnected && controlWs.readyState === WebSocket.OPEN) {
+        controlWs.send(JSON.stringify(data));
+    } else {
+        // Salva in localStorage e ritenta dopo
+        localStorage.setItem('pendingData', JSON.stringify(data));
+        console.log('💾 Dati salvati localmente, in attesa di connessione');
+    }
+}
+
+
+
+
 const db = firebase.database();
 const votesRef = db.ref('votes');
 
