@@ -1,5 +1,5 @@
 // CONNESSIONE WEBSOCKET GLOBALE
-window.controlWs = new WebSocket('ws://wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com:433');
+window.controlWs = new WebSocket('ws://wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com:443');
 
 // STATO APPLICAZIONE
 window.appState = {
