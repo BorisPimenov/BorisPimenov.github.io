@@ -5,12 +5,12 @@ class SliderController {
     }
     
     initSliders() {
-        // Configurazione slider
+        // Configurazione COMPLETA per 7 slider
         const sliderConfig = [
             { id: 'slider1', index: 0, label: 'Colore Ambiente' },
             { id: 'slider2', index: 1, label: 'Attrai/Respingi' },
             { id: 'slider3', index: 2, label: 'Saturazione' },
-            { id: 'slider4', index: 3, label: 'Tonalità' }
+            { id: 'slider4', index: 3, label: 'Tonalità' },
             { id: 'slider5', index: 4, label: 'Velocità Particelle' },
             { id: 'slider6', index: 5, label: 'Dimensione Particelle' },
             { id: 'slider7', index: 6, label: 'Forza Campo' }
@@ -29,6 +29,9 @@ class SliderController {
             console.warn(`Slider ${config.id} non trovato`);
             return;
         }
+        
+        // AGGIUNGI QUESTO: Inizializza il valore display
+        valueDisplay.textContent = slider.value;
         
         slider.addEventListener('input', () => {
             valueDisplay.textContent = slider.value;
@@ -53,7 +56,13 @@ class SliderController {
             timestamp: Date.now()
         };
         
-        sendToTouchDesigner(message);
+        // USA LA CONNESSIONE WEBSOCKET ESISTENTE
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify(message));
+            console.log(`📤 Slider ${index} inviato:`, message);
+        } else {
+            console.log('⚠️ WebSocket non connesso, messaggio non inviato');
+        }
     }
     
     getSliderValue(index) {
