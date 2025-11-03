@@ -51,11 +51,14 @@ class QuestionnaireManager {
             sessionId: this.generateSessionId()
         };
         
-        // Usa la funzione utility globale
-        if (window.sendToTouchDesigner) {
-            sendToTouchDesigner(message);
+        // INVIO DIRETTO TRAMITE WEBSOCKET - MODIFICA PRINCIPALE
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify(message));
+            console.log('📤 Questionario inviato via WebSocket:', message);
         } else {
-            console.log('Funzione sendToTouchDesigner non disponibile');
+            console.log('⚠️ WebSocket non connesso, questionario non inviato');
+            // Salva in localStorage per invio successivo
+            localStorage.setItem('pendingQuestionnaire', JSON.stringify(message));
         }
         
         // Salva anche localmente per backup
@@ -138,7 +141,23 @@ class QuestionnaireManager {
         this.hasSubmitted = false;
         localStorage.removeItem('questionnaireCompleted');
         localStorage.removeItem('userQuestionnaire');
+        localStorage.removeItem('pendingQuestionnaire');
         this.showQuestionnaire();
+    }
+    
+    // Nuovo metodo per inviare questionari in sospeso
+    sendPendingQuestionnaire() {
+        const pendingQuestionnaire = localStorage.getItem('pendingQuestionnaire');
+        if (pendingQuestionnaire && window.ws && window.ws.readyState === WebSocket.OPEN) {
+            try {
+                const message = JSON.parse(pendingQuestionnaire);
+                window.ws.send(JSON.stringify(message));
+                console.log('📤 Questionario in sospeso inviato');
+                localStorage.removeItem('pendingQuestionnaire');
+            } catch (e) {
+                console.error('Errore nell\'invio del questionario in sospeso:', e);
+            }
+        }
     }
 }
 
@@ -148,7 +167,21 @@ let questionnaireManager;
 document.addEventListener('DOMContentLoaded', () => {
     questionnaireManager = new QuestionnaireManager();
     console.log('✅ QuestionnaireManager inizializzato');
+    
+    // Se il questionario è già stato completato, nascondilo
+    if (localStorage.getItem('questionnaireCompleted') === 'true') {
+        questionnaireManager.completeQuestionnaire();
+    }
 });
 
-// Debug: rendi globale per testing
+// Rendi globale per accesso esterno
 window.questionnaireManager = questionnaireManager;
+
+// Ascolta le riconnessioni WebSocket per inviare questionari in sospeso
+if (window.ws) {
+    window.ws.addEventListener('open', () => {
+        if (window.questionnaireManager) {
+            window.questionnaireManager.sendPendingQuestionnaire();
+        }
+    });
+}
