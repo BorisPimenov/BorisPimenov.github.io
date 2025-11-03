@@ -1,76 +1,610 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sondaggio Admin</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Control System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a2a3a, #0d1b2a);
+      color: #e0e0e0;
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #34495e;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #3498db;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #95a5a6;
+    }
+
+    .panels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .panel {
+      background: rgba(30, 40, 50, 0.8);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      border: 1px solid #34495e;
+    }
+
+    .panel h2 {
+      color: #2ecc71;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel h2 i {
+      font-size: 1.3rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: center;
+      margin: 5px;
+    }
+
+    .btn:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .btn-success {
+      background: #2ecc71;
+    }
+
+    .btn-success:hover {
+      background: #27ae60;
+    }
+
+    .btn-warning {
+      background: #f39c12;
+    }
+
+    .btn-warning:hover {
+      background: #d35400;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-connected {
+      background: #2ecc71;
+    }
+
+    .status-disconnected {
+      background: #e74c3c;
+    }
+
+    .status-connecting {
+      background: #f39c12;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .log-container {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      padding: 15px;
+      height: 300px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+
+    .log-entry {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #34495e;
+    }
+
+    .log-time {
+      color: #95a5a6;
+      font-size: 0.8rem;
+    }
+
+    .log-message {
+      color: #e0e0e0;
+    }
+
+    .log-error {
+      color: #e74c3c;
+    }
+
+    .log-success {
+      color: #2ecc71;
+    }
+
+    .log-warning {
+      color: #f39c12;
+    }
+
+    .log-info {
+      color: #3498db;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #34495e;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #3498db;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #95a5a6;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #34495e;
+      color: #95a5a6;
+      font-size: 0.9rem;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .test-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .test-buttons .btn {
+      flex: 1;
+      min-width: 120px;
+    }
+  </style>
 </head>
 <body>
-  <script>
-    // Password semplice lato client
-    const ADMIN_PASSWORD = 'JamesJoyce1984';
+  <div class="admin-container">
+    <header>
+      <h1>Admin Control Panel</h1>
+      <p class="subtitle">Gestisci il questionario e monitora il sistema</p>
+    </header>
 
-    function checkAdmin() {
-      const pass = prompt("Inserisci la password admin:");
-      if (pass !== ADMIN_PASSWORD) {
-        document.body.innerHTML = "<h2>Accesso negato</h2>";
-      }
-    }
-    checkAdmin();
-  </script>
-  <!-- VIDEO DI SFONDO -->
-  <div class="video-background">
-    <iframe src="https://www.youtube.com/embed/10wJ6shYnzg?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=10wJ6shYnzg"
-            frameborder="0"
-            allow="autoplay; fullscreen"
-            allowfullscreen></iframe>
-  </div>
-  <!-- CONTAINER PRINCIPALE -->
-  <div class="container">
-    <div class="video-container">
-      <!-- NUOVO VIDEO PRINCIPALE INCORPORATO -->
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/g9Br3j0fsKc?si=zc3_AtA1o1eLZLHL"
-        title="YouTube video player" frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-    </div>
-    <div class="interaction-panel">
-      <h2>Quale opzione preferisci?</h2>
-      <div class="buttons-container">
-        <div class="option-group">
-          <button id="voteA" class="option-button">Opzione A</button>
-          <div class="percentage-display" id="percentage-A">0%</div>
+    <div class="panels-grid">
+      <!-- Panel Stato Connessione -->
+      <div class="panel">
+        <h2><i>🔌</i> Stato Connessione</h2>
+        <div class="connection-status">
+          <span class="status-indicator status-connecting" id="statusIndicator"></span>
+          <span id="connectionText">Connessione in corso...</span>
         </div>
-        <div class="option-group">
-          <button id="voteB" class="option-button">Opzione B</button>
-          <div class="percentage-display" id="percentage-B">0%</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="messageCount">0</div>
+            <div class="stat-label">Messaggi Ricevuti</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="sliderCount">0</div>
+            <div class="stat-label">Slider Attivi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="questionnaireCount">0</div>
+            <div class="stat-label">Questionari Inviati</div>
+          </div>
         </div>
       </div>
-      <div class="total-clicks" id="totalClicks">0 voti totali</div>
-      <p class="voted-message" id="votedMessage" style="display:none;">Hai già votato!</p>
-      <!-- Bottone RESET votazione -->
-      <button id="resetVotes" style="margin-top:24px; background:#fff; color:#c00; padding:12px 32px; border:2px solid #c00; border-radius:12px; font-weight:600; font-family:inherit; cursor:pointer;">
-        Reset votazione
-      </button>
+
+      <!-- Panel Gestione Questionario -->
+      <div class="panel">
+        <h2><i>📝</i> Gestione Questionario</h2>
+        <p>Stato attuale: <strong id="questionnaireStatus">Sconosciuto</strong></p>
+        <div class="test-buttons">
+          <button class="btn btn-success" id="resetQuestionnaireBtn">Resetta Questionario</button>
+          <button class="btn btn-warning" id="simulateQuestionnaireBtn">Simula Questionario</button>
+        </div>
+        <div class="form-group">
+          <label for="questionnaireUrl">URL Questionario:</label>
+          <input type="text" id="questionnaireUrl" value="https://tuosito.com" readonly>
+          <button class="btn" id="copyUrlBtn">Copia URL</button>
+        </div>
+      </div>
+
+      <!-- Panel Test WebSocket -->
+      <div class="panel">
+        <h2><i>🔧</i> Test WebSocket</h2>
+        <div class="test-buttons">
+          <button class="btn" id="testConnectionBtn">Test Connessione</button>
+          <button class="btn btn-warning" id="testSliderBtn">Test Slider</button>
+          <button class="btn btn-warning" id="testVoteBtn">Test Voto</button>
+        </div>
+        <div class="form-group">
+          <label for="customMessage">Messaggio Personalizzato:</label>
+          <input type="text" id="customMessage" placeholder='{"type": "test", "message": "Hello"}'>
+          <button class="btn" id="sendCustomBtn">Invia Messaggio</button>
+        </div>
+      </div>
+
+      <!-- Panel Log Sistema -->
+      <div class="panel">
+        <h2><i>📊</i> Log Sistema</h2>
+        <div class="log-container" id="logContainer">
+          <div class="log-entry">
+            <span class="log-time">[00:00:00]</span>
+            <span class="log-info log-message">Sistema admin inizializzato</span>
+          </div>
+        </div>
+        <div class="test-buttons">
+          <button class="btn" id="clearLogBtn">Pulisci Log</button>
+          <button class="btn btn-warning" id="exportLogBtn">Esporta Log</button>
+        </div>
+      </div>
     </div>
+
+    <footer>
+      <p>Admin Panel - Control System | Eburnea Performance</p>
+    </footer>
   </div>
-  <!-- FIREBASE -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyADP0DV2JbMa6mrofsjkZJRF7Lj6Aq1LC4",
-      authDomain: "eburnea-fd632.firebaseapp.com",
-      databaseURL: "https://eburnea-fd632-default-rtdb.firebaseio.com",
-      projectId: "eburnea-fd632",
-      storageBucket: "eburnea-fd632.appspot.com",
-      messagingSenderId: "560492313221",
-      appId: "1:560492313221:web:e8bd91b5c384c57fe187ec",
-      measurementId: "G-CH43LTYK55"
-    };
-    firebase.initializeApp(firebaseConfig);
+    // Elementi DOM
+    const statusIndicator = document.getElementById('statusIndicator');
+    const connectionText = document.getElementById('connectionText');
+    const messageCountEl = document.getElementById('messageCount');
+    const sliderCountEl = document.getElementById('sliderCount');
+    const questionnaireCountEl = document.getElementById('questionnaireCount');
+    const questionnaireStatus = document.getElementById('questionnaireStatus');
+    const resetQuestionnaireBtn = document.getElementById('resetQuestionnaireBtn');
+    const simulateQuestionnaireBtn = document.getElementById('simulateQuestionnaireBtn');
+    const questionnaireUrl = document.getElementById('questionnaireUrl');
+    const copyUrlBtn = document.getElementById('copyUrlBtn');
+    const testConnectionBtn = document.getElementById('testConnectionBtn');
+    const testSliderBtn = document.getElementById('testSliderBtn');
+    const testVoteBtn = document.getElementById('testVoteBtn');
+    const customMessage = document.getElementById('customMessage');
+    const sendCustomBtn = document.getElementById('sendCustomBtn');
+    const logContainer = document.getElementById('logContainer');
+    const clearLogBtn = document.getElementById('clearLogBtn');
+    const exportLogBtn = document.getElementById('exportLogBtn');
+
+    // Variabili di stato
+    let messageCount = 0;
+    let sliderCount = 0;
+    let questionnaireCount = 0;
+    let ws = null;
+
+    // Inizializzazione
+    document.addEventListener('DOMContentLoaded', () => {
+      logMessage('Sistema admin inizializzato', 'info');
+      updateQuestionnaireStatus();
+      connectWebSocket();
+      
+      // Imposta l'URL corrente
+      questionnaireUrl.value = window.location.origin;
+    });
+
+    // Connessione WebSocket
+    function connectWebSocket() {
+      try {
+        updateConnectionStatus('connecting', 'Connessione in corso...');
+        
+        // Usa lo stesso WebSocket della pagina principale
+        ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+        
+        ws.onopen = function(event) {
+          updateConnectionStatus('connected', 'Connesso al server');
+          logMessage('Connessione WebSocket stabilita', 'success');
+        };
+
+        ws.onclose = function(event) {
+          updateConnectionStatus('disconnected', 'Disconnesso dal server');
+          logMessage('Connessione WebSocket chiusa', 'warning');
+          
+          // Tentativo di riconnessione dopo 5 secondi
+          setTimeout(connectWebSocket, 5000);
+        };
+
+        ws.onerror = function(error) {
+          updateConnectionStatus('disconnected', 'Errore di connessione');
+          logMessage('Errore WebSocket: ' + error, 'error');
+        };
+
+        ws.onmessage = function(event) {
+          messageCount++;
+          messageCountEl.textContent = messageCount;
+          logMessage(`Messaggio ricevuto: ${event.data}`, 'info');
+          
+          // Analizza il messaggio per aggiornare i contatori
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'slider') {
+              sliderCount++;
+              sliderCountEl.textContent = sliderCount;
+            } else if (data.type === 'questionnaire') {
+              questionnaireCount++;
+              questionnaireCountEl.textContent = questionnaireCount;
+            }
+          } catch (e) {
+            // Ignora errori di parsing
+          }
+        };
+      } catch (error) {
+        logMessage('Errore nella connessione WebSocket: ' + error, 'error');
+      }
+    }
+
+    // Aggiorna lo stato della connessione
+    function updateConnectionStatus(status, text) {
+      statusIndicator.className = 'status-indicator';
+      
+      if (status === 'connected') {
+        statusIndicator.classList.add('status-connected');
+        connectionText.textContent = text;
+      } else if (status === 'disconnected') {
+        statusIndicator.classList.add('status-disconnected');
+        connectionText.textContent = text;
+      } else {
+        statusIndicator.classList.add('status-connecting');
+        connectionText.textContent = text;
+      }
+    }
+
+    // Aggiorna lo stato del questionario
+    function updateQuestionnaireStatus() {
+      const isCompleted = localStorage.getItem('questionnaireCompleted') === 'true';
+      questionnaireStatus.textContent = isCompleted ? 'Completato' : 'Non completato';
+      questionnaireStatus.style.color = isCompleted ? '#2ecc71' : '#e74c3c';
+    }
+
+    // Aggiunge un messaggio al log
+    function logMessage(message, type = 'info') {
+      const now = new Date();
+      const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+      
+      const logEntry = document.createElement('div');
+      logEntry.className = 'log-entry';
+      
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'log-time';
+      timeSpan.textContent = timeString;
+      
+      const messageSpan = document.createElement('span');
+      messageSpan.className = `log-message log-${type}`;
+      messageSpan.textContent = ` ${message}`;
+      
+      logEntry.appendChild(timeSpan);
+      logEntry.appendChild(messageSpan);
+      
+      logContainer.appendChild(logEntry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // Invia un messaggio via WebSocket
+    function sendWebSocketMessage(message) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
+        logMessage(`Messaggio inviato: ${JSON.stringify(message)}`, 'success');
+        return true;
+      } else {
+        logMessage('WebSocket non connesso, messaggio non inviato', 'error');
+        return false;
+      }
+    }
+
+    // Event Listeners
+    resetQuestionnaireBtn.addEventListener('click', () => {
+      localStorage.removeItem('questionnaireCompleted');
+      localStorage.removeItem('userQuestionnaire');
+      localStorage.removeItem('pendingQuestionnaire');
+      
+      updateQuestionnaireStatus();
+      logMessage('Questionario resettato con successo', 'success');
+      
+      // Notifica anche la pagina principale se è aperta
+      if (window.opener) {
+        window.opener.postMessage({ type: 'resetQuestionnaire' }, '*');
+      }
+    });
+
+    simulateQuestionnaireBtn.addEventListener('click', () => {
+      const testData = {
+        type: "questionnaire",
+        answers: {
+          emotion: "curiosità",
+          color: "blu intenso",
+          element: "acqua",
+          expectation: "scoperta"
+        },
+        timestamp: Date.now(),
+        sessionId: "test_session_" + Date.now()
+      };
+      
+      if (sendWebSocketMessage(testData)) {
+        questionnaireCount++;
+        questionnaireCountEl.textContent = questionnaireCount;
+        logMessage('Questionario di test inviato', 'success');
+      }
+    });
+
+    copyUrlBtn.addEventListener('click', () => {
+      questionnaireUrl.select();
+      document.execCommand('copy');
+      logMessage('URL copiato negli appunti', 'success');
+    });
+
+    testConnectionBtn.addEventListener('click', () => {
+      const testMessage = {
+        type: "test",
+        message: "Test di connessione dall'admin panel",
+        timestamp: Date.now()
+      };
+      
+      sendWebSocketMessage(testMessage);
+    });
+
+    testSliderBtn.addEventListener('click', () => {
+      const testMessage = {
+        type: "slider",
+        index: Math.floor(Math.random() * 7),
+        value: Math.random(),
+        timestamp: Date.now()
+      };
+      
+      if (sendWebSocketMessage(testMessage)) {
+        sliderCount++;
+        sliderCountEl.textContent = sliderCount;
+      }
+    });
+
+    testVoteBtn.addEventListener('click', () => {
+      const testMessage = {
+        type: "vote",
+        option: Math.random() > 0.5 ? "A" : "B",
+        percentages: {
+          A: Math.floor(Math.random() * 100),
+          B: Math.floor(Math.random() * 100)
+        },
+        timestamp: Date.now()
+      };
+      
+      sendWebSocketMessage(testMessage);
+    });
+
+    sendCustomBtn.addEventListener('click', () => {
+      try {
+        const message = JSON.parse(customMessage.value);
+        sendWebSocketMessage(message);
+      } catch (e) {
+        logMessage('Errore nel parsing del messaggio personalizzato: ' + e, 'error');
+      }
+    });
+
+    clearLogBtn.addEventListener('click', () => {
+      logContainer.innerHTML = '';
+      logMessage('Log pulito', 'info');
+    });
+
+    exportLogBtn.addEventListener('click', () => {
+      const logText = logContainer.innerText;
+      const blob = new Blob([logText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `system-log-${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      logMessage('Log esportato', 'success');
+    });
+
+    // Ascolta messaggi dalla pagina principale
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'questionnaireCompleted') {
+        updateQuestionnaireStatus();
+        logMessage('Questionario completato dalla pagina principale', 'info');
+      }
+    });
   </script>
-  <script src="script.js"></script>
 </body>
 </html>
