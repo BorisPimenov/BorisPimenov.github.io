@@ -5,6 +5,48 @@ const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
 window.ws = ws;
 const connectionStatus = document.getElementById('connectionStatus');
 
+// FUNZIONE GLOBALE PER INVIO MESSAGGI - AGGIUNGI QUESTO
+function sendToTouchDesigner(message) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
+        console.log('📤 Messaggio inviato:', message);
+    } else {
+        console.log('⚠️ WebSocket non connesso, messaggio non inviato:', message);
+        // Opzionale: metti in coda i messaggi per quando si riconnette
+        if (!window.pendingMessages) window.pendingMessages = [];
+        window.pendingMessages.push(message);
+    }
+}
+
+// Funzione per inviare messaggi in sospeso quando si ricollega
+function sendPendingMessages() {
+    if (window.pendingMessages && window.pendingMessages.length > 0) {
+        console.log('📦 Invio messaggi in sospeso:', window.pendingMessages.length);
+        window.pendingMessages.forEach(message => {
+            sendToTouchDesigner(message);
+        });
+        window.pendingMessages = [];
+    }
+}
+
+// Aggiorna l'evento onopen per inviare i messaggi in sospeso
+ws.onopen = function(event) {
+    console.log('✅✅✅ WEB SOCKET CONNESSO!');
+    connectionStatus.textContent = 'Connected';
+    connectionStatus.className = 'connection-status connected';
+    
+    // Invia messaggi in sospeso se ce ne sono
+    sendPendingMessages();
+    
+    // Test invio immediato
+    sendToTouchDesigner({
+        type: "test",
+        message: "Connessione test",
+        timestamp: Date.now()
+    });
+};
+
+
 ws.onopen = function(event) {
     console.log('✅✅✅ WEB SOCKET CONNESSO!');
     console.log('Event:', event);
