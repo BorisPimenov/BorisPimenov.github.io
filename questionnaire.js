@@ -5,6 +5,22 @@ class QuestionnaireManager {
         this.hasSubmitted = false;
         
         this.initEvents();
+        this.checkPreviousSubmission(); // AGGIUNTO: controlla stato precedente
+    }
+    
+    // AGGIUNGI QUESTO METODO:
+    checkPreviousSubmission() {
+        const wasCompleted = localStorage.getItem('questionnaireCompleted') === 'true';
+        
+        if (wasCompleted) {
+            this.hasSubmitted = true;
+            this.hideQuestionnaire();
+            console.log('✅ Questionario già completato in precedenza');
+        } else {
+            // Mostra il questionario se NON è stato completato
+            this.showQuestionnaire();
+            console.log('📝 Mostro questionario - non completato');
+        }
     }
     
     initEvents() {
@@ -51,7 +67,7 @@ class QuestionnaireManager {
             sessionId: this.generateSessionId()
         };
         
-        // INVIO DIRETTO TRAMITE WEBSOCKET - MODIFICA PRINCIPALE
+        // INVIO DIRETTO TRAMITE WEBSOCKET
         if (window.ws && window.ws.readyState === WebSocket.OPEN) {
             window.ws.send(JSON.stringify(message));
             console.log('📤 Questionario inviato via WebSocket:', message);
@@ -105,11 +121,11 @@ class QuestionnaireManager {
             const touchPanel = document.querySelector('.touch-panel');
             if (container) container.style.display = 'none';
             if (touchPanel) touchPanel.style.display = 'none';
+            console.log('📝 Questionario mostrato');
         }
     }
     
     showError(message) {
-        // Creare un messaggio di errore più elegante
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = `
             position: fixed;
@@ -126,7 +142,6 @@ class QuestionnaireManager {
         errorDiv.textContent = message;
         document.body.appendChild(errorDiv);
         
-        // Rimuovi dopo 5 secondi
         setTimeout(() => {
             if (errorDiv.parentNode) {
                 errorDiv.parentNode.removeChild(errorDiv);
@@ -143,6 +158,7 @@ class QuestionnaireManager {
         localStorage.removeItem('userQuestionnaire');
         localStorage.removeItem('pendingQuestionnaire');
         this.showQuestionnaire();
+        console.log('🔄 Questionario resettato');
     }
     
     // Nuovo metodo per inviare questionari in sospeso
@@ -168,10 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
     questionnaireManager = new QuestionnaireManager();
     console.log('✅ QuestionnaireManager inizializzato');
     
-    // Se il questionario è già stato completato, nascondilo
-    if (localStorage.getItem('questionnaireCompleted') === 'true') {
-        questionnaireManager.completeQuestionnaire();
-    }
+    // ⚠️ RIMUOVI QUESTA PARTE - ORA GESTITA NEL COSTRUTTORE
+    // if (localStorage.getItem('questionnaireCompleted') === 'true') {
+    //     questionnaireManager.completeQuestionnaire();
+    // }
 });
 
 // Rendi globale per accesso esterno
