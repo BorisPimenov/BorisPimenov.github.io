@@ -182,7 +182,7 @@
 
 <style>
 /* STILE QUESTIONARIO */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 .questionnaire-overlay {
   position: fixed;
@@ -190,7 +190,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 25%, #000000 50%, #0a0a0a 75%, #000000 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #000000 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -199,16 +199,16 @@
 }
 
 .questionnaire-container {
-  background: linear-gradient(145deg, #1a1a1a 0%, #000000 100%);
-  padding: 50px 40px;
-  border-radius: 12px;
-  max-width: 750px;
+  background: linear-gradient(145deg, #151515 0%, #0a0a0a 100%);
+  padding: 45px 35px;
+  border-radius: 8px;
+  max-width: 700px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8),
-              inset 0 1px 0 rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.6),
+              inset 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
   position: relative;
 }
 
@@ -218,105 +218,100 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #ff6b00, #ff0080, #00ff88, #0080ff);
-  border-radius: 12px 12px 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
 .questionnaire-container h2 {
   color: #ffffff;
   text-align: center;
-  margin-bottom: 15px;
-  font-weight: 900;
-  font-size: 2.2em;
-  letter-spacing: 1px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 2em;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+.questionnaire-container h2::first-letter {
   text-transform: uppercase;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  background: linear-gradient(45deg, #ffffff, #e0e0e0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .questionnaire-subtitle {
   text-align: center;
-  color: #888;
-  margin-bottom: 40px;
-  font-size: 1.1em;
-  font-style: italic;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  color: #aaa;
+  margin-bottom: 35px;
+  font-size: 1em;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  line-height: 1.5;
 }
 
 .questions-form {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 28px;
 }
 
 .question-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .question-label {
-  font-weight: 800;
-  color: #ffffff;
-  font-size: 1.1em;
+  font-weight: 500;
+  color: #e0e0e0;
+  font-size: 1em;
   line-height: 1.4;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  text-transform: none;
+}
+
+.question-label::first-letter {
   text-transform: uppercase;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 .question-input {
-  padding: 16px 20px;
-  border: 2px solid #333;
-  border-radius: 8px;
+  padding: 14px 18px;
+  border: 1px solid #333;
+  border-radius: 6px;
   font-size: 1em;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(20, 20, 20, 0.8);
   color: #ffffff;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+  font-weight: 400;
 }
 
 .question-input:focus {
   outline: none;
-  border-color: #ff6b00;
-  background: rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 20px rgba(255, 107, 0, 0.3),
-              inset 0 2px 10px rgba(0,0,0,0.5);
-  transform: translateY(-2px);
+  border-color: #666;
+  background: rgba(30, 30, 30, 0.9);
+  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.2);
 }
 
 .question-input::placeholder {
   color: #666;
-  font-style: italic;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .form-actions {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 25px;
 }
 
 .submit-questions {
-  background: linear-gradient(45deg, #ff6b00, #ff0080);
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
   color: white;
   border: none;
-  padding: 18px 40px;
-  font-size: 1.2em;
-  border-radius: 8px;
+  padding: 16px 35px;
+  font-size: 1.1em;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   font-family: 'Poppins', sans-serif;
-  box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);
   position: relative;
   overflow: hidden;
 }
@@ -328,14 +323,14 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.6s;
 }
 
 .submit-questions:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(255, 107, 0, 0.6);
-  background: linear-gradient(45deg, #ff8000, #ff0090);
+  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(198, 40, 40, 0.3);
 }
 
 .submit-questions:hover::before {
@@ -343,28 +338,73 @@
 }
 
 .submit-questions:active {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 20px rgba(255, 107, 0, 0.4);
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.2);
 }
 
 /* Nascondi il questionario dopo l'invio */
 .questionnaire-overlay.hidden {
   display: none;
+  animation: fadeOut 0.4s ease-out forwards;
 }
 
-/* Effetti di luce */
-.questionnaire-container {
-  animation: glow 3s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
+/* Animazioni eleganti in scala di grigi */
+@keyframes fadeOut {
   from {
-    box-shadow: 0 20px 60px rgba(0,0,0,0.8),
-                inset 0 1px 0 rgba(255,255,255,0.1);
+    opacity: 1;
+    transform: scale(1);
   }
   to {
-    box-shadow: 0 20px 80px rgba(255, 107, 0, 0.1),
-                inset 0 1px 0 rgba(255,255,255,0.1);
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.questionnaire-container {
+  animation: subtleGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes subtleGlow {
+  from {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  to {
+    box-shadow: 0 15px 45px rgba(50, 50, 50, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+}
+
+/* Transizione di entrata per il questionario */
+.questionnaire-overlay:not(.hidden) {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(5px);
+  }
+}
+
+/* Miglioramenti per mobile */
+@media (max-width: 768px) {
+  .questionnaire-container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .questionnaire-container h2 {
+    font-size: 1.6em;
+  }
+  
+  .submit-questions {
+    padding: 14px 25px;
+    font-size: 1em;
   }
 }
 /* Nascondi il questionario dopo l'invio */
