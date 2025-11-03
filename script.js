@@ -41,39 +41,7 @@ ws.onmessage = function(event) {
     console.log('📩 Messaggio dal server:', event.data);
 };
 
-// SLIDER (solo quando connesso)
-function handleSlider(sliderId, index) {
-    const slider = document.getElementById(sliderId);
-    const valueDisplay = document.getElementById(sliderId + 'Value');
 
-    slider.addEventListener('input', function() {
-        valueDisplay.textContent = slider.value;
-        
-        if (ws.readyState === WebSocket.OPEN) {
-            const message = {
-                type: "slider",
-                index: index,
-                value: parseFloat(slider.value) / 100
-            };
-            ws.send(JSON.stringify(message));
-            console.log('📤 Slider inviato:', message);
-        } else {
-            console.log('⚠️ WebSocket non connesso, messaggio non inviato');
-        }
-    });
-}
-
-// Inizializza slider quando la pagina è pronta
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 Pagina caricata, inizializzo slider...');
-    handleSlider('slider1', 0);
-    handleSlider('slider2', 1);
-    handleSlider('slider3', 2);
-    handleSlider('slider4', 3);
-    handleSlider('slider5', 4);
-    handleSlider('slider6', 5);
-    handleSlider('slider7', 6);
-});
 
 // FIREBASE (mantieni questo)
 const db = firebase.database();
