@@ -70,6 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
     handleSlider('slider2', 1);
     handleSlider('slider3', 2);
     handleSlider('slider4', 3);
+    handleSlider('slider5', 4);
+    handleSlider('slider6', 5);
+    handleSlider('slider7', 6);
 });
 
 // FIREBASE (mantieni questo)
