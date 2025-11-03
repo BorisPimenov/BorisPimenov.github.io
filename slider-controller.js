@@ -11,6 +11,9 @@ class SliderController {
             { id: 'slider2', index: 1, label: 'Attrai/Respingi' },
             { id: 'slider3', index: 2, label: 'Saturazione' },
             { id: 'slider4', index: 3, label: 'Tonalità' }
+            { id: 'slider5', index: 4, label: 'Velocità Particelle' },
+            { id: 'slider6', index: 5, label: 'Dimensione Particelle' },
+            { id: 'slider7', index: 6, label: 'Forza Campo' }
         ];
         
         sliderConfig.forEach(config => {
