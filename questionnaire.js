@@ -201,3 +201,15 @@ if (window.ws) {
         }
     });
 }
+// Aggiungi alla fine del file questionnaire.js
+// Notifica la pagina admin quando il questionario viene completato
+if (window.opener) {
+  window.opener.postMessage({ type: 'questionnaireCompleted' }, '*');
+}
+
+// Ascolta i messaggi di reset dalla pagina admin
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'resetQuestionnaire') {
+    questionnaireManager.resetQuestionnaire();
+  }
+});
