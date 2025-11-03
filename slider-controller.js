@@ -7,8 +7,8 @@ class SliderController {
     initSliders() {
         // Configurazione slider
         const sliderConfig = [
-            { id: 'slider1', index: 0, label: 'Luminosità' },
-            { id: 'slider2', index: 1, label: 'Contrasto' },
+            { id: 'slider1', index: 0, label: 'Colore Ambiente' },
+            { id: 'slider2', index: 1, label: 'Attrai/Respingi' },
             { id: 'slider3', index: 2, label: 'Saturazione' },
             { id: 'slider4', index: 3, label: 'Tonalità' }
         ];
