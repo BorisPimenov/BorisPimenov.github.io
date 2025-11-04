@@ -222,6 +222,22 @@
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
+/* TITOLO SPETTACOLO EBURNEA */
+.spectacle-title {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: 700;
+  font-size: 2.8em;
+  letter-spacing: 1px;
+  text-transform: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+.spectacle-title::first-letter {
+  text-transform: uppercase;
+}
+
 .questionnaire-container h2 {
   color: #ffffff;
   text-align: center;
@@ -340,6 +356,76 @@
 .submit-questions:active {
   transform: translateY(0);
   box-shadow: 0 4px 12px rgba(198, 40, 40, 0.2);
+}
+
+/* Animazioni eleganti in scala di grigi */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.questionnaire-container {
+  animation: subtleGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes subtleGlow {
+  from {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  to {
+    box-shadow: 0 15px 45px rgba(50, 50, 50, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+}
+
+/* Transizione di entrata per il questionario */
+.questionnaire-overlay:not(.hidden) {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(5px);
+  }
+}
+
+/* Miglioramenti per mobile */
+@media (max-width: 768px) {
+  .questionnaire-container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .spectacle-title {
+    font-size: 2.2em;
+  }
+  
+  .questionnaire-container h2 {
+    font-size: 1.6em;
+  }
+  
+  .submit-questions {
+    padding: 14px 25px;
+    font-size: 1em;
+  }
+}
+
+/* Nascondi il questionario dopo l'invio */
+.questionnaire-overlay.hidden {
+  display: none;
+  animation: fadeOut 0.4s ease-out forwards;
 }
 
 /* Nascondi il questionario dopo l'invio */
