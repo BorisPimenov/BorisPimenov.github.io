@@ -1,3 +1,4 @@
+// hand-signal.js
 class HandSignalController {
     constructor() {
         this.handButton = document.getElementById('handSignalButton');
