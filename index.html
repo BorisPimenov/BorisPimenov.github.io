@@ -431,71 +431,82 @@
     <!-- PANEL AFFIANCATI SOTTO IL VIDEO -->
     <div class="control-panels">
    
-      <!-- PANEL PARAMETRI (DESTRA) -->
-      <div class="parameters-panel">
-        <h3>Parametri</h3>
-        
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Posizione Luce</span>
-            <span class="slider-value" id="slider1Value">50</span>
-          </div>
-          <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
-        </div>
-
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Ricordi</span>
-            <span class="slider-value" id="slider2Value">25</span>
-          </div>
-          <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
-        </div>
-
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Posizione Sfera</span>
-            <span class="slider-value" id="slider3Value">75</span>
-          </div>
-          <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
-        </div>
-
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Contrai_Separa</span>
-            <span class="slider-value" id="slider4Value">10</span>
-          </div>
-          <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
-        </div>
-                <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Rosso (R)</span>
-            <span class="slider-value" id="slider5Value">50</span>
-          </div>
-          <input type="range" class="slider-input" id="slider5" min="0" max="100" value="50">
-        </div>
-
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Verde (G)</span>
-            <span class="slider-value" id="slider6Value">50</span>
-          </div>
-          <input type="range" class="slider-input" id="slider6" min="0" max="100" value="50">
-        </div>
-
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="slider-label">Blu (B)</span>
-            <span class="slider-value" id="slider7Value">50</span>
-          </div>
-          <input type="range" class="slider-input" id="slider7" min="0" max="100" value="50">
-        </div>
-
-        <div class="connection-status" id="connectionStatus">
-          Connecting to server...
-        </div>
-      </div>
+      <!-- PANEL PARAMETRI TRASCINABILE -->
+<div class="parameters-panel" id="parametersPanel">
+  <div class="panel-header" id="panelHeader">
+    <h3>Parametri</h3>
+    <div class="panel-controls">
+      <button id="minimizePanel" title="Riduci a icona">−</button>
+      <button id="closePanel" title="Chiudi pannello">×</button>
     </div>
   </div>
+  
+  <div class="panel-content">
+    <!-- I tuoi 7 slider esistenti qui -->
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Posizione Luce</span>
+        <span class="slider-value" id="slider1Value">50</span>
+      </div>
+      <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Ricordi</span>
+        <span class="slider-value" id="slider2Value">25</span>
+      </div>
+      <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Posizione Sfera</span>
+        <span class="slider-value" id="slider3Value">75</span>
+      </div>
+      <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Contrai_Separa</span>
+        <span class="slider-value" id="slider4Value">10</span>
+      </div>
+      <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Rosso (R)</span>
+        <span class="slider-value" id="slider5Value">50</span>
+      </div>
+      <input type="range" class="slider-input" id="slider5" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Verde (G)</span>
+        <span class="slider-value" id="slider6Value">50</span>
+      </div>
+      <input type="range" class="slider-input" id="slider6" min="0" max="100" value="50">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-header">
+        <span class="slider-label">Blu (B)</span>
+        <span class="slider-value" id="slider7Value">50</span>
+      </div>
+      <input type="range" class="slider-input" id="slider7" min="0" max="100" value="50">
+    </div>
+
+    <div class="connection-status" id="connectionStatus">
+      Connecting to server...
+    </div>
+  </div>
+</div>
+
+<!-- PULSANTE TOGGLE PER RIAPRIRE -->
+<div class="toggle-panel" id="togglePanel">⚙️</div>
 
   <!-- TOUCH PANEL (mantieni solo l'HTML, non lo style/script) -->
   <div class="touch-panel">
