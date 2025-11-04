@@ -1,53 +1,49 @@
-// hand-signal.js
 class HandSignalController {
     constructor() {
-        this.handButton = document.getElementById('handSignalButton');
-        this.isConnected = false;
+        console.log('🎯 HandSignalController inizializzato');
         this.signalCount = 0;
-        
+        this.isInitialized = false;
         this.init();
     }
     
     init() {
-        this.setupEventListeners();
-        this.checkWebSocketConnection();
+        if (this.isInitialized) return;
+        
+        console.log('🔍 Cercando bottone mano...');
+        this.setupButtonListener();
+        this.isInitialized = true;
     }
     
-    setupEventListeners() {
-        if (this.handButton) {
-            this.handButton.addEventListener('click', () => {
-                this.sendHandSignal();
-            });
-        }
-        
-        // Controlla lo stato della connessione WebSocket
-        this.checkConnectionInterval = setInterval(() => {
-            this.checkWebSocketConnection();
-        }, 2000);
-    }
-    
-    checkWebSocketConnection() {
-        if (window.ws) {
-            this.isConnected = window.ws.readyState === WebSocket.OPEN;
-        } else {
-            this.isConnected = false;
-        }
-        
-        // Aggiorna lo stato del bottone
-        if (this.handButton) {
-            if (this.isConnected) {
-                this.handButton.disabled = false;
-                this.handButton.title = "Clicca per alzare la mano";
-            } else {
-                this.handButton.disabled = true;
-                this.handButton.title = "In attesa di connessione...";
+    setupButtonListener() {
+        // Usa event delegation sul document per essere sicuro
+        document.addEventListener('click', (event) => {
+            if (event.target && event.target.id === 'handSignalButton') {
+                console.log('🖱️ CLICK RILEVATO tramite event delegation!');
+                this.handleHandSignal();
+                event.preventDefault();
+                event.stopPropagation();
             }
-        }
+        });
+        
+        // Anche per touch
+        document.addEventListener('touchstart', (event) => {
+            if (event.target && event.target.id === 'handSignalButton') {
+                console.log('👆 TOUCH RILEVATO tramite event delegation!');
+                this.handleHandSignal();
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+        
+        console.log('✅ Event delegation configurato');
     }
     
-    sendHandSignal() {
-        if (!this.isConnected) {
-            console.log('⚠️ WebSocket non connesso, segnale mano non inviato');
+    handleHandSignal() {
+        console.log('🔄 Gestione segnale mano...');
+        
+        if (!window.ws || window.ws.readyState !== WebSocket.OPEN) {
+            console.log('❌ WebSocket non pronto');
+            this.showButtonFeedback('❌ Non connesso', '#f44336');
             return;
         }
         
@@ -61,47 +57,77 @@ class HandSignalController {
             sessionId: this.getSessionId()
         };
         
+        console.log('📤 Invio messaggio:', message);
+        
         try {
             window.ws.send(JSON.stringify(message));
-            console.log('✋ Segnale mano inviato:', message);
-            
-            // Feedback visivo
-            this.showButtonFeedback();
+            console.log('✅ Segnale mano inviato con successo!');
+            this.showButtonFeedback('✓ Inviato!', '#4CAF50');
             
         } catch (error) {
-            console.error('❌ Errore nell\'invio del segnale mano:', error);
+            console.error('❌ Errore invio:', error);
+            this.showButtonFeedback('❌ Errore', '#f44336');
         }
     }
     
-    showButtonFeedback() {
-        if (!this.handButton) return;
+    showButtonFeedback(text, color) {
+        const button = document.getElementById('handSignalButton');
+        if (!button) return;
         
-        // Animazione di feedback
-        this.handButton.style.transform = 'scale(0.95)';
-        this.handButton.innerHTML = '✋ Mano alzata!';
+        const originalHTML = button.innerHTML;
+        const originalBackground = button.style.background;
+        
+        button.style.background = color || originalBackground;
+        button.innerHTML = text;
+        button.disabled = true;
         
         setTimeout(() => {
-            this.handButton.style.transform = '';
-            this.handButton.innerHTML = '✋ Alza la mano';
-        }, 500);
+            button.style.background = originalBackground;
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+        }, 1500);
     }
     
     getSessionId() {
-        return localStorage.getItem('userSessionId') || 'unknown_session';
-    }
-    
-    // Reset contatore (opzionale)
-    resetCounter() {
-        this.signalCount = 0;
+        let sessionId = localStorage.getItem('userSessionId');
+        if (!sessionId) {
+            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('userSessionId', sessionId);
+        }
+        return sessionId;
     }
 }
 
-// Inizializza quando il DOM è pronto
-let handSignalController;
+// Inizializzazione RAPIDA e AGGGRESSIVA
+console.log('🚀 Caricamento HandSignalController...');
 
+// Method 1: DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    handSignalController = new HandSignalController();
+    console.log('🏁 DOMContentLoaded - Inizializzo controller');
+    window.handSignalController = new HandSignalController();
 });
 
-// Rendi globale per debug
-window.handSignalController = handSignalController;
+// Method 2: window.load
+window.addEventListener('load', () => {
+    console.log('📄 Window loaded - Verifico controller');
+    if (!window.handSignalController) {
+        window.handSignalController = new HandSignalController();
+    }
+});
+
+// Method 3: Timeout di sicurezza
+setTimeout(() => {
+    console.log('⏰ Timeout sicurezza - Forzo inizializzazione');
+    if (!window.handSignalController) {
+        window.handSignalController = new HandSignalController();
+    }
+}, 2000);
+
+// Method 4: Controllo continuo per bottone
+setInterval(() => {
+    const button = document.getElementById('handSignalButton');
+    if (button && !window.handSignalController) {
+        console.log('🔍 Bottone trovato in ritardo - Inizializzo');
+        window.handSignalController = new HandSignalController();
+    }
+}, 1000);
