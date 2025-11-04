@@ -396,3 +396,68 @@ body.force-mobile .video-container {
     height: 60px;
   }
 }
+/* BOTTONE MANO */
+.hand-signal-section {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.hand-signal-btn {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  font-size: 1.1em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.hand-signal-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s;
+}
+
+.hand-signal-btn:hover {
+  background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+}
+
+.hand-signal-btn:hover::before {
+  left: 100%;
+}
+
+.hand-signal-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.hand-signal-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.hand-signal-btn:disabled:hover::before {
+  left: -100%;
+}
