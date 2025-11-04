@@ -15,27 +15,31 @@ class HandSignalController {
     }
     
     setupButtonListener() {
-        // Usa event delegation sul document per essere sicuro
+        // Usa event delegation ma previeni specificamente il comportamento del form
         document.addEventListener('click', (event) => {
-            if (event.target && event.target.id === 'handSignalButton') {
-                console.log('🖱️ CLICK RILEVATO tramite event delegation!');
-                this.handleHandSignal();
+            const handButton = event.target.closest('#handSignalButton');
+            if (handButton) {
+                console.log('🖱️ CLICK RILEVATO sul bottone mano!');
                 event.preventDefault();
+                event.stopImmediatePropagation();
                 event.stopPropagation();
+                this.handleHandSignal();
             }
         });
         
         // Anche per touch
         document.addEventListener('touchstart', (event) => {
-            if (event.target && event.target.id === 'handSignalButton') {
-                console.log('👆 TOUCH RILEVATO tramite event delegation!');
-                this.handleHandSignal();
+            const handButton = event.target.closest('#handSignalButton');
+            if (handButton) {
+                console.log('👆 TOUCH RILEVATO sul bottone mano!');
                 event.preventDefault();
+                event.stopImmediatePropagation();
                 event.stopPropagation();
+                this.handleHandSignal();
             }
         });
         
-        console.log('✅ Event delegation configurato');
+        console.log('✅ Event listener configurato');
     }
     
     handleHandSignal() {
@@ -98,36 +102,15 @@ class HandSignalController {
     }
 }
 
-// Inizializzazione RAPIDA e AGGGRESSIVA
-console.log('🚀 Caricamento HandSignalController...');
-
-// Method 1: DOMContentLoaded
+// Inizializzazione
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🏁 DOMContentLoaded - Inizializzo controller');
+    console.log('🏁 DOMContentLoaded - Inizializzo HandSignalController');
     window.handSignalController = new HandSignalController();
 });
 
-// Method 2: window.load
 window.addEventListener('load', () => {
-    console.log('📄 Window loaded - Verifico controller');
+    console.log('📄 Window loaded - Verifico HandSignalController');
     if (!window.handSignalController) {
         window.handSignalController = new HandSignalController();
     }
 });
-
-// Method 3: Timeout di sicurezza
-setTimeout(() => {
-    console.log('⏰ Timeout sicurezza - Forzo inizializzazione');
-    if (!window.handSignalController) {
-        window.handSignalController = new HandSignalController();
-    }
-}, 2000);
-
-// Method 4: Controllo continuo per bottone
-setInterval(() => {
-    const button = document.getElementById('handSignalButton');
-    if (button && !window.handSignalController) {
-        console.log('🔍 Bottone trovato in ritardo - Inizializzo');
-        window.handSignalController = new HandSignalController();
-    }
-}, 1000);
