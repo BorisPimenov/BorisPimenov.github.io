@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Test - Boris Pimenov</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        #videoElement {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .status-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+        
+        .status-offline { background: #ff4757; }
+        .status-connecting { background: #ffa502; color: black; }
+        .status-online { background: #2ed573; }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #4a4af0;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a3ad0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .messages {
+            height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .message {
+            margin-bottom: 0.5rem;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 WebRTC Stream Test</h1>
+            <p>Pagina di test per lo streaming da TouchDesigner</p>
+        </div>
+        
+        <!-- Sezione WebRTC Stream -->
+        <div class="test-section">
+            <h2>📹 Stream Video Live</h2>
+            <div class="video-container">
+                <video id="videoElement" autoplay playsinline muted></video>
+                <div id="statusIndicator" class="status-overlay status-offline">
+                    🔴 Offline
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-primary" onclick="connectWebRTC()">
+                    ▶️ Connetti WebRTC
+                </button>
+                <button class="btn btn-secondary" onclick="disconnectWebRTC()">
+                    ⏹️ Disconnetti
+                </button>
+                <button class="btn btn-secondary" onclick="clearMessages()">
+                    🗑️ Pulisci Log
+                </button>
+            </div>
+        </div>
+        
+        <!-- Pannello Informazioni -->
+        <div class="test-section">
+            <h2>📊 Informazioni di Connessione</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Stato WebSocket:</strong>
+                    <div id="wsStatus">Disconnesso</div>
+                </div>
+                <div class="info-item">
+                    <strong>Stato WebRTC:</strong>
+                    <div id="webrtcStatus">Disconnesso</div>
+                </div>
+                <div class="info-item">
+                    <strong>Stanza:</strong>
+                    <div id="roomInfo">live</div>
+                </div>
+                <div class="info-item">
+                    <strong>Ultimo Aggiornamento:</strong>
+                    <div id="lastUpdate">-</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Log Messaggi -->
+        <div class="test-section">
+            <h2>📝 Log Messaggi</h2>
+            <div class="messages" id="messages">
+                <div class="message">Sistema: Pagina caricata. Pronto per il test.</div>
+            </div>
+        </div>
+        
+        <!-- Link di Navigazione -->
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">🏠 Torna alla Home</a>
+            <a href="live.html" class="nav-link">🎥 Pagina Live Ufficiale</a>
+            <a href="admin.html" class="nav-link">⚙️ Admin Panel</a>
+        </div>
+    </div>
+
+    <script>
+        // Configurazione - MODIFICA QUESTI VALORI!
+        const SIGNALING_SERVER = 'wss://il-tuo-server-heroku.herokuapp.com';
+        const ROOM_NAME = 'live';
+        
+        // Variabili globali
+        let peerConnection = null;
+        let signalingSocket = null;
+        let isWebRTCConnected = false;
+        let isWebSocketConnected = false;
+        
+        // Elementi DOM
+        const videoElement = document.getElementById('videoElement');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const wsStatusElement = document.getElementById('wsStatus');
+        const webrtcStatusElement = document.getElementById('webrtcStatus');
+        const roomInfoElement = document.getElementById('roomInfo');
+        const lastUpdateElement = document.getElementById('lastUpdate');
+        const messagesElement = document.getElementById('messages');
+        
+        // Funzioni di utilità
+        function updateStatus() {
+            const now = new Date().toLocaleTimeString();
+            lastUpdateElement.textContent = now;
+            roomInfoElement.textContent = ROOM_NAME;
+        }
+        
+        function addMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            messagesElement.appendChild(messageElement);
+            messagesElement.scrollTop = messagesElement.scrollHeight;
+            updateStatus();
+        }
+        
+        function clearMessages() {
+            messagesElement.innerHTML = '<div class="message">Sistema: Log pulito.</div>';
+        }
+        
+        // WebSocket Connection
+        function connectWebSocket() {
+            if (signalingSocket && signalingSocket.readyState === WebSocket.OPEN) {
+                return;
+            }
+            
+            addMessage('Tentativo di connessione WebSocket...');
+            
+            try {
+                signalingSocket = new WebSocket(SIGNALING_SERVER);
+                
+                signalingSocket.onopen = () => {
+                    isWebSocketConnected = true;
+                    wsStatusElement.textContent = 'Connesso';
+                    wsStatusElement.style.color = '#2ed573';
+                    addMessage('✅ WebSocket connesso con successo');
+                    
+                    // Unisciti alla stanza WebRTC
+                    signalingSocket.send(JSON.stringify({
+                        type: 'webrtc-join',
+                        room: ROOM_NAME
+                    }));
+                    addMessage(`Entrato nella stanza: ${ROOM_NAME}`);
+                };
+                
+                signalingSocket.onmessage = async (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        
+                        // Gestione messaggi WebRTC
+                        if (data.type && data.type.startsWith('webrtc-')) {
+                            await handleWebRTCSignaling(data);
+                        } else {
+                            // Altri messaggi WebSocket
+                            addMessage(`WS: ${JSON.stringify(data)}`);
+                        }
+                    } catch (error) {
+                        addMessage(`WS (testo): ${event.data}`);
+                    }
+                };
+                
+                signalingSocket.onerror = (error) => {
+                    addMessage('❌ Errore WebSocket');
+                    console.error('WebSocket error:', error);
+                };
+                
+                signalingSocket.onclose = () => {
+                    isWebSocketConnected = false;
+                    wsStatusElement.textContent = 'Disconnesso';
+                    wsStatusElement.style.color = '#ff4757';
+                    addMessage('🔴 WebSocket disconnesso');
+                    
+                    // Ritenta dopo 3 secondi
+                    setTimeout(connectWebSocket, 3000);
+                };
+                
+            } catch (error) {
+                addMessage('❌ Errore nella connessione WebSocket');
+                console.error('Connection error:', error);
+            }
+        }
+        
+        // WebRTC Functions
+        function connectWebRTC() {
+            if (!isWebSocketConnected) {
+                addMessage('⚠️ Prima connetti il WebSocket!');
+                connectWebSocket();
+                return;
+            }
+            
+            addMessage('Avvio connessione WebRTC...');
+            statusIndicator.textContent = '🔄 Connessione...';
+            statusIndicator.className = 'status-overlay status-connecting';
+        }
+        
+        function disconnectWebRTC() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            if (signalingSocket && signalingSocket.readyState === WebSocket.OPEN) {
+                signalingSocket.send(JSON.stringify({
+                    type: 'webrtc-leave'
+                }));
+            }
+            
+            videoElement.srcObject = null;
+            isWebRTCConnected = false;
+            statusIndicator.textContent = '🔴 Offline';
+            statusIndicator.className = 'status-overlay status-offline';
+            webrtcStatusElement.textContent = 'Disconnesso';
+            webrtcStatusElement.style.color = '#ff4757';
+            addMessage('WebRTC disconnesso');
+        }
+        
+        async function handleWebRTCSignaling(data) {
+            switch (data.type) {
+                case 'webrtc-offer':
+                    await handleOffer(data);
+                    break;
+                case 'webrtc-answer':
+                    await handleAnswer(data);
+                    break;
+                case 'webrtc-candidate':
+                    await handleCandidate(data);
+                    break;
+                case 'webrtc-joined':
+                    addMessage(`✅ Entrato nella stanza WebRTC: ${data.room}`);
+                    break;
+            }
+        }
+        
+        async function handleOffer(offer) {
+            addMessage('📨 Ricevuta offerta WebRTC');
+            
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            
+            // Crea PeerConnection
+            peerConnection = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            });
+            
+            // Gestione stream
+            peerConnection.ontrack = (event) => {
+                addMessage('🎬 Stream video ricevuto!');
+                if (event.streams && event.streams[0]) {
+                    videoElement.srcObject = event.streams[0];
+                    statusIndicator.textContent = '🎬 Live!';
+                    statusIndicator.className = 'status-overlay status-online';
+                    isWebRTCConnected = true;
+                    webrtcStatusElement.textContent = 'Connesso';
+                    webrtcStatusElement.style.color = '#2ed573';
+                }
+            };
+            
+            // Monitora stato connessione
+            peerConnection.oniceconnectionstatechange = () => {
+                const state = peerConnection.iceConnectionState;
+                addMessage(`ICE State: ${state}`);
+                
+                if (state === 'connected' || state === 'completed') {
+                    statusIndicator.textContent = '🎬 Live!';
+                    statusIndicator.className = 'status-overlay status-online';
+                } else if (state === 'disconnected' || state === 'failed') {
+                    statusIndicator.textContent = '🔴 Offline';
+                    statusIndicator.className = 'status-overlay status-offline';
+                    isWebRTCConnected = false;
+                }
+            };
+            
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate && signalingSocket.readyState === WebSocket.OPEN) {
+                    signalingSocket.send(JSON.stringify({
+                        type: 'webrtc-candidate',
+                        candidate: event.candidate
+                    }));
+                }
+            };
+            
+            try {
+                await peerConnection.setRemoteDescription(offer);
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                
+                signalingSocket.send(JSON.stringify({
+                    type: 'webrtc-answer',
+                    sdp: answer.sdp
+                }));
+                
+                addMessage('📤 Inviata risposta WebRTC');
+                
+            } catch (error) {
+                addMessage('❌ Errore nella negoziazione WebRTC');
+                console.error('WebRTC error:', error);
+            }
+        }
+        
+        async function handleAnswer(answer) {
+            if (peerConnection) {
+                try {
+                    await peerConnection.setRemoteDescription(answer);
+                    addMessage('✅ Risposta WebRTC processata');
+                } catch (error) {
+                    console.error('Error setting answer:', error);
+                }
+            }
+        }
+        
+        async function handleCandidate(candidate) {
+            if (peerConnection && peerConnection.remoteDescription) {
+                try {
+                    await peerConnection.addIceCandidate(candidate);
+                } catch (error) {
+                    console.error('Error adding ICE candidate:', error);
+                }
+            }
+        }
+        
+        // Inizializzazione
+        window.addEventListener('load', () => {
+            addMessage('Pagina caricata. Collegamento al server...');
+            connectWebSocket();
+            updateStatus();
+        });
+        
+        // Pulizia
+        window.addEventListener('beforeunload', () => {
+            if (signalingSocket) {
+                signalingSocket.close();
+            }
+            if (peerConnection) {
+                peerConnection.close();
+            }
+        });
+    </script>
+</body>
+</html>
