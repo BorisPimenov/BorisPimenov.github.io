@@ -3,20 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Stream Test - Boris Pimenov</title>
+    <title>Live Stream - Boris Pimenov</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Stili base - puoi adattarli al tuo design */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #1a1a1a;
-            color: white;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        /* Stili aggiuntivi per la pagina live */
         .video-container {
             position: relative;
             width: 100%;
@@ -41,8 +31,18 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎥 Live Stream</h1>
+    <!-- Assumendo che tu abbia una struttura di header e footer comune -->
+    <header>
+        <!-- Il tuo header esistente -->
+        <nav>
+            <!-- ... -->
+            <a href="index.html">Home</a>
+            <a href="live.html">Live</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Live Stream</h1>
         <p>Stream in tempo reale da TouchDesigner</p>
         
         <div id="status" class="status disconnected">
@@ -58,11 +58,15 @@
                 ▶️ Connetti
             </button>
         </div>
-    </div>
+    </main>
+
+    <footer>
+        <!-- Il tuo footer esistente -->
+    </footer>
 
     <script>
         // Configurazione - MODIFICA QUESTI VALORI
-        const HEROKU_APP_URL = 'wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com';
+        const HEROKU_APP_URL = 'wss://your-app-name.herokuapp.com';
         const ROOM_NAME = 'live';
         
         let peerConnection = null;
