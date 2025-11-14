@@ -232,7 +232,19 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('❌ Bottone reset non trovato');
     }
 });
+// DEBUG - Verifica che il bottone esista
+console.log('🔍 Ricerca bottone reset...');
+const resetButton = document.getElementById('resetButton');
+console.log('Bottone trovato:', resetButton);
 
+if (resetButton) {
+    console.log('✅ Bottone reset trovato nel DOM');
+    resetButton.addEventListener('click', function() {
+        console.log('🔄 CLICK RILEVATO sul bottone reset!');
+    });
+} else {
+    console.error('❌ Bottone reset NON TROVATO nel DOM');
+}
 }
 
 
