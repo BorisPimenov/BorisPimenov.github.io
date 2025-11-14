@@ -203,5 +203,36 @@ document.getElementById('resetButton').addEventListener('click', function() {
         this.textContent = 'Reset Parametri';
     }, 1500);
 });
+    // Aggiungi questo codice in fondo a script (1).js
+
+document.addEventListener('DOMContentLoaded', function() {
+    const resetButton = document.getElementById('resetButton');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            console.log('🔄 Bottone reset premuto');
+            
+            // Invia messaggio WebSocket
+            sendToTouchDesigner({
+                type: "reset",
+                button: "reset_parameters",
+                timestamp: Date.now(),
+                message: "Reset parametri richiesto"
+            });
+            
+            // Opzionale: feedback visivo
+            this.style.background = '#2e7d32';
+            this.textContent = 'Reset Inviato!';
+            
+            setTimeout(() => {
+                this.style.background = '#333';
+                this.textContent = 'Reset Parametri';
+            }, 1500);
+        });
+    } else {
+        console.error('❌ Bottone reset non trovato');
+    }
+});
+
 }
+
 
