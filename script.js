@@ -157,4 +157,51 @@ if (voteBButton) {
         });
         setVoted();
     };
+// BOTTONE RESET PARAMETRI
+document.getElementById('resetButton').addEventListener('click', function() {
+    console.log('🔄 Bottone reset premuto');
+    
+    // Invia messaggio WebSocket
+    sendToTouchDesigner({
+        type: "reset",
+        button: "reset_parameters",
+        timestamp: Date.now(),
+        message: "Reset parametri richiesto"
+    });
+    
+    // Reset valori slider a valori predefiniti
+    const defaultValues = {
+        slider1: 50,
+        slider2: 25, 
+        slider3: 75,
+        slider4: 10,
+        slider5: 50,
+        slider6: 50,
+        slider7: 50
+    };
+    
+    // Aggiorna slider visivamente
+    Object.keys(defaultValues).forEach(sliderId => {
+        const slider = document.getElementById(sliderId);
+        const valueDisplay = document.getElementById(sliderId + 'Value');
+        
+        if (slider && valueDisplay) {
+            slider.value = defaultValues[sliderId];
+            valueDisplay.textContent = defaultValues[sliderId];
+            
+            // Trigger change event per aggiornare WebSocket
+            slider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+    
+    // Feedback visivo
+    this.style.background = '#2e7d32';
+    this.textContent = 'Reset Completato!';
+    
+    setTimeout(() => {
+        this.style.background = '#333';
+        this.textContent = 'Reset Parametri';
+    }, 1500);
+});
 }
+
