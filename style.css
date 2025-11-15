@@ -494,3 +494,40 @@ body.force-mobile .video-container {
 .control-button:active {
     transform: translateY(0);
 }
+/* Stili per slider disabilitati */
+.slider-disabled {
+    position: relative;
+}
+
+.slider-disabled::after {
+    content: "❌";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    opacity: 0.7;
+}
+
+.slider-enabled {
+    transition: all 0.3s ease;
+}
+
+.slider-element {
+    transition: all 0.3s ease;
+}
+
+/* Miglioramenti visivi per stato disabilitato */
+.slider-input:disabled {
+    background: #f0f0f0;
+}
+
+.slider-input:disabled::-webkit-slider-thumb {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.slider-input:disabled::-moz-range-thumb {
+    background: #999;
+    cursor: not-allowed;
+}
