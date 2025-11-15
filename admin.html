@@ -115,6 +115,16 @@
       background: #d35400;
     }
 
+    .btn-disabled {
+      background: #7f8c8d;
+      cursor: not-allowed;
+    }
+
+    .btn-disabled:hover {
+      background: #7f8c8d;
+      transform: none;
+    }
+
     .status-indicator {
       display: inline-block;
       width: 12px;
@@ -262,13 +272,176 @@
       flex: 1;
       min-width: 120px;
     }
+
+    /* NUOVI STILI PER CONTROLLO SLIDER */
+    .slider-control-panel {
+      margin-top: 20px;
+    }
+
+    .slider-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .slider-status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .status-enabled {
+      background: #2ecc71;
+      box-shadow: 0 0 8px #2ecc71;
+    }
+
+    .status-disabled {
+      background: #e74c3c;
+      box-shadow: 0 0 8px #e74c3c;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e74c3c;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: #2ecc71;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(30px);
+    }
+
+    .slider-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .slider-control-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .slider-control-item.disabled {
+      opacity: 0.5;
+      background: rgba(255, 0, 0, 0.1);
+    }
+
+    .slider-control-item.enabled {
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    .slider-control-label {
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    .slider-control-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #3498db;
+    }
+
+    .control-section {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #34495e;
+    }
+
+    .control-section:last-child {
+      border-bottom: none;
+    }
+
+    .broadcast-message {
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid #3498db;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .broadcast-message h4 {
+      margin-bottom: 10px;
+      color: #3498db;
+    }
+
+    .message-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .message-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #34495e;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+    }
+
+    .message-input button {
+      padding: 8px 15px;
+    }
   </style>
 </head>
 <body>
   <div class="admin-container">
     <header>
       <h1>Admin Control Panel</h1>
-      <p class="subtitle">Gestisci il questionario e monitora il sistema</p>
+      <p class="subtitle">Gestisci il questionario, gli slider e monitora il sistema</p>
     </header>
 
     <div class="panels-grid">
@@ -310,14 +483,52 @@
         </div>
       </div>
 
+      <!-- NUOVO: Panel Controllo Slider -->
+      <div class="panel">
+        <h2><i>🎚️</i> Controllo Slider</h2>
+        
+        <div class="slider-control-panel">
+          <div class="slider-status">
+            <div class="slider-status-indicator">
+              <span class="status-dot status-disabled" id="sliderGlobalStatus"></span>
+              <span id="sliderStatusText">Sliders Disabilitati</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="sliderToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="slider-controls" id="sliderControls">
+            <!-- I controlli slider verranno generati dinamicamente -->
+          </div>
+
+          <div class="test-buttons">
+            <button class="btn btn-success" id="enableAllSlidersBtn">Abilita Tutti</button>
+            <button class="btn btn-danger" id="disableAllSlidersBtn">Disabilita Tutti</button>
+            <button class="btn" id="resetSlidersBtn">Reset Valori</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Panel Test WebSocket -->
       <div class="panel">
         <h2><i>🔧</i> Test WebSocket</h2>
         <div class="test-buttons">
           <button class="btn" id="testConnectionBtn">Test Connessione</button>
           <button class="btn btn-warning" id="testSliderBtn">Test Slider</button>
-          <button class="btn btn-warning" id="testVoteBtn">Test Voto</button>
+          <button class="btn btn-warning" id="testHandBtn">Test Mano</button>
         </div>
+
+        <div class="broadcast-message">
+          <h4>📢 Messaggio Broadcast</h4>
+          <p>Invia un messaggio a tutti i client connessi</p>
+          <div class="message-input">
+            <input type="text" id="broadcastMessage" placeholder="Inserisci il messaggio...">
+            <button class="btn" id="sendBroadcastBtn">Invia</button>
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="customMessage">Messaggio Personalizzato:</label>
           <input type="text" id="customMessage" placeholder='{"type": "test", "message": "Hello"}'>
@@ -360,28 +571,154 @@
     const copyUrlBtn = document.getElementById('copyUrlBtn');
     const testConnectionBtn = document.getElementById('testConnectionBtn');
     const testSliderBtn = document.getElementById('testSliderBtn');
-    const testVoteBtn = document.getElementById('testVoteBtn');
+    const testHandBtn = document.getElementById('testHandBtn');
     const customMessage = document.getElementById('customMessage');
     const sendCustomBtn = document.getElementById('sendCustomBtn');
     const logContainer = document.getElementById('logContainer');
     const clearLogBtn = document.getElementById('clearLogBtn');
     const exportLogBtn = document.getElementById('exportLogBtn');
 
+    // Nuovi elementi per il controllo slider
+    const sliderToggle = document.getElementById('sliderToggle');
+    const sliderGlobalStatus = document.getElementById('sliderGlobalStatus');
+    const sliderStatusText = document.getElementById('sliderStatusText');
+    const sliderControls = document.getElementById('sliderControls');
+    const enableAllSlidersBtn = document.getElementById('enableAllSlidersBtn');
+    const disableAllSlidersBtn = document.getElementById('disableAllSlidersBtn');
+    const resetSlidersBtn = document.getElementById('resetSlidersBtn');
+    const broadcastMessage = document.getElementById('broadcastMessage');
+    const sendBroadcastBtn = document.getElementById('sendBroadcastBtn');
+
     // Variabili di stato
     let messageCount = 0;
     let sliderCount = 0;
     let questionnaireCount = 0;
     let ws = null;
+    let slidersEnabled = true;
+    let sliderValues = {};
 
     // Inizializzazione
     document.addEventListener('DOMContentLoaded', () => {
       logMessage('Sistema admin inizializzato', 'info');
       updateQuestionnaireStatus();
       connectWebSocket();
+      initializeSliderControls();
       
       // Imposta l'URL corrente
       questionnaireUrl.value = window.location.origin;
     });
+
+    // Inizializza i controlli slider
+    function initializeSliderControls() {
+      // Crea i controlli per ogni slider
+      for (let i = 1; i <= 7; i++) {
+        const sliderControl = document.createElement('div');
+        sliderControl.className = 'slider-control-item enabled';
+        sliderControl.id = `sliderControl${i}`;
+        sliderControl.innerHTML = `
+          <span class="slider-control-label">Slider ${i}</span>
+          <span class="slider-control-value" id="sliderValue${i}">50</span>
+          <div class="test-buttons" style="margin-top: 5px;">
+            <button class="btn btn-success btn-small enable-slider" data-slider="${i}">On</button>
+            <button class="btn btn-danger btn-small disable-slider" data-slider="${i}">Off</button>
+          </div>
+        `;
+        sliderControls.appendChild(sliderControl);
+        
+        // Inizializza valori
+        sliderValues[i] = 50;
+      }
+      
+      // Imposta lo stato iniziale
+      updateSlidersState(true);
+      
+      // Aggiungi event listeners per i controlli slider
+      document.querySelectorAll('.enable-slider').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const sliderId = e.target.getAttribute('data-slider');
+          enableSlider(sliderId);
+        });
+      });
+      
+      document.querySelectorAll('.disable-slider').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const sliderId = e.target.getAttribute('data-slider');
+          disableSlider(sliderId);
+        });
+      });
+    }
+
+    // Abilita/disabilita tutti gli slider
+    function updateSlidersState(enabled) {
+      slidersEnabled = enabled;
+      sliderToggle.checked = enabled;
+      
+      if (enabled) {
+        sliderGlobalStatus.className = 'status-dot status-enabled';
+        sliderStatusText.textContent = 'Sliders Abilitati';
+        logMessage('Tutti gli slider sono stati abilitati', 'success');
+      } else {
+        sliderGlobalStatus.className = 'status-dot status-disabled';
+        sliderStatusText.textContent = 'Sliders Disabilitati';
+        logMessage('Tutti gli slider sono stati disabilitati', 'warning');
+      }
+      
+      // Invia lo stato al server
+      sendSliderControlState();
+    }
+
+    // Abilita uno slider specifico
+    function enableSlider(sliderId) {
+      const control = document.getElementById(`sliderControl${sliderId}`);
+      control.classList.remove('disabled');
+      control.classList.add('enabled');
+      logMessage(`Slider ${sliderId} abilitato`, 'success');
+      sendIndividualSliderControl(sliderId, true);
+    }
+
+    // Disabilita uno slider specifico
+    function disableSlider(sliderId) {
+      const control = document.getElementById(`sliderControl${sliderId}`);
+      control.classList.remove('enabled');
+      control.classList.add('disabled');
+      logMessage(`Slider ${sliderId} disabilitato`, 'warning');
+      sendIndividualSliderControl(sliderId, false);
+    }
+
+    // Invia lo stato di controllo degli slider al server
+    function sendSliderControlState() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        const message = {
+          type: "slider_control",
+          enabled: slidersEnabled,
+          timestamp: Date.now()
+        };
+        ws.send(JSON.stringify(message));
+        logMessage(`Stato slider inviato: ${slidersEnabled ? 'Abilitati' : 'Disabilitati'}`, 'info');
+      }
+    }
+
+    // Invia controllo per slider individuale
+    function sendIndividualSliderControl(sliderId, enabled) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        const message = {
+          type: "slider_control_individual",
+          sliderId: parseInt(sliderId),
+          enabled: enabled,
+          timestamp: Date.now()
+        };
+        ws.send(JSON.stringify(message));
+      }
+    }
+
+    // Aggiorna il valore di uno slider
+    function updateSliderValue(sliderId, value) {
+      const valueElement = document.getElementById(`sliderValue${sliderId}`);
+      if (valueElement) {
+        valueElement.textContent = value;
+        sliderValues[sliderId] = value;
+      }
+    }
 
     // Connessione WebSocket
     function connectWebSocket() {
@@ -394,6 +731,9 @@
         ws.onopen = function(event) {
           updateConnectionStatus('connected', 'Connesso al server');
           logMessage('Connessione WebSocket stabilita', 'success');
+          
+          // Invia lo stato iniziale degli slider
+          sendSliderControlState();
         };
 
         ws.onclose = function(event) {
@@ -420,9 +760,17 @@
             if (data.type === 'slider') {
               sliderCount++;
               sliderCountEl.textContent = sliderCount;
+              
+              // Aggiorna il valore dello slider nel pannello admin
+              if (data.index !== undefined) {
+                const sliderId = data.index + 1; // Converti da 0-based a 1-based
+                updateSliderValue(sliderId, Math.round(data.value * 100));
+              }
             } else if (data.type === 'questionnaire') {
               questionnaireCount++;
               questionnaireCountEl.textContent = questionnaireCount;
+            } else if (data.type === 'hand_signal') {
+              logMessage(`Segnale mano ricevuto: #${data.count}`, 'info');
             }
           } catch (e) {
             // Ignora errori di parsing
@@ -556,18 +904,17 @@
       }
     });
 
-    testVoteBtn.addEventListener('click', () => {
+    testHandBtn.addEventListener('click', () => {
       const testMessage = {
-        type: "vote",
-        option: Math.random() > 0.5 ? "A" : "B",
-        percentages: {
-          A: Math.floor(Math.random() * 100),
-          B: Math.floor(Math.random() * 100)
-        },
-        timestamp: Date.now()
+        type: "hand_signal",
+        value: 1,
+        count: Math.floor(Math.random() * 1000),
+        timestamp: Date.now(),
+        sessionId: "test_admin_" + Date.now()
       };
       
       sendWebSocketMessage(testMessage);
+      logMessage('Segnale mano di test inviato', 'info');
     });
 
     sendCustomBtn.addEventListener('click', () => {
@@ -576,6 +923,24 @@
         sendWebSocketMessage(message);
       } catch (e) {
         logMessage('Errore nel parsing del messaggio personalizzato: ' + e, 'error');
+      }
+    });
+
+    sendBroadcastBtn.addEventListener('click', () => {
+      const message = broadcastMessage.value.trim();
+      if (message) {
+        const broadcastData = {
+          type: "broadcast",
+          message: message,
+          timestamp: Date.now()
+        };
+        
+        if (sendWebSocketMessage(broadcastData)) {
+          logMessage(`Messaggio broadcast inviato: "${message}"`, 'success');
+          broadcastMessage.value = '';
+        }
+      } else {
+        logMessage('Inserisci un messaggio per il broadcast', 'warning');
       }
     });
 
@@ -596,6 +961,35 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       logMessage('Log esportato', 'success');
+    });
+
+    // Nuovi event listeners per il controllo slider
+    sliderToggle.addEventListener('change', () => {
+      updateSlidersState(sliderToggle.checked);
+    });
+
+    enableAllSlidersBtn.addEventListener('click', () => {
+      updateSlidersState(true);
+      // Abilita tutti gli slider individualmente
+      for (let i = 1; i <= 7; i++) {
+        enableSlider(i);
+      }
+    });
+
+    disableAllSlidersBtn.addEventListener('click', () => {
+      updateSlidersState(false);
+      // Disabilita tutti gli slider individualmente
+      for (let i = 1; i <= 7; i++) {
+        disableSlider(i);
+      }
+    });
+
+    resetSlidersBtn.addEventListener('click', () => {
+      // Resetta tutti i valori degli slider a 50
+      for (let i = 1; i <= 7; i++) {
+        updateSliderValue(i, 50);
+      }
+      logMessage('Valori slider resettati a 50', 'info');
     });
 
     // Ascolta messaggi dalla pagina principale
