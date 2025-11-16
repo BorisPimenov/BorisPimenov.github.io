@@ -24,11 +24,13 @@
             height: auto;
             border: 2px solid #333;
             border-radius: 4px;
+            background: #000;
         }
         .status {
             padding: 10px;
             margin: 10px 0;
             border-radius: 4px;
+            font-weight: bold;
         }
         .connected { background-color: #d4edda; color: #155724; }
         .disconnected { background-color: #f8d7da; color: #721c24; }
@@ -42,35 +44,48 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
+        button:hover { background-color: #0056b3; }
         button:disabled {
             background-color: #6c757d;
             cursor: not-allowed;
         }
+        .log-entry { 
+            margin: 2px 0; 
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error { color: #dc3545; }
+        .success { color: #28a745; }
+        .info { color: #17a2b8; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Ricezione Video WebRTC da TouchDesigner</h1>
+        <h1>🎥 Ricezione Video WebRTC da TouchDesigner</h1>
         
         <div id="status" class="status disconnected">
-            Disconnesso
+            ⚠️ Disconnesso
         </div>
 
         <div>
-            <button id="connectBtn" onclick="connect()">Connetti</button>
-            <button id="disconnectBtn" onclick="disconnect()" disabled>Disconnetti</button>
+            <button id="connectBtn" onclick="connect()">🔗 Connetti</button>
+            <button id="disconnectBtn" onclick="disconnect()" disabled>❌ Disconnetti</button>
+            <button id="joinRoomBtn" onclick="joinRoom()" disabled>🎯 Entra in Stanza</button>
         </div>
 
         <div>
-            <h2>Video Stream</h2>
+            <h2>📹 Video Stream</h2>
             <video id="videoElement" autoplay playsinline muted></video>
+            <div id="videoInfo"></div>
         </div>
 
         <div>
-            <h3>Log:</h3>
+            <h3>📊 Informazioni Connessione:</h3>
+            <div id="connectionInfo"></div>
+        </div>
+
+        <div>
+            <h3>📋 Log:</h3>
             <div id="log" style="height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; background-color: #f8f9fa;"></div>
         </div>
     </div>
