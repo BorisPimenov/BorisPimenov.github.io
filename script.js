@@ -1,6 +1,6 @@
 // CONNESSIONE WEBSOCKET CON DEBUG ESTESO
 console.log('🔄 Tentativo di connessione WebSocket...');
-const ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+const ws = new WebSocket('wss://eburnea-fixed-f2da05b9b297.herokuapp.com');
 // Rendi il WebSocket globale per l'accesso da altri file
 window.ws = ws;
 const connectionStatus = document.getElementById('connectionStatus');
