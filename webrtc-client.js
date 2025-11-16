@@ -4,7 +4,7 @@ async connect() {
         this.updateStatus('connecting', '🔄 Connessione in corso...');
 
         // ✅ SOSTITUISCI 'tuo-app-heroku' con il nome vero della tua app Heroku
-        const websocketUrl = 'wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com';
+        const websocketUrl = 'wss://eburnea-fixed-f2da05b9b297.herokuapp.com';
         
         this.log(`🔗 Connessione a: ${websocketUrl}`, 'info');
         console.log('DEBUG - WebSocket URL:', websocketUrl);
