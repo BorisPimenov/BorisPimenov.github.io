@@ -10,7 +10,38 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+<script>
+    // Test immediato del DOM
+    console.log('🔧 Test del DOM...');
+    
+    // Verifica che tutti gli elementi esistano
+    const elements = [
+        'videoElement', 'videoPlaceholder', 'status', 'status-text',
+        'connectBtn', 'disconnectBtn', 'joinRoomBtn', 'log',
+        'connectionInfo', 'videoInfo', 'webrtcState', 'iceState',
+        'videoResolution', 'videoFPS'
+    ];
+    
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        console.log(`${element ? '✅' : '❌'} Elemento ${id}:`, element ? 'TROVATO' : 'NON TROVATO');
+    });
+    
+    // Test dei pulsanti
+    document.getElementById('connectBtn').addEventListener('click', function() {
+        console.log('🎯 Pulsante Connect cliccato!');
+    });
+    
+    document.getElementById('joinRoomBtn').addEventListener('click', function() {
+        console.log('🎯 Pulsante Join Room cliccato!');
+    });
+    
+    document.getElementById('disconnectBtn').addEventListener('click', function() {
+        console.log('🎯 Pulsante Disconnect cliccato!');
+    });
+    
+    console.log('🧪 Test completato');
+</script>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
