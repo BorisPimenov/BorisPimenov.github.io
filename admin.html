@@ -21,7 +21,7 @@
     }
 
     .admin-container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -435,13 +435,114 @@
     .message-input button {
       padding: 8px 15px;
     }
+
+    /* NUOVI STILI PER LO STREAMING VIDEO */
+    .streaming-panel {
+      grid-column: span 2;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .stream-stats {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .stream-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    .stream-stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2ecc71;
+    }
+
+    .stream-stat-label {
+      font-size: 0.8rem;
+      color: #95a5a6;
+      margin-top: 5px;
+    }
+
+    .stream-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .quality-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quality-selector select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #34495e;
+      color: #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+
+    .stream-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+    }
+
+    .stream-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e74c3c;
+      animation: pulse 2s infinite;
+    }
+
+    .stream-indicator.live {
+      background: #2ecc71;
+    }
+
+    @media (max-width: 768px) {
+      .streaming-panel {
+        grid-column: span 1;
+      }
+      
+      .panels-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="admin-container">
     <header>
       <h1>Admin Control Panel</h1>
-      <p class="subtitle">Gestisci il questionario, gli slider e monitora il sistema</p>
+      <p class="subtitle">Gestisci il questionario, gli slider, lo streaming e monitora il sistema</p>
     </header>
 
     <div class="panels-grid">
@@ -483,7 +584,56 @@
         </div>
       </div>
 
-      <!-- NUOVO: Panel Controllo Slider -->
+      <!-- NUOVO: Panel Streaming Video -->
+      <div class="panel streaming-panel">
+        <h2><i>📹</i> Live Streaming</h2>
+        
+        <div class="stream-status">
+          <span class="stream-indicator" id="streamIndicator"></span>
+          <span id="streamStatusText">Streaming non attivo</span>
+        </div>
+        
+        <div class="video-container">
+          <iframe src="https://vdo.ninja/?view=Ha93mG8&password=optionalpassword" 
+                  allow="camera; microphone; fullscreen; display-capture" 
+                  id="streamFrame">
+          </iframe>
+        </div>
+        
+        <div class="stream-stats">
+          <div class="stream-stat">
+            <div class="stream-stat-value" id="fpsValue">0</div>
+            <div class="stream-stat-label">FPS</div>
+          </div>
+          <div class="stream-stat">
+            <div class="stream-stat-value" id="uploadSpeedValue">0 KB/s</div>
+            <div class="stream-stat-label">Velocità Upload</div>
+          </div>
+          <div class="stream-stat">
+            <div class="stream-stat-value" id="bitrateValue">0 kbps</div>
+            <div class="stream-stat-label">Bitrate</div>
+          </div>
+          <div class="stream-stat">
+            <div class="stream-stat-value" id="latencyValue">0 ms</div>
+            <div class="stream-stat-label">Latenza</div>
+          </div>
+        </div>
+        
+        <div class="stream-controls">
+          <button class="btn" id="refreshStreamBtn">Aggiorna Stream</button>
+          <div class="quality-selector">
+            <label for="streamQuality">Qualità:</label>
+            <select id="streamQuality">
+              <option value="auto">Auto</option>
+              <option value="hd">HD (720p)</option>
+              <option value="sd">SD (480p)</option>
+              <option value="low">Bassa (360p)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Controllo Slider -->
       <div class="panel">
         <h2><i>🎚️</i> Controllo Slider</h2>
         
@@ -589,6 +739,17 @@
     const broadcastMessage = document.getElementById('broadcastMessage');
     const sendBroadcastBtn = document.getElementById('sendBroadcastBtn');
 
+    // Nuovi elementi per lo streaming
+    const streamIndicator = document.getElementById('streamIndicator');
+    const streamStatusText = document.getElementById('streamStatusText');
+    const streamFrame = document.getElementById('streamFrame');
+    const fpsValue = document.getElementById('fpsValue');
+    const uploadSpeedValue = document.getElementById('uploadSpeedValue');
+    const bitrateValue = document.getElementById('bitrateValue');
+    const latencyValue = document.getElementById('latencyValue');
+    const refreshStreamBtn = document.getElementById('refreshStreamBtn');
+    const streamQuality = document.getElementById('streamQuality');
+
     // Variabili di stato
     let messageCount = 0;
     let sliderCount = 0;
@@ -596,6 +757,13 @@
     let ws = null;
     let slidersEnabled = true;
     let sliderValues = {};
+    
+    // Variabili per lo streaming
+    let streamStatsInterval;
+    let simulatedFPS = 0;
+    let simulatedUploadSpeed = 0;
+    let simulatedBitrate = 0;
+    let simulatedLatency = 0;
 
     // Inizializzazione
     document.addEventListener('DOMContentLoaded', () => {
@@ -603,10 +771,100 @@
       updateQuestionnaireStatus();
       connectWebSocket();
       initializeSliderControls();
+      initializeStreamMonitoring();
       
       // Imposta l'URL corrente
       questionnaireUrl.value = window.location.origin;
     });
+
+    // Inizializza il monitoraggio dello streaming
+    function initializeStreamMonitoring() {
+      // Simula statistiche dello streaming (in un caso reale, queste verrebbero da un'API)
+      startStreamStatsSimulation();
+      
+      // Aggiorna lo stato dello streaming
+      updateStreamStatus(true);
+      
+      // Aggiungi event listener per il pulsante di aggiornamento
+      refreshStreamBtn.addEventListener('click', () => {
+        refreshStream();
+      });
+      
+      // Aggiungi event listener per il selettore di qualità
+      streamQuality.addEventListener('change', () => {
+        updateStreamQuality(streamQuality.value);
+      });
+    }
+
+    // Simula statistiche dello streaming
+    function startStreamStatsSimulation() {
+      clearInterval(streamStatsInterval);
+      
+      streamStatsInterval = setInterval(() => {
+        // Simula valori realistici per uno streaming
+        simulatedFPS = Math.floor(Math.random() * 10) + 25; // 25-35 FPS
+        simulatedUploadSpeed = Math.floor(Math.random() * 500) + 500; // 500-1000 KB/s
+        simulatedBitrate = Math.floor(Math.random() * 1000) + 1500; // 1500-2500 kbps
+        simulatedLatency = Math.floor(Math.random() * 100) + 50; // 50-150 ms
+        
+        // Aggiorna i valori visualizzati
+        updateStreamStats();
+      }, 2000);
+    }
+
+    // Aggiorna le statistiche dello streaming
+    function updateStreamStats() {
+      fpsValue.textContent = simulatedFPS;
+      uploadSpeedValue.textContent = simulatedUploadSpeed + ' KB/s';
+      bitrateValue.textContent = simulatedBitrate + ' kbps';
+      latencyValue.textContent = simulatedLatency + ' ms';
+    }
+
+    // Aggiorna lo stato dello streaming
+    function updateStreamStatus(isActive) {
+      if (isActive) {
+        streamIndicator.className = 'stream-indicator live';
+        streamStatusText.textContent = 'Streaming Live';
+        logMessage('Streaming attivo', 'success');
+      } else {
+        streamIndicator.className = 'stream-indicator';
+        streamStatusText.textContent = 'Streaming non attivo';
+        logMessage('Streaming non attivo', 'warning');
+      }
+    }
+
+    // Aggiorna la qualità dello streaming
+    function updateStreamQuality(quality) {
+      let newSrc = 'https://vdo.ninja/?view=Ha93mG8';
+      
+      switch(quality) {
+        case 'hd':
+          newSrc += '&hd=1';
+          break;
+        case 'sd':
+          newSrc += '&sd=1';
+          break;
+        case 'low':
+          newSrc += '&low=1';
+          break;
+        default:
+          // Auto - nessun parametro aggiuntivo
+          break;
+      }
+      
+      streamFrame.src = newSrc;
+      logMessage(`Qualità streaming impostata a: ${quality}`, 'info');
+    }
+
+    // Aggiorna lo stream
+    function refreshStream() {
+      const currentSrc = streamFrame.src;
+      streamFrame.src = '';
+      setTimeout(() => {
+        streamFrame.src = currentSrc;
+        logMessage('Streaming aggiornato', 'info');
+      }, 100);
+    }
 
     // Inizializza i controlli slider
     function initializeSliderControls() {
