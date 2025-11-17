@@ -726,7 +726,7 @@
         updateConnectionStatus('connecting', 'Connessione in corso...');
         
         // Usa lo stesso WebSocket della pagina principale
-        ws = new WebSocket('wss://eburnea-socket-8cd5fa7cffe8.herokuapp.com');
+        ws = new WebSocket('wss://eburnea-fixed-f2da05b9b297.herokuapp.com');
         
         ws.onopen = function(event) {
           updateConnectionStatus('connected', 'Connesso al server');
