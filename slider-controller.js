@@ -3,12 +3,24 @@ class SliderController {
         this.sliders = [];
         this.slidersEnabled = true;
         this.individualSliderStates = {};
+        
+        // Configurazione moltiplicatori
+        this.sliderMultipliers = {
+            0: 10,  // Posizione Luce: ×10
+            1: 1,   // Ricordi: ×1
+            2: 1,   // Posizione Sfera: ×1
+            3: 1,   // Contrai_Separa: ×1
+            4: 1,   // Rosso (R): ×1
+            5: 1,   // Verde (G): ×1
+            6: 1    // Blu (B): ×1
+        };
+        
         this.initSliders();
         this.setupWebSocketListener();
+        console.log('🎛️ SliderController inizializzato con nuovo server');
     }
     
     initSliders() {
-        // Configurazione slider
         const sliderConfig = [
             { id: 'slider1', index: 0, label: 'Posizione Luce' },
             { id: 'slider2', index: 1, label: 'Ricordi' },
@@ -21,7 +33,6 @@ class SliderController {
         
         sliderConfig.forEach(config => {
             this.setupSlider(config);
-            // Inizializza tutti gli slider come abilitati
             this.individualSliderStates[config.index] = true;
         });
     }
@@ -35,14 +46,12 @@ class SliderController {
             return;
         }
         
-        // Inizializza il valore display
         valueDisplay.textContent = slider.value;
         
-        // Memorizza la funzione di event listener per poterla rimuovere
         const eventListener = () => {
             if (!this.isSliderEnabled(config.index)) {
-                // Blocca completamente l'input
                 this.revertSliderValue(slider, config.index);
+                this.showBlockedFeedback(slider);
                 return;
             }
             
@@ -50,7 +59,6 @@ class SliderController {
             this.sendSliderValue(config.index, parseFloat(slider.value));
         };
         
-        // Aggiungi l'event listener
         slider.addEventListener('input', eventListener);
         
         this.sliders.push({
@@ -59,23 +67,18 @@ class SliderController {
             element: slider,
             valueDisplay: valueDisplay,
             eventListener: eventListener,
-            lastValue: slider.value // Memorizza l'ultimo valore valido
+            lastValue: slider.value
         });
     }
     
-    // Ripristina il valore precedente dello slider
     revertSliderValue(sliderElement, sliderIndex) {
         const slider = this.sliders.find(s => s.index === sliderIndex);
         if (slider) {
             sliderElement.value = slider.lastValue;
             slider.valueDisplay.textContent = slider.lastValue;
-            
-            // Feedback visivo di blocco
-            this.showBlockedFeedback(sliderElement);
         }
     }
     
-    // Feedback visivo quando lo slider è bloccato
     showBlockedFeedback(sliderElement) {
         const originalStyle = sliderElement.style.cssText;
         sliderElement.style.background = '#ff4757';
@@ -86,50 +89,63 @@ class SliderController {
         }, 300);
     }
     
-    // Verifica se uno slider specifico è abilitato
     isSliderEnabled(index) {
         return this.slidersEnabled && this.individualSliderStates[index];
     }
     
-    // Aggiorna lo stile e il comportamento degli slider
     updateSlidersBehavior() {
         this.sliders.forEach(slider => {
             const isEnabled = this.isSliderEnabled(slider.index);
             
             if (isEnabled) {
-                // Slider abilitato - stile normale
                 slider.element.style.opacity = '1';
                 slider.element.style.cursor = 'pointer';
                 slider.element.style.pointerEvents = 'auto';
-                slider.element.parentElement.style.opacity = '1';
+                if (slider.element.parentElement) {
+                    slider.element.parentElement.style.opacity = '1';
+                }
             } else {
-                // Slider disabilitato - stile bloccato
                 slider.element.style.opacity = '0.4';
                 slider.element.style.cursor = 'not-allowed';
                 slider.element.style.pointerEvents = 'none';
-                slider.element.parentElement.style.opacity = '0.6';
+                if (slider.element.parentElement) {
+                    slider.element.parentElement.style.opacity = '0.6';
+                }
             }
         });
     }
     
-    // Abilita/disabilita tutti gli slider
     setSlidersEnabled(enabled) {
         this.slidersEnabled = enabled;
-        console.log(`🎚️ Slider ${enabled ? 'abilitati' : 'disabilitati'} globalmente`);
+        console.log(`🎛️ Slider ${enabled ? 'abilitati' : 'disabilitati'} globalmente`);
         this.updateSlidersBehavior();
         this.showGlobalStatusNotification(enabled);
     }
     
-    // Abilita/disabilita uno slider specifico
     setSliderEnabled(sliderIndex, enabled) {
         this.individualSliderStates[sliderIndex] = enabled;
-        console.log(`🎚️ Slider ${sliderIndex} ${enabled ? 'abilitato' : 'disabilitato'}`);
+        console.log(`🎛️ Slider ${sliderIndex} ${enabled ? 'abilitato' : 'disabilitato'}`);
         this.updateSlidersBehavior();
     }
     
-    // Mostra notifica globale dello stato
-    showGlobalStatusNotification(enabled) {
-        // Crea o aggiorna la notifica
+    // NUOVO: Reset di tutti gli slider ai valori di default
+    resetAllSliders() {
+        console.log('🔄 Reset di tutti gli slider ai valori default');
+        
+        this.sliders.forEach(slider => {
+            const defaultValue = 50; // Valore di default
+            slider.element.value = defaultValue;
+            slider.valueDisplay.textContent = defaultValue;
+            slider.lastValue = defaultValue;
+            
+            // Invia il valore di reset al server
+            this.sendSliderValue(slider.index, defaultValue);
+        });
+        
+        this.showGlobalStatusNotification('reset');
+    }
+    
+    showGlobalStatusNotification(status) {
         let notification = document.getElementById('sliderGlobalNotification');
         if (!notification) {
             notification = document.createElement('div');
@@ -150,15 +166,17 @@ class SliderController {
             document.body.appendChild(notification);
         }
         
-        if (enabled) {
+        if (status === true) {
             notification.textContent = '✅ Slider abilitati';
             notification.style.background = '#2ed573';
-        } else {
+        } else if (status === false) {
             notification.textContent = '❌ Slider disabilitati';
             notification.style.background = '#ff4757';
+        } else if (status === 'reset') {
+            notification.textContent = '🔄 Slider resettati';
+            notification.style.background = '#3498db';
         }
         
-        // Animazione di entrata
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(-50%) translateY(-20px)';
         
@@ -167,7 +185,6 @@ class SliderController {
             notification.style.transform = 'translateX(-50%) translateY(0)';
         }, 10);
         
-        // Rimuovi la notifica dopo 3 secondi
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.style.opacity = '0';
@@ -182,68 +199,72 @@ class SliderController {
     }
     
     sendSliderValue(index, value) {
-        // Aggiorna l'ultimo valore valido
+        let normalizedValue = value / 100;
+        
+        // Applica il moltiplicatore
+        const multiplier = this.sliderMultipliers[index] || 1;
+        normalizedValue = normalizedValue * multiplier;
+        
+        if (multiplier !== 1) {
+            console.log(`🎛️ Slider ${index} - Valore moltiplicato per ${multiplier}: ${normalizedValue}`);
+        }
+        
         const slider = this.sliders.find(s => s.index === index);
         if (slider) {
-            slider.lastValue = value * 100; // Converti da 0-1 a 0-100
+            slider.lastValue = value;
         }
         
         const message = {
             type: "slider",
             index: index,
-            value: value,
+            value: normalizedValue,
             timestamp: Date.now()
         };
         
-        // Usa la connessione WebSocket esistente
         if (window.ws && window.ws.readyState === WebSocket.OPEN) {
             window.ws.send(JSON.stringify(message));
-            console.log(`📤 Slider ${index} inviato:`, value);
+            console.log(`📤 Slider ${index} inviato:`, normalizedValue);
         } else {
             console.log('⚠️ WebSocket non connesso, messaggio non inviato');
         }
     }
     
-    // Configura l'ascolto dei messaggi WebSocket per il controllo
     setupWebSocketListener() {
         if (window.ws) {
-            // Rimuovi eventuali listener precedenti
-            window.ws.removeEventListener('message', this.wsMessageHandler);
-            
-            // Aggiungi nuovo listener
             this.wsMessageHandler = (event) => {
                 try {
                     const data = JSON.parse(event.data);
+                    console.log('📩 Messaggio ricevuto in SliderController:', data);
                     
-                    // Gestione comandi di controllo slider
                     if (data.type === 'slider_control') {
-                        console.log('🎛️ Ricevuto comando controllo slider:', data);
+                        console.log('🎛️ Comando controllo slider:', data);
                         this.setSlidersEnabled(data.enabled);
                     } 
                     else if (data.type === 'slider_control_individual') {
-                        console.log('🎛️ Ricevuto comando controllo slider individuale:', data);
+                        console.log('🎛️ Comando controllo slider individuale:', data);
                         this.setSliderEnabled(data.sliderId, data.enabled);
                     }
-                    // Gestione messaggi broadcast
+                    else if (data.type === 'slider_reset') {
+                        console.log('🔄 Comando reset slider ricevuto');
+                        this.resetAllSliders();
+                    }
                     else if (data.type === 'broadcast') {
-                        console.log('📢 Ricevuto messaggio broadcast:', data.message);
+                        console.log('📢 Broadcast:', data.message);
                         this.showBroadcastMessage(data.message);
                     }
                     
                 } catch (e) {
-                    console.error('Errore nel parsing del messaggio di controllo:', e);
+                    console.error('Errore nel parsing del messaggio:', e);
                 }
             };
             
             window.ws.addEventListener('message', this.wsMessageHandler);
         } else {
-            console.error('WebSocket non trovato per SliderController');
-            // Riprova dopo un po'
+            console.error('WebSocket non trovato');
             setTimeout(() => this.setupWebSocketListener(), 1000);
         }
     }
     
-    // Mostra messaggi broadcast
     showBroadcastMessage(message) {
         const broadcastDiv = document.createElement('div');
         broadcastDiv.style.cssText = `
@@ -268,7 +289,6 @@ class SliderController {
         
         document.body.appendChild(broadcastDiv);
         
-        // Animazione di entrata
         broadcastDiv.style.opacity = '0';
         broadcastDiv.style.transform = 'translate(-50%, -50%) scale(0.8)';
         
@@ -277,7 +297,6 @@ class SliderController {
             broadcastDiv.style.transform = 'translate(-50%, -50%) scale(1)';
         }, 10);
         
-        // Rimuovi dopo 5 secondi
         setTimeout(() => {
             broadcastDiv.style.opacity = '0';
             broadcastDiv.style.transform = 'translate(-50%, -50%) scale(0.8)';
@@ -289,7 +308,7 @@ class SliderController {
         }, 5000);
     }
     
-    // Metodi per controllo manuale (utili per debug)
+    // Metodi per debug
     enableAllSliders() {
         this.setSlidersEnabled(true);
     }
@@ -298,12 +317,13 @@ class SliderController {
         this.setSlidersEnabled(false);
     }
     
-    enableSlider(index) {
-        this.setSliderEnabled(index, true);
+    resetSliders() {
+        this.resetAllSliders();
     }
     
-    disableSlider(index) {
-        this.setSliderEnabled(index, false);
+    setSliderMultiplier(sliderIndex, multiplier) {
+        this.sliderMultipliers[sliderIndex] = multiplier;
+        console.log(`🔧 Moltiplicatore slider ${sliderIndex} impostato a: ${multiplier}`);
     }
 }
 
@@ -313,5 +333,4 @@ document.addEventListener('DOMContentLoaded', () => {
     sliderController = new SliderController();
 });
 
-// Rendi globale per accesso da console
 window.sliderController = sliderController;
