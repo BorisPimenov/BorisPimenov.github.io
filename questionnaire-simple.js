@@ -29,15 +29,22 @@ class SimpleQuestionnaire {
 
         // Enter per inviare
         const input = document.querySelector('.question-input');
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.handleSubmit();
-            }
-        });
+        if (input) {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.handleSubmit();
+                }
+            });
+        }
     }
     
     handleSubmit() {
         const input = document.querySelector('.question-input');
+        if (!input) {
+            console.error('❌ Input element not found');
+            return;
+        }
+
         const message = this.sanitizeInput(input.value);
         
         if (this.validateMessage(message)) {
