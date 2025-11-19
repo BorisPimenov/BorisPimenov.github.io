@@ -38,10 +38,10 @@ class SimpleQuestionnaire {
     
     handleSubmit() {
         const input = document.querySelector('.question-input');
-        const answer = this.sanitizeInput(input.value);
+        const message = this.sanitizeInput(input.value);
         
-        if (this.validateAnswer(answer)) {
-            this.sendAnswer(answer);
+        if (this.validateMessage(message)) {
+            this.sendMessage(message);
             this.showSuccess();
             input.value = ''; // Pulisci l'input
             this.submitCount++;
@@ -51,40 +51,35 @@ class SimpleQuestionnaire {
     }
     
     sanitizeInput(text) {
-        return text.trim().replace(/[<>]/g, '').substring(0, 150);
+        return text.trim().replace(/[<>]/g, '').substring(0, 500);
     }
     
-    validateAnswer(answer) {
-        return answer && answer.length >= 2;
+    validateMessage(message) {
+        return message && message.length >= 2;
     }
     
-    sendAnswer(answer) {
-        const message = {
-            type: "questionnaire",
-            answers: {
-                emotion: answer,      // Mappa la risposta al campo "emotion"
-                color: "semplice",    // Campo fisso per compatibilità
-                element: "testo",     // Campo fisso per compatibilità  
-                expectation: "risposta" // Campo fisso per compatibilità
-            },
+    sendMessage(message) {
+        const data = {
+            type: "spectator_message",
+            message: message,
             timestamp: Date.now(),
             sessionId: this.generateSessionId(),
             submissionCount: this.submitCount
         };
         
         if (window.ws && window.ws.readyState === WebSocket.OPEN) {
-            window.ws.send(JSON.stringify(message));
-            console.log('📤 Risposta inviata:', answer);
+            window.ws.send(JSON.stringify(data));
+            console.log('📤 Messaggio spettatore inviato:', message);
         } else {
-            console.log('⚠️ WebSocket non connesso, risposta non inviata');
+            console.log('⚠️ WebSocket non connesso, messaggio non inviato');
         }
     }
     
     generateSessionId() {
-        let sessionId = localStorage.getItem('questionnaireSessionId');
+        let sessionId = localStorage.getItem('spectatorSessionId');
         if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('questionnaireSessionId', sessionId);
+            sessionId = 'spectator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('spectatorSessionId', sessionId);
         }
         return sessionId;
     }
@@ -104,7 +99,7 @@ class SimpleQuestionnaire {
             font-size: 0.9em;
             box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         `;
-        successMsg.textContent = 'Risposta inviata ✓';
+        successMsg.textContent = 'Messaggio inviato ✓';
         document.body.appendChild(successMsg);
         
         setTimeout(() => {
