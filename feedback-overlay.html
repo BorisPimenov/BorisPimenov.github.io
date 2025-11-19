@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Eburnea Performance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .feedback-container {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .feedback-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feedback-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #ccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feedback-subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .feedback-form {
+            margin: 30px 0;
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .feedback-textarea:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .feedback-textarea::placeholder {
+            color: #666;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .thank-you-message {
+            display: none;
+            font-size: 1.5rem;
+            color: #4CAF50;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .character-count {
+            text-align: right;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .connection-status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .connected {
+            color: #4CAF50;
+        }
+
+        .disconnected {
+            color: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .feedback-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .feedback-title {
+                font-size: 2rem;
+            }
+
+            .feedback-subtitle {
+                font-size: 1rem;
+            }
+
+            .feedback-textarea {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <div class="feedback-icon">💭</div>
+        <h1 class="feedback-title">Condividi i tuoi pensieri</h1>
+        <p class="feedback-subtitle">
+            "Non puoi applaudire, ma puoi lasciare un commento"<br>
+            Raccontaci la tua esperienza e le emozioni provate durante lo spettacolo
+        </p>
+
+        <div class="feedback-form">
+            <div class="character-count">
+                <span id="charCount">0</span>/1000 caratteri
+            </div>
+            <textarea 
+                class="feedback-textarea" 
+                id="feedbackComment" 
+                placeholder="Scrivi qui i tuoi pensieri, emozioni, riflessioni... 
+                
+Cosa ti ha colpito di più?
+Quali emozioni hai provato?
+Cosa porterai con te di questa esperienza?"
+                maxlength="1000"
+            ></textarea>
+            <button class="submit-btn" id="submitFeedback">Invia il mio commento</button>
+        </div>
+
+        <div class="thank-you-message" id="thankYouMessage">
+            Grazie per aver condiviso i tuoi pensieri! 💫
+        </div>
+
+        <div class="connection-status" id="connectionStatus">
+            <span id="statusText">Connessione in corso...</span>
+        </div>
+    </div>
+
+    <script>
+        class FeedbackController {
+            constructor() {
+                this.ws = null;
+                this.isConnected = false;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.connectWebSocket();
+                this.updateCharacterCount();
+            }
+
+            setupEventListeners() {
+                const textarea = document.getElementById('feedbackComment');
+                const submitBtn = document.getElementById('submitFeedback');
+
+                textarea.addEventListener('input', () => {
+                    this.updateCharacterCount();
+                    this.validateForm();
+                });
+
+                submitBtn.addEventListener('click', () => {
+                    this.submitFeedback();
+                });
+
+                // Invio con Ctrl+Enter
+                textarea.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        this.submitFeedback();
+                    }
+                });
+            }
+
+            updateCharacterCount() {
+                const textarea = document.getElementById('feedbackComment');
+                const charCount = document.getElementById('charCount');
+                charCount.textContent = textarea.value.length;
+            }
+
+            validateForm() {
+                const textarea = document.getElementById('feedbackComment');
+                const submitBtn = document.getElementById('submitFeedback');
+                const isValid = textarea.value.trim().length >= 10;
+
+                submitBtn.disabled = !isValid;
+                return isValid;
+            }
+
+            submitFeedback() {
+                if (!this.validateForm()) {
+                    alert('Per favore, scrivi almeno 10 caratteri per il tuo commento.');
+                    return;
+                }
+
+                if (!this.isConnected) {
+                    alert('Connessione non disponibile. Riprova più tardi.');
+                    return;
+                }
+
+                const comment = document.getElementById('feedbackComment').value.trim();
+                this.sendFeedback(comment);
+            }
+
+            sendFeedback(comment) {
+                const message = {
+                    type: "feedback",
+                    comment: comment,
+                    timestamp: Date.now(),
+                    sessionId: this.getSessionId()
+                };
+
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(JSON.stringify(message));
+                    this.showThankYouMessage();
+                    console.log('📝 Feedback inviato:', comment);
+                } else {
+                    alert('Errore di connessione. Riprova più tardi.');
+                }
+            }
+
+            showThankYouMessage() {
+                const thankYou = document.getElementById('thankYouMessage');
+                const form = document.querySelector('.feedback-form');
+                
+                form.style.display = 'none';
+                thankYou.style.display = 'block';
+
+                // Reset dopo 5 secondi
+                setTimeout(() => {
+                    form.style.display = 'block';
+                    thankYou.style.display = 'none';
+                    document.getElementById('feedbackComment').value = '';
+                    this.updateCharacterCount();
+                    this.validateForm();
+                }, 5000);
+            }
+
+            connectWebSocket() {
+                try {
+                    this.updateConnectionStatus('connecting', 'Connessione in corso...');
+                    
+                    this.ws = new WebSocket('wss://eburnea-fixed-f2da05b9b297.herokuapp.com');
+                    
+                    this.ws.onopen = () => {
+                        this.isConnected = true;
+                        this.updateConnectionStatus('connected', 'Connesso al server');
+                        console.log('✅ Connesso al server feedback');
+                    };
+
+                    this.ws.onclose = () => {
+                        this.isConnected = false;
+                        this.updateConnectionStatus('disconnected', 'Disconnesso dal server');
+                        console.log('❌ Disconnesso dal server');
+                        
+                        // Tentativo di riconnessione
+                        setTimeout(() => this.connectWebSocket(), 5000);
+                    };
+
+                    this.ws.onerror = (error) => {
+                        this.isConnected = false;
+                        this.updateConnectionStatus('disconnected', 'Errore di connessione');
+                        console.error('Errore WebSocket:', error);
+                    };
+
+                    this.ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            this.handleMessage(data);
+                        } catch (e) {
+                            console.error('Errore nel parsing del messaggio:', e);
+                        }
+                    };
+
+                } catch (error) {
+                    console.error('Errore nella connessione WebSocket:', error);
+                }
+            }
+
+            handleMessage(data) {
+                console.log('📩 Messaggio ricevuto:', data);
+                
+                if (data.type === 'feedback_ack') {
+                    console.log('✅ Feedback confermato dal server');
+                }
+            }
+
+            updateConnectionStatus(status, text) {
+                const statusElement = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('statusText');
+                
+                statusElement.className = 'connection-status';
+                statusText.textContent = text;
+
+                if (status === 'connected') {
+                    statusElement.classList.add('connected');
+                } else if (status === 'disconnected') {
+                    statusElement.classList.add('disconnected');
+                }
+            }
+
+            getSessionId() {
+                let sessionId = localStorage.getItem('feedbackSessionId');
+                if (!sessionId) {
+                    sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('feedbackSessionId', sessionId);
+                }
+                return sessionId;
+            }
+        }
+
+        // Inizializzazione quando la pagina è caricata
+        document.addEventListener('DOMContentLoaded', () => {
+            window.feedbackController = new FeedbackController();
+        });
+    </script>
+</body>
+</html>
