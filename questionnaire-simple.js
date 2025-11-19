@@ -5,6 +5,10 @@ class SimpleQuestionnaire {
         this.hasSubmitted = false;
         this.submitCount = 0;
         
+        // Aggiungi questi
+        this.isFullscreen = false;
+        this.setupFullscreenListeners();
+        
         console.log('🔍 Questionnaire element:', this.questionnaire);
         console.log('🔍 Questions form:', this.questionsForm);
         
@@ -16,129 +20,91 @@ class SimpleQuestionnaire {
         this.initEvents();
     }
     
-    initEvents() {
-        this.questionsForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleSubmit();
-        });
-
-        const input = document.querySelector('.question-input');
-        if (input) {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.handleSubmit();
-                }
-            });
-        }
-    }
-    
-    handleSubmit() {
-        const input = document.querySelector('.question-input');
-        if (!input) return;
+    // Aggiungi questi metodi per gestire il fullscreen
+    setupFullscreenListeners() {
+        // Rileva cambiamenti fullscreen
+        document.addEventListener('fullscreenchange', this.handleFullscreenChange.bind(this));
+        document.addEventListener('webkitfullscreenchange', this.handleFullscreenChange.bind(this));
+        document.addEventListener('mozfullscreenchange', this.handleFullscreenChange.bind(this));
+        document.addEventListener('MSFullscreenChange', this.handleFullscreenChange.bind(this));
         
-        const message = this.sanitizeInput(input.value);
-        
-        if (this.validateMessage(message)) {
-            this.sendMessage(message);
-            this.showSuccess();
-            input.value = '';
-            this.submitCount++;
-        } else {
-            this.showError('Per favore, scrivi almeno 2 caratteri');
-        }
-    }
-    
-    sanitizeInput(text) {
-        if (!text) return '';
-        return text.trim().replace(/[<>]/g, '').substring(0, 500);
-    }
-    
-    validateMessage(message) {
-        return message && message.length >= 2;
-    }
-    
-    sendMessage(message) {
-        // Assicurati che window.ws esista
-        if (!window.ws || window.ws.readyState !== WebSocket.OPEN) {
-            console.error('❌ WebSocket non disponibile');
-            this.showError('Connessione non disponibile. Riprova.');
-            return;
-        }
-        
-        const data = {
-            type: "spectator_message",
-            message: message,
-            timestamp: Date.now(),
-            sessionId: this.generateSessionId(),
-            submissionCount: this.submitCount
-        };
-        
-        try {
-            window.ws.send(JSON.stringify(data));
-            console.log('📤 Messaggio spettatore inviato:', message);
-        } catch (error) {
-            console.error('❌ Errore nell\'invio del messaggio:', error);
-            this.showError('Errore nell\'invio. Riprova.');
-        }
-    }
-    
-    generateSessionId() {
-        try {
-            let sessionId = localStorage.getItem('spectatorSessionId');
-            if (!sessionId) {
-                sessionId = 'spectator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('spectatorSessionId', sessionId);
+        // Forza il ridisegno del questionario periodicamente in fullscreen
+        this.fullscreenCheckInterval = setInterval(() => {
+            if (this.isFullscreen) {
+                this.forceQuestionnaireRedraw();
             }
-            return sessionId;
-        } catch (error) {
-            console.warn('⚠️ localStorage non disponibile, uso sessionId temporaneo');
-            return 'temp_' + Date.now();
+        }, 1000);
+    }
+    
+    handleFullscreenChange() {
+        this.isFullscreen = !!(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement
+        );
+        
+        console.log(`🖥️ Modalità fullscreen: ${this.isFullscreen ? 'ATTIVA' : 'DISATTIVATA'}`);
+        
+        if (this.isFullscreen) {
+            this.forceQuestionnaireVisibility();
         }
     }
     
-    showSuccess() {
-        this.showNotification('Messaggio inviato ✓', '#4CAF50');
-    }
-    
-    showError(message) {
-        this.showNotification(message, '#f44336');
-    }
-    
-    showNotification(message, color) {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: ${color};
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            z-index: 10001;
-            font-size: 0.9em;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            max-width: 80%;
-            text-align: center;
+    forceQuestionnaireVisibility() {
+        if (!this.questionnaire) return;
+        
+        // Forza lo stile per garantire la visibilità
+        this.questionnaire.style.cssText = `
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #000000 100%) !important;
+            padding: 15px 0 !important;
+            z-index: 2147483647 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
+            border-top: 1px solid rgba(255,255,255,0.1) !important;
         `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
         
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
+        console.log('🔧 Visibilità questionario forzata in fullscreen');
     }
+    
+    forceQuestionnaireRedraw() {
+        if (!this.questionnaire || !this.isFullscreen) return;
+        
+        // Trucco per forzare il ridisegno del browser
+        this.questionnaire.style.display = 'none';
+        void this.questionnaire.offsetHeight; // Trigger reflow
+        this.questionnaire.style.display = 'block';
+    }
+    
+    // Ricorda di pulire l'intervallo quando non serve più
+    destroy() {
+        if (this.fullscreenCheckInterval) {
+            clearInterval(this.fullscreenCheckInterval);
+        }
+    }
+    
+    // ... il resto dei metodi rimane invariato ...
 }
 
-// Inizializzazione sicura
+// Inizializzazione
 document.addEventListener('DOMContentLoaded', () => {
     try {
         window.simpleQuestionnaire = new SimpleQuestionnaire();
-        console.log('✅ SimpleQuestionnaire inizializzato con successo');
+        console.log('✅ SimpleQuestionnaire inizializzato con supporto fullscreen');
     } catch (error) {
         console.error('❌ Errore nell\'inizializzazione del questionario:', error);
+    }
+});
+
+// Pulisci quando la pagina viene chiusa
+window.addEventListener('beforeunload', () => {
+    if (window.simpleQuestionnaire && window.simpleQuestionnaire.destroy) {
+        window.simpleQuestionnaire.destroy();
     }
 });
