@@ -5,6 +5,19 @@ class SimpleQuestionnaire {
         this.hasSubmitted = false;
         this.submitCount = 0;
         
+        console.log('🔍 Questionnaire element:', this.questionnaire);
+        console.log('🔍 Questions form:', this.questionsForm);
+        
+        if (!this.questionnaire) {
+            console.error('❌ QUESTIONNAIRE ELEMENT NOT FOUND!');
+            return;
+        }
+        
+        if (!this.questionsForm) {
+            console.error('❌ QUESTIONS FORM NOT FOUND!');
+            return;
+        }
+        
         this.initEvents();
     }
     
@@ -49,7 +62,10 @@ class SimpleQuestionnaire {
         const message = {
             type: "questionnaire",
             answers: {
-                question1: answer
+                emotion: answer,      // Mappa la risposta al campo "emotion"
+                color: "semplice",    // Campo fisso per compatibilità
+                element: "testo",     // Campo fisso per compatibilità  
+                expectation: "risposta" // Campo fisso per compatibilità
             },
             timestamp: Date.now(),
             sessionId: this.generateSessionId(),
