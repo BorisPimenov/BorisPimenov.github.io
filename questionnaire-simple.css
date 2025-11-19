@@ -1,53 +1,38 @@
-/* STILE QUESTIONARIO SEMPLIFICATO - FULLSCREEN COMPATIBLE */
+/* STILE QUESTIONARIO SEMPLIFICATO - NO STRETCH */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 #questionnaire.questionnaire-overlay {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #000000 100%);
-  padding: 15px 0;
-  z-index: 2147483647; /* Valore massimo per z-index */
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  padding: 20px;
+  z-index: 2147483647;
   font-family: 'Poppins', sans-serif;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 15px;
   box-sizing: border-box;
   backdrop-filter: blur(10px);
-  
-  /* Forza la visibilità in fullscreen */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
-}
-
-/* Stili specifici per modalità fullscreen */
-:fullscreen #questionnaire.questionnaire-overlay,
-:-webkit-full-screen #questionnaire.questionnaire-overlay,
-:-moz-full-screen #questionnaire.questionnaire-overlay {
-  z-index: 2147483647 !important;
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  width: auto;
+  max-width: 500px;
+  min-width: 300px;
 }
 
 #questionnaire .questionnaire-container {
-  max-width: 95%;
-  width: 100%;
   margin: 0 auto;
-  padding: 0 10px;
+  padding: 0;
   box-sizing: border-box;
+  width: 100%;
 }
 
-/* Il resto del CSS rimane invariato */
 #questionnaire .spectacle-title {
   color: #ffffff;
   text-align: center;
-  margin: 0 0 5px 0;
+  margin: 0 0 8px 0;
   font-weight: 700;
-  font-size: clamp(1.2em, 4vw, 1.8em);
+  font-size: 1.4em;
   letter-spacing: 0.5px;
 }
 
@@ -55,23 +40,22 @@
   text-align: center;
   color: #aaa;
   margin: 0 0 15px 0;
-  font-size: clamp(0.7em, 3vw, 0.9em);
+  font-size: 0.85em;
   font-weight: 400;
   line-height: 1.4;
 }
 
 #questionnaire .questions-form {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   background: rgba(20, 20, 20, 0.9);
   border: 1px solid #333;
   border-radius: 25px;
-  padding: 8px 8px 8px 15px;
+  padding: 8px 8px 8px 20px;
   transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
-  min-height: 50px;
 }
 
 #questionnaire .question-input {
@@ -79,12 +63,17 @@
   border: none;
   background: transparent;
   color: #ffffff;
-  font-size: clamp(14px, 4vw, 16px);
+  font-size: 14px;
   font-family: 'Poppins', sans-serif;
-  padding: 8px 0;
+  padding: 10px 0;
   outline: none;
   min-width: 0;
   box-sizing: border-box;
+}
+
+#questionnaire .question-input::placeholder {
+  color: #666;
+  font-size: 13px;
 }
 
 #questionnaire .submit-arrow {
@@ -100,25 +89,44 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  min-width: 40px;
 }
 
-/* Miglioramenti per schermi piccoli */
-@media (max-width: 480px) {
-  #questionnaire.questionnaire-overlay {
-    padding: 10px 0;
-  }
-  
-  #questionnaire .questions-form {
-    padding: 6px 6px 6px 12px;
-    gap: 8px;
-    min-height: 44px;
-  }
+#questionnaire .submit-arrow:hover {
+  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  transform: translateY(-2px);
 }
 
-/* Supporto per safe areas */
-@supports(padding: max(0px)) {
-  #questionnaire.questionnaire-overlay {
-    padding-bottom: max(15px, env(safe-area-inset-bottom));
-  }
+#questionnaire .submit-arrow:active {
+  transform: translateY(0);
+}
+
+#questionnaire .submit-arrow svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+/* Stili specifici per fullscreen - APPROCCIO DIVERSO */
+:fullscreen #questionnaire.questionnaire-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+:-webkit-full-screen #questionnaire.questionnaire-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+:-moz-full-screen #questionnaire.questionnaire-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
 }
