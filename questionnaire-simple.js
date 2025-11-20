@@ -5,148 +5,18 @@ class SimpleQuestionnaire {
         this.hasSubmitted = false;
         this.submitCount = 0;
         
-        // SOLUZIONE FULLSCREEN - Sposta il questionario nel body
-        this.moveQuestionnaireToBody();
-        
         console.log('🔍 Questionnaire element:', this.questionnaire);
+        console.log('🔍 Questions form:', this.questionsForm);
         
         if (!this.questionnaire || !this.questionsForm) {
             console.error('❌ Elementi del questionario non trovati!');
             return;
         }
         
-        this.setupFullscreenSolution();
         this.initEvents();
-    }
-    
-    // SOLUZIONE CRITICA: Sposta il questionario come figlio diretto del body
-    moveQuestionnaireToBody() {
-        if (this.questionnaire && this.questionnaire.parentNode !== document.body) {
-            document.body.appendChild(this.questionnaire);
-            console.log('🔧 Questionario spostato come figlio diretto del body');
-        }
-    }
-    
-    // Nuovo approccio per il fullscreen
-    setupFullscreenSolution() {
-        // Forza lo stile iniziale
-        this.applyFullscreenStyles();
-        
-        // Monitora i cambiamenti fullscreen
-        document.addEventListener('fullscreenchange', this.handleFullscreen.bind(this));
-        document.addEventListener('webkitfullscreenchange', this.handleFullscreen.bind(this));
-        document.addEventListener('mozfullscreenchange', this.handleFullscreen.bind(this));
-        
-        // Monitora anche il resize per catturare i cambiamenti
-        window.addEventListener('resize', this.handleFullscreen.bind(this));
-        
-        // Check periodico di sicurezza
-        this.safetyCheckInterval = setInterval(() => {
-            this.ensureQuestionnaireVisibility();
-        }, 2000);
-    }
-    
-    handleFullscreen() {
-        const isFullscreen = !!(
-            document.fullscreenElement ||
-            document.webkitFullscreenElement ||
-            document.mozFullScreenElement ||
-            document.msFullscreenElement
-        );
-        
-        console.log(`🖥️ Fullscreen: ${isFullscreen ? 'ON' : 'OFF'}`);
-        this.applyFullscreenStyles();
-        
-        // Force reflow e visibilità
-        setTimeout(() => {
-            this.ensureQuestionnaireVisibility();
-        }, 100);
-    }
-    
-    applyFullscreenStyles() {
-        if (!this.questionnaire) return;
-        
-        // STILI UNIVERSALI per garantire la visibilità
-        this.questionnaire.style.cssText = `
-            position: fixed !important;
-            bottom: 20px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
-            padding: 20px !important;
-            z-index: 2147483647 !important;
-            font-family: 'Poppins', sans-serif !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-            border-radius: 15px !important;
-            box-sizing: border-box !important;
-            backdrop-filter: blur(10px) !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
-            width: auto !important;
-            max-width: 500px !important;
-            min-width: 300px !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: block !important;
-        `;
-    }
-    
-    ensureQuestionnaireVisibility() {
-        if (!this.questionnaire) return;
-        
-        // Controlla se è visibile
-        const rect = this.questionnaire.getBoundingClientRect();
-        const isVisible = rect.width > 0 && rect.height > 0 && 
-                         this.questionnaire.style.visibility !== 'hidden' && 
-                         this.questionnaire.style.display !== 'none';
-        
-        if (!isVisible) {
-            console.warn('⚠️ Questionario non visibile, riapplicando stili...');
-            this.applyFullscreenStyles();
-            
-            // Ultima risorsa: ricrea l'elemento
-            setTimeout(() => {
-                if (!this.isElementVisible(this.questionnaire)) {
-                    this.recreateQuestionnaire();
-                }
-            }, 500);
-        }
-    }
-    
-    isElementVisible(element) {
-        if (!element) return false;
-        const rect = element.getBoundingClientRect();
-        return !(rect.width === 0 && rect.height === 0);
-    }
-    
-    recreateQuestionnaire() {
-        console.log('🔄 Ricreazione del questionario...');
-        
-        const originalHTML = this.questionnaire.outerHTML;
-        const parent = this.questionnaire.parentNode;
-        
-        // Rimuovi e ricrea
-        parent.removeChild(this.questionnaire);
-        
-        // Crea un nuovo elemento
-        const newQuestionnaire = document.createElement('div');
-        newQuestionnaire.innerHTML = originalHTML;
-        newQuestionnaire.id = 'questionnaire';
-        newQuestionnaire.className = 'questionnaire-overlay';
-        
-        parent.appendChild(newQuestionnaire);
-        
-        // Aggiorna i riferimenti
-        this.questionnaire = newQuestionnaire;
-        this.questionsForm = document.getElementById('questionsForm');
-        
-        // Re-inizializza gli eventi
-        this.initEvents();
-        this.applyFullscreenStyles();
     }
     
     initEvents() {
-        if (!this.questionsForm) return;
-        
         this.questionsForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleSubmit();
@@ -163,39 +33,112 @@ class SimpleQuestionnaire {
         }
     }
     
-    // ... il resto dei metodi handleSubmit, sendMessage, etc. rimane uguale ...
-    
-    destroy() {
-        if (this.safetyCheckInterval) {
-            clearInterval(this.safetyCheckInterval);
+    handleSubmit() {
+        const input = document.querySelector('.question-input');
+        if (!input) return;
+        
+        const message = this.sanitizeInput(input.value);
+        
+        if (this.validateMessage(message)) {
+            this.sendMessage(message);
+            this.showSuccess();
+            input.value = '';
+            this.submitCount++;
+        } else {
+            this.showError('Per favore, scrivi almeno 2 caratteri');
         }
+    }
+    
+    sanitizeInput(text) {
+        if (!text) return '';
+        return text.trim().replace(/[<>]/g, '').substring(0, 500);
+    }
+    
+    validateMessage(message) {
+        return message && message.length >= 2;
+    }
+    
+    sendMessage(message) {
+        // Assicurati che window.ws esista
+        if (!window.ws || window.ws.readyState !== WebSocket.OPEN) {
+            console.error('❌ WebSocket non disponibile');
+            this.showError('Connessione non disponibile. Riprova.');
+            return;
+        }
+        
+        const data = {
+            type: "spectator_message",
+            message: message,
+            timestamp: Date.now(),
+            sessionId: this.generateSessionId(),
+            submissionCount: this.submitCount
+        };
+        
+        try {
+            window.ws.send(JSON.stringify(data));
+            console.log('📤 Messaggio spettatore inviato:', message);
+        } catch (error) {
+            console.error('❌ Errore nell\'invio del messaggio:', error);
+            this.showError('Errore nell\'invio. Riprova.');
+        }
+    }
+    
+    generateSessionId() {
+        try {
+            let sessionId = localStorage.getItem('spectatorSessionId');
+            if (!sessionId) {
+                sessionId = 'spectator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('spectatorSessionId', sessionId);
+            }
+            return sessionId;
+        } catch (error) {
+            console.warn('⚠️ localStorage non disponibile, uso sessionId temporaneo');
+            return 'temp_' + Date.now();
+        }
+    }
+    
+    showSuccess() {
+        this.showNotification('Messaggio inviato ✓', '#4CAF50');
+    }
+    
+    showError(message) {
+        this.showNotification(message, '#f44336');
+    }
+    
+    showNotification(message, color) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${color};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 10001;
+            font-size: 0.9em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 80%;
+            text-align: center;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
     }
 }
 
-// Inizializzazione rinforzata
+// Inizializzazione sicura
 document.addEventListener('DOMContentLoaded', () => {
-    // Piccolo delay per assicurarsi che tutto sia caricato
-    setTimeout(() => {
-        try {
-            window.simpleQuestionnaire = new SimpleQuestionnaire();
-            console.log('✅ SimpleQuestionnaire inizializzato con protezione fullscreen');
-            
-            // Doppio check dopo il loading completo
-            setTimeout(() => {
-                if (window.simpleQuestionnaire) {
-                    window.simpleQuestionnaire.ensureQuestionnaireVisibility();
-                }
-            }, 1000);
-            
-        } catch (error) {
-            console.error('❌ Errore critico nell\'inizializzazione:', error);
-        }
-    }, 100);
-});
-
-// Cleanup
-window.addEventListener('beforeunload', () => {
-    if (window.simpleQuestionnaire && window.simpleQuestionnaire.destroy) {
-        window.simpleQuestionnaire.destroy();
+    try {
+        window.simpleQuestionnaire = new SimpleQuestionnaire();
+        console.log('✅ SimpleQuestionnaire inizializzato con successo');
+    } catch (error) {
+        console.error('❌ Errore nell\'inizializzazione del questionario:', error);
     }
 });
