@@ -172,18 +172,19 @@
     }
   </script>
 
-  <!-- QUESTIONARIO SEMPLIFICATO IN BASSO -->
+<!-- QUESTIONARIO SEMPLIFICATO -->
 <div id="questionnaire" class="questionnaire-overlay">
   <div class="questionnaire-container">
     <h1 class="spectacle-title">Eburnea</h1>
-    <p class="questionnaire-subtitle">Le tue parole daranno forma alla scenografia</p>
+    <p class="questionnaire-subtitle">Scrivi il tuo pensiero...</p>
     
     <form id="questionsForm" class="questions-form">
-      <input type="text" class="question-input" name="answer" 
-             placeholder="#domanda numero 1: Scrivi la tua risposta..." 
-             maxlength="150" required>
+      <input type="text" class="question-input" name="message" 
+             placeholder="Scrivi qui il tuo messaggio..." 
+             maxlength="500" required
+             aria-label="Messaggio dello spettatore">
       
-      <button type="submit" class="submit-arrow" title="Invia risposta">
+      <button type="submit" class="submit-arrow" title="Invia messaggio">
         <svg viewBox="0 0 24 24" width="24" height="24">
           <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
         </svg>
