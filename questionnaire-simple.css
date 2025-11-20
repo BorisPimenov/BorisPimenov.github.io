@@ -1,4 +1,4 @@
-/* STILE QUESTIONARIO SEMPLIFICATO - FULLSCREEN COMPATIBLE */
+/* STILE QUESTIONARIO SEMPLIFICATO MIGLIORATO */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 #questionnaire.questionnaire-overlay {
@@ -9,36 +9,151 @@
   width: 100%;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #000000 100%);
   padding: 15px 0;
-  z-index: 2147483647; /* Valore massimo per z-index */
+  z-index: 10000;
   font-family: 'Poppins', sans-serif;
   border-top: 1px solid rgba(255,255,255,0.1);
   box-sizing: border-box;
   backdrop-filter: blur(10px);
-  
-  /* Forza la visibilità in fullscreen */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
 }
 
 #questionnaire .questionnaire-container {
-  max-width: 600px; /* Larghezza massima fissa */
+  max-width: 95%;
   width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 10px;
   box-sizing: border-box;
 }
 
-/* Stili specifici per modalità fullscreen */
-:fullscreen #questionnaire.questionnaire-overlay,
-:-webkit-full-screen #questionnaire.questionnaire-overlay,
-:-moz-full-screen #questionnaire.questionnaire-overlay {
-  z-index: 2147483647 !important;
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
+#questionnaire .spectacle-title {
+  color: #ffffff;
+  text-align: center;
+  margin: 0 0 5px 0;
+  font-weight: 700;
+  font-size: clamp(1.2em, 4vw, 1.8em);
+  letter-spacing: 0.5px;
 }
 
-/* ... il resto del CSS ... */
+#questionnaire .questionnaire-subtitle {
+  text-align: center;
+  color: #aaa;
+  margin: 0 0 15px 0;
+  font-size: clamp(0.7em, 3vw, 0.9em);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+#questionnaire .questions-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #333;
+  border-radius: 25px;
+  padding: 8px 8px 8px 15px;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 50px;
+}
+
+#questionnaire .questions-form:focus-within {
+  border-color: #666;
+  background: rgba(30, 30, 30, 0.95);
+  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.2);
+}
+
+#questionnaire .question-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: clamp(14px, 4vw, 16px);
+  font-family: 'Poppins', sans-serif;
+  padding: 8px 0;
+  outline: none;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#questionnaire .question-input::placeholder {
+  color: #666;
+  font-size: clamp(12px, 3vw, 14px);
+}
+
+#questionnaire .submit-arrow {
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 40px;
+}
+
+#questionnaire .submit-arrow:hover {
+  background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+  transform: translateY(-2px);
+}
+
+#questionnaire .submit-arrow:active {
+  transform: translateY(0);
+}
+
+#questionnaire .submit-arrow svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+/* Miglioramenti per schermi piccoli */
+@media (max-width: 480px) {
+  #questionnaire.questionnaire-overlay {
+    padding: 10px 0;
+  }
+  
+  #questionnaire .questionnaire-container {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+  
+  #questionnaire .questions-form {
+    padding: 6px 6px 6px 12px;
+    gap: 8px;
+    min-height: 44px;
+  }
+  
+  #questionnaire .submit-arrow {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  
+  #questionnaire .submit-arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  #questionnaire .question-input {
+    padding: 6px 0;
+  }
+}
+
+/* Per schermi molto alti o con notch */
+@supports(padding: max(0px)) {
+  #questionnaire.questionnaire-overlay {
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Assicurati che non venga mai nascosto */
+#questionnaire {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
