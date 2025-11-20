@@ -661,39 +661,41 @@
         </div>
       </div>
 
-      <!-- Panel Test WebSocket -->
-      <div class="panel">
-        <h2><i>🔧</i> Test WebSocket</h2>
-        <div class="test-buttons">
-          <button class="btn" id="testConnectionBtn">Test Connessione</button>
-          <button class="btn btn-warning" id="testSliderBtn">Test Slider</button>
-          <button class="btn btn-warning" id="testHandBtn">Test Mano</button>
-          <!-- Aggiungi questo nel panel Test WebSocket -->
-<div class="broadcast-message" style="margin-top: 20px;">
+   <!-- Panel Test WebSocket -->
+<div class="panel">
+  <h2><i>🔧</i> Test WebSocket</h2>
+  <div class="test-buttons">
+    <button class="btn" id="testConnectionBtn">Test Connessione</button>
+    <button class="btn btn-warning" id="testSliderBtn">Test Slider</button>
+    <button class="btn btn-warning" id="testHandBtn">Test Mano</button>
+    <!-- NUOVO BOTTONE PER TEST MESSAGGI SPETTATORE -->
+    <button class="btn btn-success" id="testSpectatorMessagesBtn">Test 10 Messaggi Spettatore</button>
+  </div>
+
+  <div class="broadcast-message" style="margin-top: 20px;">
     <h4>🎭 Controllo Performance</h4>
     <p>Gestisci il feedback finale</p>
     <div class="test-buttons">
-        <button class="btn btn-success" id="showFeedbackBtn">Mostra Feedback Overlay</button>
-        <button class="btn btn-danger" id="hideFeedbackBtn">Nascondi Feedback</button>
+      <button class="btn btn-success" id="showFeedbackBtn">Mostra Feedback Overlay</button>
+      <button class="btn btn-danger" id="hideFeedbackBtn">Nascondi Feedback</button>
     </div>
+  </div>
+
+  <div class="broadcast-message">
+    <h4>📢 Messaggio Broadcast</h4>
+    <p>Invia un messaggio a tutti i client connessi</p>
+    <div class="message-input">
+      <input type="text" id="broadcastMessage" placeholder="Inserisci il messaggio...">
+      <button class="btn" id="sendBroadcastBtn">Invia</button>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="customMessage">Messaggio Personalizzato:</label>
+    <input type="text" id="customMessage" placeholder='{"type": "test", "message": "Hello"}'>
+    <button class="btn" id="sendCustomBtn">Invia Messaggio</button>
+  </div>
 </div>
-        </div>
-
-        <div class="broadcast-message">
-          <h4>📢 Messaggio Broadcast</h4>
-          <p>Invia un messaggio a tutti i client connessi</p>
-          <div class="message-input">
-            <input type="text" id="broadcastMessage" placeholder="Inserisci il messaggio...">
-            <button class="btn" id="sendBroadcastBtn">Invia</button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="customMessage">Messaggio Personalizzato:</label>
-          <input type="text" id="customMessage" placeholder='{"type": "test", "message": "Hello"}'>
-          <button class="btn" id="sendCustomBtn">Invia Messaggio</button>
-        </div>
-      </div>
 
       <!-- Panel Log Sistema -->
       <div class="panel">
