@@ -8,13 +8,8 @@ class SimpleQuestionnaire {
         console.log('🔍 Questionnaire element:', this.questionnaire);
         console.log('🔍 Questions form:', this.questionsForm);
         
-        if (!this.questionnaire) {
-            console.error('❌ QUESTIONNAIRE ELEMENT NOT FOUND!');
-            return;
-        }
-        
-        if (!this.questionsForm) {
-            console.error('❌ QUESTIONS FORM NOT FOUND!');
+        if (!this.questionnaire || !this.questionsForm) {
+            console.error('❌ Elementi del questionario non trovati!');
             return;
         }
         
@@ -27,11 +22,11 @@ class SimpleQuestionnaire {
             this.handleSubmit();
         });
 
-        // Enter per inviare
         const input = document.querySelector('.question-input');
         if (input) {
             input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
                     this.handleSubmit();
                 }
             });
@@ -40,17 +35,14 @@ class SimpleQuestionnaire {
     
     handleSubmit() {
         const input = document.querySelector('.question-input');
-        if (!input) {
-            console.error('❌ Input element not found');
-            return;
-        }
-
+        if (!input) return;
+        
         const message = this.sanitizeInput(input.value);
         
         if (this.validateMessage(message)) {
             this.sendMessage(message);
             this.showSuccess();
-            input.value = ''; // Pulisci l'input
+            input.value = '';
             this.submitCount++;
         } else {
             this.showError('Per favore, scrivi almeno 2 caratteri');
@@ -58,6 +50,7 @@ class SimpleQuestionnaire {
     }
     
     sanitizeInput(text) {
+        if (!text) return '';
         return text.trim().replace(/[<>]/g, '').substring(0, 500);
     }
     
@@ -66,6 +59,13 @@ class SimpleQuestionnaire {
     }
     
     sendMessage(message) {
+        // Assicurati che window.ws esista
+        if (!window.ws || window.ws.readyState !== WebSocket.OPEN) {
+            console.error('❌ WebSocket non disponibile');
+            this.showError('Connessione non disponibile. Riprova.');
+            return;
+        }
+        
         const data = {
             type: "spectator_message",
             message: message,
@@ -74,80 +74,71 @@ class SimpleQuestionnaire {
             submissionCount: this.submitCount
         };
         
-        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+        try {
             window.ws.send(JSON.stringify(data));
             console.log('📤 Messaggio spettatore inviato:', message);
-        } else {
-            console.log('⚠️ WebSocket non connesso, messaggio non inviato');
+        } catch (error) {
+            console.error('❌ Errore nell\'invio del messaggio:', error);
+            this.showError('Errore nell\'invio. Riprova.');
         }
     }
     
     generateSessionId() {
-        let sessionId = localStorage.getItem('spectatorSessionId');
-        if (!sessionId) {
-            sessionId = 'spectator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('spectatorSessionId', sessionId);
+        try {
+            let sessionId = localStorage.getItem('spectatorSessionId');
+            if (!sessionId) {
+                sessionId = 'spectator_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('spectatorSessionId', sessionId);
+            }
+            return sessionId;
+        } catch (error) {
+            console.warn('⚠️ localStorage non disponibile, uso sessionId temporaneo');
+            return 'temp_' + Date.now();
         }
-        return sessionId;
     }
     
     showSuccess() {
-        const successMsg = document.createElement('div');
-        successMsg.style.cssText = `
-            position: fixed;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            z-index: 10001;
-            font-size: 0.9em;
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-        `;
-        successMsg.textContent = 'Messaggio inviato ✓';
-        document.body.appendChild(successMsg);
-        
-        setTimeout(() => {
-            if (successMsg.parentNode) {
-                successMsg.parentNode.removeChild(successMsg);
-            }
-        }, 2000);
+        this.showNotification('Messaggio inviato ✓', '#4CAF50');
     }
     
     showError(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.style.cssText = `
+        this.showNotification(message, '#f44336');
+    }
+    
+    showNotification(message, color) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
             position: fixed;
             bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
-            background: #f44336;
+            background: ${color};
             color: white;
             padding: 10px 20px;
             border-radius: 20px;
             z-index: 10001;
             font-size: 0.9em;
-            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 80%;
+            text-align: center;
         `;
-        errorDiv.textContent = message;
-        document.body.appendChild(errorDiv);
+        notification.textContent = message;
+        document.body.appendChild(notification);
         
         setTimeout(() => {
-            if (errorDiv.parentNode) {
-                errorDiv.parentNode.removeChild(errorDiv);
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
             }
         }, 3000);
     }
 }
 
-// Inizializza quando il DOM è pronto
-let simpleQuestionnaire;
-
+// Inizializzazione sicura
 document.addEventListener('DOMContentLoaded', () => {
-    simpleQuestionnaire = new SimpleQuestionnaire();
-    console.log('✅ SimpleQuestionnaire inizializzato');
+    try {
+        window.simpleQuestionnaire = new SimpleQuestionnaire();
+        console.log('✅ SimpleQuestionnaire inizializzato con successo');
+    } catch (error) {
+        console.error('❌ Errore nell\'inizializzazione del questionario:', error);
+    }
 });
-
-window.simpleQuestionnaire = simpleQuestionnaire;
