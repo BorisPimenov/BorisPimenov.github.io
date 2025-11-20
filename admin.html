@@ -995,7 +995,48 @@
         sliderValues[sliderId] = value;
       }
     }
+// Funzione per inviare 10 messaggi spettatore contemporaneamente
+function sendMultipleSpectatorMessages() {
+    const messages = [
+        "Questo è un messaggio di test 1",
+        "Interessante performance!",
+        "Mi piace molto questo show",
+        "I colori sono fantastici",
+        "La musica è coinvolgente",
+        "Bravi artisti!",
+        "Emozionante!",
+        "Che spettacolo meraviglioso",
+        "Complimenti per la regia",
+        "Voglio vedere di più!"
+    ];
 
+    let sentCount = 0;
+    
+    messages.forEach((message, index) => {
+        setTimeout(() => {
+            const testData = {
+                type: "spectator_message",
+                message: message,
+                timestamp: Date.now(),
+                sessionId: "test_spectator_" + Date.now() + "_" + index,
+                submissionCount: index + 1
+            };
+            
+            if (sendWebSocketMessage(testData)) {
+                sentCount++;
+                logMessage(`Messaggio spettatore ${index + 1}/10 inviato: "${message}"`, 'success');
+                
+                // Aggiorna il contatore
+                questionnaireCount++;
+                questionnaireCountEl.textContent = questionnaireCount;
+                
+                if (sentCount === messages.length) {
+                    logMessage('Tutti i 10 messaggi spettatore sono stati inviati', 'success');
+                }
+            }
+        }, index * 300); // Invio ogni 300ms per simulare utenti reali
+    });
+}
     // Connessione WebSocket
     function connectWebSocket() {
       try {
