@@ -157,3 +157,16 @@
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+.submit-arrow {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.questions-form {
+    pointer-events: auto !important;
+}
+
+.question-input {
+    pointer-events: auto !important;
+}
