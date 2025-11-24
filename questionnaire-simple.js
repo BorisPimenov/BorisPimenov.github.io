@@ -51,7 +51,7 @@ class SimpleQuestionnaire {
     
     sanitizeInput(text) {
         if (!text) return '';
-        return text.trim().replace(/[<>]/g, '').substring(0, 500);
+        return text.trim().replace(/[<>]/g, '').substring(0, 98);
     }
     
     validateMessage(message) {
