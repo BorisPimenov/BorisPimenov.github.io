@@ -146,50 +146,7 @@ class SliderController {
         this.showGlobalStatusNotification('reset');
     }
     
-    // NUOVO: Aggiunge il pulsante di reset alla pagina
-    addResetButton() {
-        // Verifica se il pulsante esiste già
-        if (document.getElementById('globalResetButton')) {
-            return;
-        }
-        
-        const resetButton = document.createElement('button');
-        resetButton.id = 'globalResetButton';
-        resetButton.textContent = '🔄 Reset All Sliders';
-        resetButton.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 18px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            z-index: 1000;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        `;
-        
-        resetButton.addEventListener('mouseenter', () => {
-            resetButton.style.background = '#2980b9';
-            resetButton.style.transform = 'translateY(-2px)';
-        });
-        
-        resetButton.addEventListener('mouseleave', () => {
-            resetButton.style.background = '#3498db';
-            resetButton.style.transform = 'translateY(0)';
-        });
-        
-        resetButton.addEventListener('click', () => {
-            this.resetAllSliders();
-        });
-        
-        document.body.appendChild(resetButton);
-    }
-    
+   
     showGlobalStatusNotification(status) {
         let notification = document.getElementById('sliderGlobalNotification');
         if (!notification) {
