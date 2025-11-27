@@ -293,13 +293,14 @@ body, html {
 
 body.force-mobile .video-container {
   display: none !important;
+/* VIDEO DI SFONDO VDO NINJA */
 .video-background {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  z-index: -100;
   overflow: hidden;
 }
 
@@ -310,50 +311,7 @@ body.force-mobile .video-container {
   pointer-events: auto;
 }
 
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-  transition: opacity 0.5s ease;
-}
+/* Assicurati che il questionario rimanga sopra il video */
+#questionnaire.questionnaire-overlay {
+  z-index: 10000;
 
-.video-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.play-button-container {
-  text-align: center;
-}
-
-.play-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: white;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.2em;
-  transition: transform 0.3s ease;
-}
-
-.play-button:hover {
-  transform: scale(1.05);
-}
-
-.play-button span {
-  display: block;
-  margin-top: 15px;
-  font-weight: 500;
-}
-
-/* Nascondi l'overlay quando non serve */
-.video-overlay.hidden {
-  display: none;
-}
