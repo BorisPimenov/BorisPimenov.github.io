@@ -316,7 +316,36 @@
 <script src="slider-controller.js"></script>
   <!-- Aggiungi poi: <script src="questionnaire.js"></script> -->
 <script src="panel-controller.js"></script>
-      
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const videoOverlay = document.getElementById('videoOverlay');
+  const playButton = document.getElementById('playButton');
+  const backgroundVideo = document.getElementById('backgroundVideo');
+  
+  playButton.addEventListener('click', function() {
+    // Nascondi l'overlay
+    videoOverlay.classList.add('hidden');
+    
+    // Forza il refresh dell'iframe con autoplay
+    const currentSrc = backgroundVideo.src;
+    const newSrc = currentSrc.replace('&mute=1', '') + '&autoplay=1';
+    backgroundVideo.src = newSrc;
+    
+    // Rimuovi completamente l'overlay dopo l'animazione
+    setTimeout(() => {
+      videoOverlay.style.display = 'none';
+    }, 500);
+  });
+  
+  // Se l'utente clicca direttamente sul video, rimuovi l'overlay
+  backgroundVideo.addEventListener('click', function() {
+    videoOverlay.classList.add('hidden');
+    setTimeout(() => {
+      videoOverlay.style.display = 'none';
+    }, 500);
+  });
+});
+</script>      
 
 </body>
 </html>
