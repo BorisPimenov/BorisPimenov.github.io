@@ -7,9 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="questionnaire-simple.css">
  
- <!-- Aggiungi questo da qualche parte nel tuo HTML esistente -->
-
- <style>
+  <style>
     .sliders-panel {
       background: rgba(0, 0, 0, 0.95);
       padding: 30px;
@@ -163,7 +161,7 @@
       background: #666666;
       cursor: not-allowed;
     }
-</style>
+  </style>
 </head>
 <body>
   <script>
@@ -172,26 +170,27 @@
     }
   </script>
 
-<!-- VIDEO DI SFONDO -->
-<div class="video-background">
-  <div class="video-overlay" id="videoOverlay">
-    <div class="play-prompt">
-      <button class="play-button" id="playButton">
-        <svg width="80" height="80" viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="38" fill="rgba(0,0,0,0.7)" stroke="white" stroke-width="2"/>
-          <polygon points="32,24 32,56 56,40" fill="white"/>
-        </svg>
-        <span>Clicca per avviare il video</span>
-      </button>
+  <!-- VIDEO DI SFONDO -->
+  <div class="video-background">
+    <div class="video-overlay" id="videoOverlay">
+      <div class="play-prompt">
+        <button class="play-button" id="playButton">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="38" fill="rgba(0,0,0,0.7)" stroke="white" stroke-width="2"/>
+            <polygon points="32,24 32,56 56,40" fill="white"/>
+          </svg>
+          <span>Clicca per avviare il video</span>
+        </button>
+      </div>
     </div>
+    <iframe src="https://vdo.ninja/?view=Ha93mG8&mute=1" 
+            frameborder="0"
+            allow="autoplay; fullscreen; encrypted-media"
+            allowfullscreen
+            id="backgroundVideo">
+    </iframe>
   </div>
-  <iframe src="https://vdo.ninja/?view=Ha93mG8&mute=1" 
-          frameborder="0"
-          allow="autoplay; fullscreen; encrypted-media"
-          allowfullscreen
-          id="backgroundVideo">
-  </iframe>
-</div>
+
   <!-- QUESTIONARIO SEMPLIFICATO -->
   <div id="questionnaire" class="questionnaire-overlay">
     <div class="questionnaire-container">
@@ -209,90 +208,85 @@
       </form>
     </div>
   </div>
-        
+
+  <!-- PANEL AFFIANCATI SOTTO IL VIDEO -->
+  <div class="control-panels">
+    <!-- PANEL PARAMETRI TRASCINABILE -->
+    <div class="parameters-panel" id="parametersPanel">
+      <div class="panel-header" id="panelHeader">
+        <h3>Parametri</h3>
+        <div class="panel-controls">
+          <button id="minimizePanel" title="Riduci a icona">−</button>
+          <button id="closePanel" title="Chiudi pannello">×</button>
+        </div>
+      </div>
+      
+      <div class="panel-content">
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">OBLIO</span>
+            <span class="slider-value" id="slider1Value">50</span>
+          </div>
+          <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">ECO</span>
+            <span class="slider-value" id="slider2Value">25</span>
+          </div>
+          <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">RIFLESSO</span>
+            <span class="slider-value" id="slider3Value">75</span>
+          </div>
+          <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">DIFETTO</span>
+            <span class="slider-value" id="slider4Value">10</span>
+          </div>
+          <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">FRATTURA</span>
+            <span class="slider-value" id="slider5Value">50</span>
+          </div>
+          <input type="range" class="slider-input" id="slider5" min="0" max="100" value="50">
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">IMPULSO</span>
+            <span class="slider-value" id="slider6Value">50</span>
+          </div>
+          <input type="range" class="slider-input" id="slider6" min="0" max="100" value="50">
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <span class="slider-label">RUMORE</span>
+            <span class="slider-value" id="slider7Value">50</span>
+          </div>
+          <input type="range" class="slider-input" id="slider7" min="0" max="100" value="50">
+        </div>
+     
+        <div class="connection-status" id="connectionStatus">
+          Connecting to server...
+        </div>
+      </div>
     </div>
-</div>
-    <!-- PANEL AFFIANCATI SOTTO IL VIDEO -->
-    <div class="control-panels">
-   
-      <!-- PANEL PARAMETRI TRASCINABILE -->
-<div class="parameters-panel" id="parametersPanel">
-  <div class="panel-header" id="panelHeader">
-    <h3>Parametri</h3>
-    <div class="panel-controls">
-      <button id="minimizePanel" title="Riduci a icona">−</button>
-      <button id="closePanel" title="Chiudi pannello">×</button>
-    </div>
+
+    <!-- PULSANTE TOGGLE PER RIAPRIRE -->
+    <div class="toggle-panel" id="togglePanel">⚙️</div>
   </div>
-  
-  <div class="panel-content">
-    <!-- I tuoi 7 slider esistenti qui -->
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">OBLIO</span>
-        <span class="slider-value" id="slider1Value">50</span>
-      </div>
-      <input type="range" class="slider-input" id="slider1" min="0" max="100" value="50">
-    </div>
-
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">ECO</span>
-        <span class="slider-value" id="slider2Value">25</span>
-      </div>
-      <input type="range" class="slider-input" id="slider2" min="0" max="100" value="25">
-    </div>
-
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">RIFLESSO</span>
-        <span class="slider-value" id="slider3Value">75</span>
-      </div>
-      <input type="range" class="slider-input" id="slider3" min="0" max="100" value="75">
-    </div>
-
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">DIFETTO</span>
-        <span class="slider-value" id="slider4Value">10</span>
-      </div>
-      <input type="range" class="slider-input" id="slider4" min="0" max="100" value="10">
-    </div>
-
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">FRATTURA</span>
-        <span class="slider-value" id="slider5Value">50</span>
-      </div>
-      <input type="range" class="slider-input" id="slider5" min="0" max="100" value="50">
-    </div>
-
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">IMPULSO</span>
-        <span class="slider-value" id="slider6Value">50</span>
-      </div>
-      <input type="range" class="slider-input" id="slider6" min="0" max="100" value="50">
-    </div>
-
-    <div class="slider-container">
-      <div class="slider-header">
-        <span class="slider-label">RUMORE</span>
-        <span class="slider-value" id="slider7Value">50</span>
-      </div>
-      <input type="range" class="slider-input" id="slider7" min="0" max="100" value="50">
-    </div>
- 
-    <div class="connection-status" id="connectionStatus">
-      Connecting to server...
-    </div>
-  </div>
-</div>
-
-<!-- PULSANTE TOGGLE PER RIAPRIRE -->
-<div class="toggle-panel" id="togglePanel">⚙️</div>
-
-  
 
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -311,13 +305,199 @@
     firebase.initializeApp(firebaseConfig);
   </script>
 
-<script src="script.js"></script>          <!-- Primo - definisce funzioni globali -->
-<script src="questionnaire-simple.js"></script>   <!-- Secondo - usa le funzioni globali -->
-<script src="slider-controller.js"></script>
-  <!-- Aggiungi poi: <script src="questionnaire.js"></script> -->
-<script src="panel-controller.js"></script>
-<script>
-</script>      
+  <!-- SCRIPT PRINCIPALE CON WEBSOCKET E FUNZIONI GLOBALI -->
+  <script>
+    // FUNZIONE GLOBALE PER INVIO MESSAGGI - DEFINITA PER PRIMA
+    function sendToTouchDesigner(message) {
+        if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+            window.ws.send(JSON.stringify(message));
+            console.log('📤 Messaggio inviato:', message);
+        } else {
+            console.log('⚠️ WebSocket non connesso, messaggio non inviato:', message);
+            if (!window.pendingMessages) window.pendingMessages = [];
+            window.pendingMessages.push(message);
+        }
+    }
 
+    // Rendi la funzione globale
+    window.sendToTouchDesigner = sendToTouchDesigner;
+
+    // CONNESSIONE WEBSOCKET
+    console.log('🔄 Tentativo di connessione WebSocket...');
+    const ws = new WebSocket('wss://eburnea-fixed-f2da05b9b297.herokuapp.com');
+    window.ws = ws;
+    const connectionStatus = document.getElementById('connectionStatus');
+
+    // Funzione per inviare messaggi in sospeso quando si ricollega
+    function sendPendingMessages() {
+        if (window.pendingMessages && window.pendingMessages.length > 0) {
+            console.log('📦 Invio messaggi in sospeso:', window.pendingMessages.length);
+            window.pendingMessages.forEach(message => {
+                sendToTouchDesigner(message);
+            });
+            window.pendingMessages = [];
+        }
+    }
+
+    ws.onopen = function(event) {
+        console.log('✅✅✅ WEB SOCKET CONNESSO!');
+        connectionStatus.textContent = 'Connected';
+        connectionStatus.className = 'connection-status connected';
+        
+        sendPendingMessages();
+        
+        sendToTouchDesigner({
+            type: "test",
+            message: "Connessione test",
+            timestamp: Date.now()
+        });
+    };
+
+    ws.onclose = function(event) {
+        console.log('❌❌❌ WEB SOCKET DISCONNESSO');
+        connectionStatus.textContent = 'Disconnected - Code: ' + event.code;
+        connectionStatus.className = 'connection-status disconnected';
+        
+        setTimeout(() => {
+            console.log('🔄 Tentativo riconnessione...');
+            location.reload();
+        }, 5000);
+    };
+
+    ws.onerror = function(error) {
+        console.log('💥💥💥 WEB SOCKET ERROR');
+        connectionStatus.textContent = 'Connection Error';
+        connectionStatus.className = 'connection-status disconnected';
+    };
+
+    ws.onmessage = function(event) {
+        console.log('📩 Messaggio dal server:', event.data);
+    };
+
+    // FIREBASE VOTING SYSTEM
+    const db = firebase.database();
+    const votesRef = db.ref('votes');
+
+    const voteAButton = document.getElementById('voteA');
+    const voteBButton = document.getElementById('voteB');
+    const percA = document.getElementById('percentage-A');
+    const percB = document.getElementById('percentage-B');
+    const totalClicks = document.getElementById('totalClicks');
+    const votedMsg = document.getElementById('votedMessage');
+
+    function updateUI(a, b) {
+        const total = a + b;
+        percA.textContent = total > 0 ? Math.round(a / total * 100) + '%' : '0%';
+        percB.textContent = total > 0 ? Math.round(b / total * 100) + '%' : '0%';
+        totalClicks.textContent = `${total} voti totali`;
+    }
+
+    if (votesRef) {
+        votesRef.on('value', (snapshot) => {
+            let data = snapshot.val();
+            if (!data) data = {A: 0, B: 0};
+            updateUI(data.A, data.B);
+
+            if (data.A === 0 && data.B === 0) {
+                localStorage.removeItem('hasVoted');
+                if (voteAButton) voteAButton.disabled = false;
+                if (voteBButton) voteBButton.disabled = false;
+                if (votedMsg) votedMsg.style.display = 'none';
+            }
+        });
+    }
+
+    function hasVoted() {
+        return localStorage.getItem('hasVoted') === 'yes';
+    }
+
+    function setVoted() {
+        localStorage.setItem('hasVoted', 'yes');
+        if (votedMsg) votedMsg.style.display = 'block';
+        if (voteAButton) voteAButton.disabled = true;
+        if (voteBButton) voteBButton.disabled = true;
+    }
+
+    if (hasVoted()) setVoted();
+
+    if (voteAButton) {
+        voteAButton.onclick = function() {
+            if (hasVoted()) return;
+            votesRef.transaction(current => {
+                return {
+                    A: (current && current.A ? current.A : 0) + 1,
+                    B: (current && current.B ? current.B : 0)
+                };
+            });
+            setVoted();
+        };
+    }
+
+    if (voteBButton) {
+        voteBButton.onclick = function() {
+            if (hasVoted()) return;
+            votesRef.transaction(current => {
+                return {
+                    A: (current && current.A ? current.A : 0),
+                    B: (current && current.B ? current.B : 0) + 1
+                };
+            });
+            setVoted();
+        };
+    }
+
+    // BOTTONE RESET PARAMETRI
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', function() {
+                console.log('🔄 Bottone reset premuto');
+                
+                sendToTouchDesigner({
+                    type: "reset",
+                    button: "reset_parameters",
+                    timestamp: Date.now(),
+                    message: "Reset parametri richiesto"
+                });
+                
+                const defaultValues = {
+                    slider1: 50,
+                    slider2: 25, 
+                    slider3: 75,
+                    slider4: 10,
+                    slider5: 50,
+                    slider6: 50,
+                    slider7: 50
+                };
+                
+                Object.keys(defaultValues).forEach(sliderId => {
+                    const slider = document.getElementById(sliderId);
+                    const valueDisplay = document.getElementById(sliderId + 'Value');
+                    
+                    if (slider && valueDisplay) {
+                        slider.value = defaultValues[sliderId];
+                        valueDisplay.textContent = defaultValues[sliderId];
+                        slider.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+                
+                this.style.background = '#2e7d32';
+                this.textContent = 'Reset Completato!';
+                
+                setTimeout(() => {
+                    this.style.background = '#333';
+                    this.textContent = 'Reset Parametri';
+                }, 1500);
+            });
+        }
+    });
+  </script>
+
+  <!-- QUESTIONNAIRE SCRIPT - USA LE FUNZIONI GLOBALI DEFINITE SOPRA -->
+  <script src="questionnaire-simple.js"></script>
+  
+  <!-- ALTRI SCRIPT -->
+  <script src="slider-controller.js"></script>
+  <script src="panel-controller.js"></script>
 </body>
 </html>
