@@ -246,5 +246,21 @@ if (resetButton) {
     console.error('❌ Bottone reset NON TROVATO nel DOM');
 }
 }
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const videoOverlay = document.getElementById('videoOverlay');
+  const playButton = document.getElementById('playButton');
+  const backgroundVideo = document.getElementById('backgroundVideo');
+  
+  playButton.addEventListener('click', function() {
+    // Cambia l'URL per rimuovere il mute e forzare il play
+    const currentSrc = backgroundVideo.src;
+    const newSrc = currentSrc.replace('&mute=1', '&autoplay=1') + '&autoplay=1';
+    backgroundVideo.src = newSrc;
+    
+    // Nascondi l'overlay
+    videoOverlay.classList.add('hidden');
+  });
+});
+</script>
 
