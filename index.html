@@ -172,32 +172,32 @@
     }
   </script>
 
-<!-- QUESTIONARIO SEMPLIFICATO -->
-<div id="questionnaire" class="questionnaire-overlay">
-  <div class="questionnaire-container">
-    <form id="questionsForm" class="questions-form">
-      <input type="text" class="question-input" name="message" 
-             placeholder="Scrivi qui il tuo messaggio..." 
-             maxlength="500" required
-             aria-label="Messaggio dello spettatore">
-      
-      <button type="submit" class="submit-arrow" title="Invia messaggio">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
-      </button>
-    </form>
+<!-- VIDEO DI SFONDO - SPOSTATO IN ALTO -->
+  <div class="video-background">
+    <iframe src="https://vdo.ninja/?view=Ha93mG8" 
+            frameborder="0"
+            allow="autoplay; fullscreen; encrypted-media"
+            allowfullscreen>
+    </iframe>
   </div>
-</div>
-</a>
-<!-- VIDEO DI SFONDO -->
-<div class="video-background">
-  <iframe src="https://vdo.ninja/?view=Ha93mG8" 
-          frameborder="0"
-          allow="autoplay; fullscreen; encrypted-media"
-          allowfullscreen>
-  </iframe>
-</div>
+
+  <!-- QUESTIONARIO SEMPLIFICATO -->
+  <div id="questionnaire" class="questionnaire-overlay">
+    <div class="questionnaire-container">
+      <form id="questionsForm" class="questions-form">
+        <input type="text" class="question-input" name="message" 
+               placeholder="Scrivi qui il tuo messaggio..." 
+               maxlength="500" required
+               aria-label="Messaggio dello spettatore">
+        
+        <button type="submit" class="submit-arrow" title="Invia messaggio">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
         
     </div>
 </div>
