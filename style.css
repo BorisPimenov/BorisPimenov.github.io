@@ -3,6 +3,31 @@ body, html {
   padding: 0;
   height: 100%;
   font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* VIDEO DI SFONDO VDO NINJA - CORRETTO */
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.video-background iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* PANEL PARAMETRI (DESTRA) */
@@ -254,37 +279,4 @@ body, html {
 
 body.force-mobile .video-container {
   display: none !important;
-} /* Qui chiudo la regola body.force-mobile */
-
-/* VIDEO DI SFONDO VDO NINJA - CORRETTO */
-.video-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-.video-background iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Reset completo per body e html */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
 }
