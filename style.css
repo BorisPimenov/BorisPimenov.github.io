@@ -5,8 +5,6 @@ body, html {
   font-family: Arial, sans-serif;
 }
 
-
-
 /* PANEL PARAMETRI (DESTRA) */
 .parameters-panel {
   position: fixed;
@@ -256,6 +254,8 @@ body, html {
 
 body.force-mobile .video-container {
   display: none !important;
+} /* Qui chiudo la regola body.force-mobile */
+
 /* VIDEO DI SFONDO VDO NINJA - CORRETTO */
 .video-background {
   position: fixed;
