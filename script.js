@@ -232,35 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('❌ Bottone reset non trovato');
     }
 });
-// DEBUG - Verifica che il bottone esista
-console.log('🔍 Ricerca bottone reset...');
-const resetButton = document.getElementById('resetButton');
-console.log('Bottone trovato:', resetButton);
 
-if (resetButton) {
-    console.log('✅ Bottone reset trovato nel DOM');
-    resetButton.addEventListener('click', function() {
-        console.log('🔄 CLICK RILEVATO sul bottone reset!');
-    });
-} else {
-    console.error('❌ Bottone reset NON TROVATO nel DOM');
-}
-}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const videoOverlay = document.getElementById('videoOverlay');
-  const playButton = document.getElementById('playButton');
-  const backgroundVideo = document.getElementById('backgroundVideo');
-  
-  playButton.addEventListener('click', function() {
-    // Cambia l'URL per rimuovere il mute e forzare il play
-    const currentSrc = backgroundVideo.src;
-    const newSrc = currentSrc.replace('&mute=1', '&autoplay=1') + '&autoplay=1';
-    backgroundVideo.src = newSrc;
-    
-    // Nascondi l'overlay
-    videoOverlay.classList.add('hidden');
-  });
-});
 </script>
 
