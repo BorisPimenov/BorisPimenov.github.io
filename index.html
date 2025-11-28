@@ -161,6 +161,62 @@
       background: #666666;
       cursor: not-allowed;
     }
+
+    /* Stili per il video e overlay */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .video-background iframe {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .play-prompt {
+      text-align: center;
+      color: white;
+    }
+
+    .play-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-size: 1.2em;
+    }
+
+    .play-button svg {
+      transition: transform 0.3s ease;
+    }
+
+    .play-button:hover svg {
+      transform: scale(1.1);
+    }
+
+    .play-button span {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
@@ -374,7 +430,77 @@
         console.log('📩 Messaggio dal server:', event.data);
     };
 
-    // FIREBASE VOTING SYSTEM
+    // GESTIONE VIDEO PLAY BUTTON
+    document.addEventListener('DOMContentLoaded', function() {
+        const playButton = document.getElementById('playButton');
+        const videoOverlay = document.getElementById('videoOverlay');
+        
+        if (playButton && videoOverlay) {
+            playButton.addEventListener('click', function() {
+                // Nascondi l'overlay
+                videoOverlay.style.display = 'none';
+                
+                // Prova a riprodurre il video
+                const videoIframe = document.getElementById('backgroundVideo');
+                if (videoIframe) {
+                    // Per iframe, non possiamo controllare direttamente la riproduzione
+                    // ma possiamo ricaricare l'iframe con autoplay
+                    const currentSrc = videoIframe.src;
+                    // Rimuovi il parametro mute se presente e aggiungi autoplay
+                    const newSrc = currentSrc.replace('&mute=1', '') + '&autoplay=1';
+                    videoIframe.src = newSrc;
+                    
+                    console.log('▶️ Video avviato');
+                }
+            });
+        }
+        
+        // Codice per il reset button (se presente)
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', function() {
+                console.log('🔄 Bottone reset premuto');
+                
+                sendToTouchDesigner({
+                    type: "reset",
+                    button: "reset_parameters",
+                    timestamp: Date.now(),
+                    message: "Reset parametri richiesto"
+                });
+                
+                const defaultValues = {
+                    slider1: 50,
+                    slider2: 25, 
+                    slider3: 75,
+                    slider4: 10,
+                    slider5: 50,
+                    slider6: 50,
+                    slider7: 50
+                };
+                
+                Object.keys(defaultValues).forEach(sliderId => {
+                    const slider = document.getElementById(sliderId);
+                    const valueDisplay = document.getElementById(sliderId + 'Value');
+                    
+                    if (slider && valueDisplay) {
+                        slider.value = defaultValues[sliderId];
+                        valueDisplay.textContent = defaultValues[sliderId];
+                        slider.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+                
+                this.style.background = '#2e7d32';
+                this.textContent = 'Reset Completato!';
+                
+                setTimeout(() => {
+                    this.style.background = '#333';
+                    this.textContent = 'Reset Parametri';
+                }, 1500);
+            });
+        }
+    });
+
+    // FIREBASE VOTING SYSTEM (se necessario)
     const db = firebase.database();
     const votesRef = db.ref('votes');
 
@@ -445,52 +571,6 @@
             setVoted();
         };
     }
-
-    // BOTTONE RESET PARAMETRI
-    document.addEventListener('DOMContentLoaded', function() {
-        const resetButton = document.getElementById('resetButton');
-        if (resetButton) {
-            resetButton.addEventListener('click', function() {
-                console.log('🔄 Bottone reset premuto');
-                
-                sendToTouchDesigner({
-                    type: "reset",
-                    button: "reset_parameters",
-                    timestamp: Date.now(),
-                    message: "Reset parametri richiesto"
-                });
-                
-                const defaultValues = {
-                    slider1: 50,
-                    slider2: 25, 
-                    slider3: 75,
-                    slider4: 10,
-                    slider5: 50,
-                    slider6: 50,
-                    slider7: 50
-                };
-                
-                Object.keys(defaultValues).forEach(sliderId => {
-                    const slider = document.getElementById(sliderId);
-                    const valueDisplay = document.getElementById(sliderId + 'Value');
-                    
-                    if (slider && valueDisplay) {
-                        slider.value = defaultValues[sliderId];
-                        valueDisplay.textContent = defaultValues[sliderId];
-                        slider.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                });
-                
-                this.style.background = '#2e7d32';
-                this.textContent = 'Reset Completato!';
-                
-                setTimeout(() => {
-                    this.style.background = '#333';
-                    this.textContent = 'Reset Parametri';
-                }, 1500);
-            });
-        }
-    });
   </script>
 
   <!-- QUESTIONNAIRE SCRIPT - USA LE FUNZIONI GLOBALI DEFINITE SOPRA -->
