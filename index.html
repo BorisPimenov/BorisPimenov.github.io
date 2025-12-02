@@ -240,7 +240,38 @@
         ></iframe>
     </div>
 </div>
-
+<script>
+// Script per avviare il video in modalità piccola e poi espanderlo
+document.addEventListener('DOMContentLoaded', function() {
+    const videoContainer = document.querySelector('.video-container');
+    const iframe = videoContainer.querySelector('iframe');
+    
+    // 1. Inizialmente carica il video piccolo (200x200)
+    videoContainer.style.position = 'fixed';
+    videoContainer.style.top = '10px';
+    videoContainer.style.left = '10px';
+    videoContainer.style.width = '200px';
+    videoContainer.style.height = '200px';
+    videoContainer.style.zIndex = '9999';
+    
+    // 2. Dopo che il video è caricato, aspetta 2 secondi e poi espandi
+    iframe.onload = function() {
+        setTimeout(function() {
+            // 3. Espandi a schermo intero
+            videoContainer.style.top = '0';
+            videoContainer.style.left = '0';
+            videoContainer.style.width = '100%';
+            videoContainer.style.height = '100%';
+            videoContainer.style.zIndex = '-1';
+            
+            console.log('✅ Video espanso a schermo intero');
+        }, 2000); // Attendi 2 secondi per far partire il video
+    };
+    
+    // 4. Ricarica l'iframe con i parametri corretti
+    iframe.src = 'https://vdo.ninja/?view=Ha93mG8&autoplay&clean&nostart&transparent';
+});
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const iframe = document.getElementById('vdoninja-iframe');
