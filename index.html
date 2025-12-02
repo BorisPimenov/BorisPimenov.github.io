@@ -229,7 +229,8 @@
 <div class="container">
     <div class="video-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; z-index: -1;">
         <iframe 
-            src="https://vdo.ninja/?view=Ha93mG8&autoplay&clean" 
+            id="vdoninja-iframe"
+            src="https://vdo.ninja/?view=Ha93mG8&clean" 
             width="100%" 
             height="100%" 
             frameborder="0"
@@ -239,6 +240,25 @@
         ></iframe>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const iframe = document.getElementById('vdoninja-iframe');
+        let started = false;
+
+        function startVideo() {
+            if (started) return;
+            started = true;
+            // Cambia l'URL per aggiungere autoplay
+            iframe.src = iframe.src + '&autoplay';
+            // Rimuovi l'event listener dopo il primo click
+            document.removeEventListener('click', startVideo);
+        }
+
+        // Al primo click su qualsiasi parte del documento, avvia il video
+        document.addEventListener('click', startVideo);
+    });
+</script>
   <!-- QUESTIONARIO SEMPLIFICATO -->
   <div id="questionnaire" class="questionnaire-overlay">
     <div class="questionnaire-container">
