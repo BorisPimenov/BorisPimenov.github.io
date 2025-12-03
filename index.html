@@ -199,40 +199,10 @@
         console.log('📩 Messaggio dal server:', event.data);
     };
 
-    // 4. GESTIONE SLIDER
-    document.addEventListener('DOMContentLoaded', function() {
-        const sliders = document.querySelectorAll('.slider-input');
-        sliders.forEach(slider => {
-            const valueDisplay = document.getElementById(slider.id + 'Value');
-            if (valueDisplay) {
-                valueDisplay.textContent = slider.value;
-            }
-            slider.addEventListener('input', function() {
-                if (valueDisplay) {
-                    valueDisplay.textContent = this.value;
-                }
-                sendToTouchDesigner({
-                    type: "parameter",
-                    id: this.id,
-                    value: parseInt(this.value),
-                    timestamp: Date.now()
-                });
-            });
-        });
-    });
-
-    // 5. FIREBASE (mantenuto per compatibilità)
-    const db = firebase.database();
-    const votesRef = db.ref('votes');
-    
-    // ... resto del codice Firebase se necessario
-  </script>
-
   <!-- QUESTIONNAIRE SCRIPT -->
   <script src="questionnaire-simple.js"></script>
   
   <!-- ALTRI SCRIPT -->
-  <script src="slider-controller.js"></script>
   <script src="panel-controller.js"></script>
 </body>
 </html>
