@@ -8,13 +8,71 @@
   <link rel="stylesheet" href="questionnaire-simple.css">
  
   <style>
-    /* BACKGROUND NERO */
+    /* BACKGROUND NERO E RESET PER QUESTIONARIO */
     body {
       background-color: #000;
       margin: 0;
       padding: 0;
       overflow: hidden;
       font-family: sans-serif;
+    }
+
+    /* RESET DEL QUESTIONARIO PER RIMUOVERE CONFLITTI */
+    #questionnaire.questionnaire-overlay {
+      position: fixed;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 90% !important;
+      max-width: 600px !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      padding: 0 !important;
+      z-index: 10000 !important;
+      bottom: 30px !important;
+    }
+
+    .questionnaire-container {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .questions-form {
+      background: rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 8px !important;
+      padding: 10px 15px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      backdrop-filter: blur(5px) !important;
+    }
+
+    .question-input {
+      background: transparent !important;
+      border: none !important;
+      color: white !important;
+      flex-grow: 1 !important;
+      padding: 10px !important;
+      font-size: 16px !important;
+    }
+
+    .question-input::placeholder {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .submit-arrow {
+      background: transparent !important;
+      border: none !important;
+      padding: 5px !important;
+    }
+
+    .submit-arrow svg {
+      fill: white !important;
     }
 
     /* STILI PER IL VIDEO IN MINIATURA E SCHERMO INTERO */
@@ -98,76 +156,20 @@
       height: 14px;
     }
     
-    /* Questionario centrato in basso */
-    #questionnaire {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 600px;
-      z-index: 10000;
-      background: rgba(20, 20, 20, 0.9);
-      backdrop-filter: blur(15px);
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    /* Quando il video è in miniatura, assicuriamoci che il questionario sia sopra */
-    .video-container:not(.fullscreen) {
-      z-index: 9000;
-    }
-    
-    /* Quando il video è a schermo intero, il questionario rimane accessibile */
-    .video-container.fullscreen + #questionnaire {
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    
-    /* Stili per i pannelli */
-    .sliders-panel h3 {
-      color: white;
-      margin-bottom: 30px;
-      text-align: center;
-      font-size: 1.2em;
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .sliders-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 25px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    @media (min-width: 768px) {
-      .sliders-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        max-width: 600px;
-      }
-    }
-    
     /* Responsive */
     @media (max-width: 768px) {
       .video-container {
         width: 280px;
-        height: 157px; /* Mantiene aspect ratio 16:9 */
+        height: 157px;
       }
       
       .video-controls {
-        opacity: 1; /* Mostra sempre i controlli su mobile */
+        opacity: 1;
       }
       
-      #questionnaire {
-        width: 85%;
-        padding: 20px;
-        bottom: 20px;
+      #questionnaire.questionnaire-overlay {
+        width: 85% !important;
+        bottom: 20px !important;
       }
     }
     
@@ -216,18 +218,17 @@
     </iframe>
   </div>
 
-  <!-- QUESTIONARIO SEMPLIFICATO (centrato in basso) -->
+  <!-- QUESTIONARIO SEMPLIFICATO (centrato e trasparente) -->
   <div id="questionnaire" class="questionnaire-overlay">
     <div class="questionnaire-container">
       <form id="questionsForm" class="questions-form">
         <input type="text" class="question-input" name="message" 
                placeholder="Scrivi qui il tuo messaggio..." 
                maxlength="500" required
-               aria-label="Messaggio dello spettatore"
-               style="background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2);">
+               aria-label="Messaggio dello spettatore">
         
         <button type="submit" class="submit-arrow" title="Invia messaggio">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <svg viewBox="0 0 24 24" width="24" height="24">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
         </button>
@@ -258,7 +259,7 @@
         const videoIframe = document.getElementById('backgroundVideo');
         const audioSpan = audioBtn.querySelector('span');
         
-        let isMuted = true; // Inizia mutato
+        let isMuted = true;
         let isFullscreen = false;
 
         // Funzione per cambiare audio
@@ -276,18 +277,16 @@
                 audioIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
             }
             
-            // RICARICA iframe con il nuovo stato audio
+            // Ricarica iframe con il nuovo stato audio
             const currentSrc = videoIframe.src;
             let newSrc;
             
             if (isMuted) {
-                // Muta
                 newSrc = currentSrc.replace(/mute=\d/, 'mute=1');
                 if (!newSrc.includes('mute=')) {
                     newSrc = currentSrc + '&mute=1';
                 }
             } else {
-                // Attiva audio
                 newSrc = currentSrc.replace(/mute=\d/, 'mute=0');
                 if (!newSrc.includes('mute=')) {
                     newSrc = currentSrc + '&mute=0';
@@ -297,7 +296,6 @@
             videoIframe.src = newSrc;
             console.log(`🔊 Audio ${isMuted ? 'disattivato' : 'attivato'}`);
             
-            // Notifica TouchDesigner
             sendToTouchDesigner({
                 type: "audio_toggle",
                 muted: isMuted,
@@ -310,11 +308,9 @@
             isFullscreen = !isFullscreen;
             videoContainer.classList.toggle('fullscreen', isFullscreen);
             
-            // Cambia testo bottone
             const fullscreenSpan = fullscreenBtn.querySelector('span');
             fullscreenSpan.textContent = isFullscreen ? 'Miniatura' : 'Schermo Intero';
             
-            // Cambia icona SVG
             const fullscreenIcon = fullscreenBtn.querySelector('svg');
             if (isFullscreen) {
                 fullscreenIcon.innerHTML = '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>';
@@ -324,7 +320,6 @@
             
             console.log(`📺 Modalità ${isFullscreen ? 'schermo intero' : 'miniature'}`);
             
-            // Notifica TouchDesigner
             sendToTouchDesigner({
                 type: "video_mode",
                 mode: isFullscreen ? "fullscreen" : "miniature",
@@ -341,7 +336,7 @@
             audioBtn.addEventListener('click', toggleAudio);
         }
         
-        // Clic sul container video per toggle fullscreen (opzionale)
+        // Clic sul container video per toggle fullscreen
         videoContainer.addEventListener('click', function(e) {
             if (e.target === videoContainer || e.target === videoIframe) {
                 toggleFullscreen();
@@ -351,20 +346,16 @@
         // Doppio clic per fullscreen rapido
         videoContainer.addEventListener('dblclick', toggleFullscreen);
         
-        // Inizializza console
-        console.log('▶️ Video VDO.Ninja avviato al centro con audio disattivato');
+        console.log('▶️ Video VDO.Ninja avviato al centro');
     });
 
     // 3. WEB SOCKET CONNECTION
     console.log('🔄 Tentativo di connessione WebSocket...');
     const ws = new WebSocket('wss://eburnea-fixed-f2da05b9b297.herokuapp.com');
     window.ws = ws;
-    const connectionStatus = document.getElementById('connectionStatus');
 
     ws.onopen = function(event) {
         console.log('✅✅✅ WEB SOCKET CONNESSO!');
-        connectionStatus.textContent = 'Connected';
-        connectionStatus.className = 'connection-status connected';
         
         sendToTouchDesigner({
             type: "test",
@@ -375,8 +366,6 @@
 
     ws.onclose = function(event) {
         console.log('❌❌❌ WEB SOCKET DISCONNESSO');
-        connectionStatus.textContent = 'Disconnected - Code: ' + event.code;
-        connectionStatus.className = 'connection-status disconnected';
         
         setTimeout(() => {
             console.log('🔄 Tentativo riconnessione...');
@@ -386,8 +375,6 @@
 
     ws.onerror = function(error) {
         console.log('💥💥💥 WEB SOCKET ERROR');
-        connectionStatus.textContent = 'Connection Error';
-        connectionStatus.className = 'connection-status disconnected';
     };
 
     ws.onmessage = function(event) {
