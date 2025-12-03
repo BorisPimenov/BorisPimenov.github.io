@@ -25,6 +25,21 @@
       position: relative;
     }
 
+    /* OVERLAY PER CATTURARE IL MOUSE IN MODALITÀ IMMERSIVA */
+    .mouse-catcher {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 7999; /* Sotto l'UI ma sopra il video */
+      pointer-events: none;
+    }
+
+    body.immersive-mode .mouse-catcher.active {
+      pointer-events: auto;
+    }
+
     /* QUESTIONARIO CON POSIZIONE FISSA IN BASSO */
     #questionnaire.questionnaire-overlay {
       position: fixed !important;
@@ -303,6 +318,9 @@
   </script>
 
   <div id="main-container">
+    <!-- OVERLAY PER CATTURARE IL MOUSE IN MODALITÀ IMMERSIVA -->
+    <div id="mouseCatcher" class="mouse-catcher"></div>
+
     <!-- CONTAINER VIDEO CON CONTROLLI -->
     <div class="video-container">
       <div class="video-controls">
@@ -376,6 +394,7 @@
         const questionnaire = document.getElementById('questionnaire');
         const questionInput = document.querySelector('.question-input');
         const questionsForm = document.querySelector('.questions-form');
+        const mouseCatcher = document.getElementById('mouseCatcher');
         const audioSpan = audioBtn.querySelector('span');
         const body = document.body;
         
@@ -406,6 +425,9 @@
             if (body.classList.contains('cursor-hidden')) {
                 body.classList.remove('cursor-hidden');
             }
+            if (mouseCatcher && isImmersive) {
+                mouseCatcher.classList.remove('active');
+            }
             
             // Reset del timer per nascondere gli elementi
             resetHideTimer();
@@ -430,6 +452,10 @@
                 }
                 // Nasconde anche il cursore in modalità immersiva
                 body.classList.add('cursor-hidden');
+                // Attiva l'overlay per catturare gli eventi del mouse
+                if (mouseCatcher) {
+                    mouseCatcher.classList.add('active');
+                }
             }
         }
 
@@ -628,6 +654,12 @@
         // Event listeners per il movimento del mouse
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseenter', showUI);
+        
+        // Event listener per il mouse catcher
+        if (mouseCatcher) {
+            mouseCatcher.addEventListener('mousemove', handleMouseMove);
+            mouseCatcher.addEventListener('click', showUI);
+        }
         
         // Event listeners per i bottoni
         if (immersiveBtn) {
