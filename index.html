@@ -40,6 +40,23 @@
       z-index: 10000 !important;
       bottom: 30px !important;
       pointer-events: auto !important;
+      opacity: 1;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateX(-50%) translateY(0) !important;
+    }
+
+    /* Questionario nascosto */
+    #questionnaire.questionnaire-overlay.hidden {
+      opacity: 0 !important;
+      transform: translateX(-50%) translateY(20px) !important;
+      pointer-events: none !important;
+    }
+
+    /* Quando il questionario è in focus, rimane sempre visibile */
+    #questionnaire.questionnaire-overlay.input-focused {
+      opacity: 1 !important;
+      transform: translateX(-50%) translateY(0) !important;
+      pointer-events: auto !important;
     }
 
     /* In modalità fullscreen, assicuriamoci che il questionario rimanga accessibile */
@@ -50,7 +67,7 @@
       position: fixed !important;
       bottom: 30px !important;
       left: 50% !important;
-      transform: translateX(-50%) !important;
+      transform: translateX(-50%) translateY(0) !important;
     }
 
     .questionnaire-container {
@@ -70,6 +87,13 @@
       align-items: center !important;
       gap: 10px !important;
       backdrop-filter: blur(5px) !important;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Highlight quando il form è attivo */
+    .questions-form.active {
+      background: rgba(0, 0, 0, 0.5) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
     }
 
     .question-input {
@@ -239,6 +263,13 @@
         transform: none !important;
         pointer-events: auto !important;
       }
+      
+      /* Su mobile, il questionario è sempre visibile */
+      #questionnaire.questionnaire-overlay.hidden {
+        opacity: 1 !important;
+        transform: translateX(-50%) translateY(0) !important;
+        pointer-events: auto !important;
+      }
     }
     
     @media (max-width: 480px) {
@@ -342,6 +373,9 @@
         const videoIframe = document.getElementById('backgroundVideo');
         const videoControls = document.querySelector('.video-controls');
         const exitHint = document.querySelector('.exit-hint');
+        const questionnaire = document.getElementById('questionnaire');
+        const questionInput = document.querySelector('.question-input');
+        const questionsForm = document.querySelector('.questions-form');
         const audioSpan = audioBtn.querySelector('span');
         const body = document.body;
         
@@ -349,11 +383,12 @@
         let isImmersive = false;
         let mouseMoveTimer = null;
         let controlsHideTimer = null;
+        let isInputFocused = false;
         const HIDE_DELAY = 2000; // 2 secondi di inattività prima di nascondere
         const MOBILE_BREAKPOINT = 768;
 
-        // Funzione per mostrare i controlli
-        function showControls() {
+        // Funzione per mostrare tutti gli elementi UI
+        function showUI() {
             if (videoControls) {
                 videoControls.classList.remove('hidden');
             }
@@ -365,20 +400,33 @@
                     exitHint.style.animation = 'fadeInOut 3s ease-in-out';
                 }, 10);
             }
+            if (questionnaire && isImmersive && !isMobileDevice()) {
+                questionnaire.classList.remove('hidden');
+            }
             if (body.classList.contains('cursor-hidden')) {
                 body.classList.remove('cursor-hidden');
             }
             
-            // Reset del timer per nascondere i controlli
+            // Reset del timer per nascondere gli elementi
             resetHideTimer();
         }
 
-        // Funzione per nascondere i controlli
-        function hideControls() {
-            if (isImmersive && videoControls && !isMobileDevice()) {
-                videoControls.classList.add('hidden');
+        // Funzione per nascondere tutti gli elementi UI
+        function hideUI() {
+            // Non nascondere se l'input è in focus
+            if (isInputFocused) {
+                return;
+            }
+            
+            if (isImmersive && !isMobileDevice()) {
+                if (videoControls) {
+                    videoControls.classList.add('hidden');
+                }
                 if (exitHint) {
                     exitHint.classList.add('hidden');
+                }
+                if (questionnaire && !isInputFocused) {
+                    questionnaire.classList.add('hidden');
                 }
                 // Nasconde anche il cursore in modalità immersiva
                 body.classList.add('cursor-hidden');
@@ -390,9 +438,9 @@
             if (controlsHideTimer) {
                 clearTimeout(controlsHideTimer);
             }
-            // Solo in modalità immersiva nascondiamo i controlli
-            if (isImmersive && !isMobileDevice()) {
-                controlsHideTimer = setTimeout(hideControls, HIDE_DELAY);
+            // Solo in modalità immersiva nascondiamo gli elementi UI
+            if (isImmersive && !isMobileDevice() && !isInputFocused) {
+                controlsHideTimer = setTimeout(hideUI, HIDE_DELAY);
             }
         }
 
@@ -409,14 +457,40 @@
                 clearTimeout(mouseMoveTimer);
             }
             
-            // Mostra i controlli
-            showControls();
+            // Mostra gli elementi UI
+            showUI();
             
             // Imposta un timer per controllare se il mouse si è fermato
             mouseMoveTimer = setTimeout(() => {
-                // Dopo che il mouse si è fermato, inizia il timer per nascondere i controlli
+                // Dopo che il mouse si è fermato, inizia il timer per nascondere gli elementi UI
                 resetHideTimer();
             }, 300);
+        }
+
+        // Gestione focus sull'input del questionario
+        function handleInputFocus() {
+            isInputFocused = true;
+            if (questionnaire) {
+                questionnaire.classList.remove('hidden');
+                questionnaire.classList.add('input-focused');
+            }
+            if (questionsForm) {
+                questionsForm.classList.add('active');
+            }
+            showUI(); // Mostra anche gli altri elementi quando l'input è in focus
+        }
+
+        // Gestione blur sull'input del questionario
+        function handleInputBlur() {
+            isInputFocused = false;
+            if (questionnaire) {
+                questionnaire.classList.remove('input-focused');
+            }
+            if (questionsForm) {
+                questionsForm.classList.remove('active');
+            }
+            // Dopo aver perso il focus, riavvia il timer per nascondere
+            resetHideTimer();
         }
 
         // Funzione per attivare/disattivare audio
@@ -456,8 +530,8 @@
                 timestamp: Date.now()
             });
             
-            // Mostra i controlli quando si interagisce
-            showControls();
+            // Mostra gli elementi UI quando si interagisce
+            showUI();
         }
 
         // Funzione per attivare/disattivare modalità immersiva
@@ -469,8 +543,8 @@
                 body.classList.add('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Uscire';
                 
-                // Mostra i controlli all'entrata
-                showControls();
+                // Mostra gli elementi UI all'entrata
+                showUI();
                 
                 // Cerca di entrare in fullscreen nativo
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && 
@@ -494,8 +568,8 @@
                 body.classList.remove('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Modalità Immersiva';
                 
-                // Mostra i controlli all'uscita
-                showControls();
+                // Mostra gli elementi UI all'uscita
+                showUI();
                 
                 // Esci dal fullscreen nativo se attivo
                 if (document.exitFullscreen) {
@@ -533,12 +607,12 @@
                 isImmersive = true;
                 body.classList.add('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Uscire';
-                showControls();
+                showUI();
             } else if (!isFullscreenNow && isImmersive) {
                 isImmersive = false;
                 body.classList.remove('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Modalità Immersiva';
-                showControls();
+                showUI();
             }
         }
 
@@ -547,50 +621,67 @@
             if (e.key === 'Escape' && isImmersive) {
                 toggleImmersiveMode();
             }
-            // Mostra i controlli quando si preme un tasto
-            showControls();
+            // Mostra gli elementi UI quando si preme un tasto
+            showUI();
         });
 
         // Event listeners per il movimento del mouse
         document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseenter', showControls);
+        document.addEventListener('mouseenter', showUI);
         
         // Event listeners per i bottoni
         if (immersiveBtn) {
             immersiveBtn.addEventListener('click', toggleImmersiveMode);
-            immersiveBtn.addEventListener('mouseenter', showControls);
+            immersiveBtn.addEventListener('mouseenter', showUI);
         }
         
         if (audioBtn) {
             audioBtn.addEventListener('click', toggleAudio);
-            audioBtn.addEventListener('mouseenter', showControls);
+            audioBtn.addEventListener('mouseenter', showUI);
+        }
+        
+        // Gestione focus/blur per l'input del questionario
+        if (questionInput) {
+            questionInput.addEventListener('focus', handleInputFocus);
+            questionInput.addEventListener('blur', handleInputBlur);
+            questionInput.addEventListener('input', showUI);
+            questionInput.addEventListener('keydown', showUI);
+        }
+        
+        // Gestione del form del questionario
+        if (questionsForm) {
+            questionsForm.addEventListener('mouseenter', showUI);
+            questionsForm.addEventListener('click', showUI);
+        }
+        
+        const submitButton = document.querySelector('.submit-arrow');
+        if (submitButton) {
+            submitButton.addEventListener('click', function() {
+                showUI();
+                // Dopo l'invio, mantieni l'UI visibile per un po'
+                setTimeout(resetHideTimer, 3000);
+            });
         }
         
         // Doppio click sul video per modalità immersiva
         videoContainer.addEventListener('dblclick', function(e) {
             toggleImmersiveMode();
-            showControls();
+            showUI();
         });
         
-        // Click sul video mostra i controlli
+        // Click sul video mostra gli elementi UI
         videoContainer.addEventListener('click', function(e) {
-            showControls();
+            showUI();
         });
         
-        // Anche il questionario mostra i controlli quando interagito
-        const questionInput = document.querySelector('.question-input');
-        if (questionInput) {
-            questionInput.addEventListener('focus', showControls);
-            questionInput.addEventListener('input', showControls);
+        // Anche il questionario mostra gli elementi UI quando interagito
+        if (questionnaire) {
+            questionnaire.addEventListener('mouseenter', showUI);
+            questionnaire.addEventListener('click', showUI);
         }
         
-        const submitButton = document.querySelector('.submit-arrow');
-        if (submitButton) {
-            submitButton.addEventListener('click', showControls);
-        }
-        
-        // Inizializzazione: mostra i controlli all'avvio
-        setTimeout(showControls, 1000);
+        // Inizializzazione: mostra gli elementi UI all'avvio
+        setTimeout(showUI, 1000);
         
         console.log('▶️ Video VDO.Ninja avviato al centro');
     });
