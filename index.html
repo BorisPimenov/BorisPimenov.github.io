@@ -42,7 +42,7 @@
       pointer-events: auto !important;
     }
 
-    /* In modalità fullscreen, assicuriamo che il questionario rimanga accessibile */
+    /* In modalità fullscreen, assicuriamoci che il questionario rimanga accessibile */
     :fullscreen #questionnaire,
     :-webkit-full-screen #questionnaire,
     :-moz-full-screen #questionnaire,
@@ -147,13 +147,16 @@
       display: flex;
       gap: 8px;
       z-index: 9001;
-      opacity: 0.7;
-      transition: opacity 0.3s ease;
+      opacity: 1;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(0);
     }
     
-    .video-container:hover .video-controls,
-    body.immersive-mode .video-controls {
-      opacity: 1;
+    /* Classe per nascondere i controlli */
+    .video-controls.hidden {
+      opacity: 0 !important;
+      transform: translateY(-10px);
+      pointer-events: none;
     }
     
     .video-btn {
@@ -195,6 +198,11 @@
       border-radius: 4px;
       display: none;
       pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    
+    .exit-hint.hidden {
+      opacity: 0;
     }
 
     body.immersive-mode .exit-hint {
@@ -216,13 +224,20 @@
         height: 157px;
       }
       
-      .video-controls {
-        opacity: 1;
-      }
-      
       #questionnaire.questionnaire-overlay {
         width: 85% !important;
         bottom: 20px !important;
+      }
+      
+      /* Su mobile, i controlli sono sempre visibili */
+      .video-controls {
+        opacity: 1 !important;
+      }
+      
+      .video-controls.hidden {
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
       }
     }
     
@@ -241,6 +256,11 @@
     /* Nascondi la scrollbar in modalità immersiva */
     body.immersive-mode {
       overflow: hidden !important;
+    }
+    
+    /* Cursore nascosto in modalità immersiva dopo inattività */
+    body.immersive-mode.cursor-hidden {
+      cursor: none !important;
     }
   </style>
 </head>
@@ -314,17 +334,90 @@
     }
     window.sendToTouchDesigner = sendToTouchDesigner;
 
-    // 2. GESTIONE VIDEO CON AUDIO E MODALITÀ IMMERSIVA
+    // 2. GESTIONE VIDEO CON AUDIO, MODALITÀ IMMERSIVA E NASCONDI CONTROLLI
     document.addEventListener('DOMContentLoaded', function() {
         const videoContainer = document.querySelector('.video-container');
         const immersiveBtn = document.getElementById('immersiveBtn');
         const audioBtn = document.getElementById('audioBtn');
         const videoIframe = document.getElementById('backgroundVideo');
+        const videoControls = document.querySelector('.video-controls');
+        const exitHint = document.querySelector('.exit-hint');
         const audioSpan = audioBtn.querySelector('span');
         const body = document.body;
         
         let isMuted = true;
         let isImmersive = false;
+        let mouseMoveTimer = null;
+        let controlsHideTimer = null;
+        const HIDE_DELAY = 2000; // 2 secondi di inattività prima di nascondere
+        const MOBILE_BREAKPOINT = 768;
+
+        // Funzione per mostrare i controlli
+        function showControls() {
+            if (videoControls) {
+                videoControls.classList.remove('hidden');
+            }
+            if (exitHint && isImmersive) {
+                exitHint.classList.remove('hidden');
+                // Riavvia l'animazione dell'hint
+                exitHint.style.animation = 'none';
+                setTimeout(() => {
+                    exitHint.style.animation = 'fadeInOut 3s ease-in-out';
+                }, 10);
+            }
+            if (body.classList.contains('cursor-hidden')) {
+                body.classList.remove('cursor-hidden');
+            }
+            
+            // Reset del timer per nascondere i controlli
+            resetHideTimer();
+        }
+
+        // Funzione per nascondere i controlli
+        function hideControls() {
+            if (isImmersive && videoControls && !isMobileDevice()) {
+                videoControls.classList.add('hidden');
+                if (exitHint) {
+                    exitHint.classList.add('hidden');
+                }
+                // Nasconde anche il cursore in modalità immersiva
+                body.classList.add('cursor-hidden');
+            }
+        }
+
+        // Funzione per resettare il timer di nascondimento
+        function resetHideTimer() {
+            if (controlsHideTimer) {
+                clearTimeout(controlsHideTimer);
+            }
+            // Solo in modalità immersiva nascondiamo i controlli
+            if (isImmersive && !isMobileDevice()) {
+                controlsHideTimer = setTimeout(hideControls, HIDE_DELAY);
+            }
+        }
+
+        // Rileva se è un dispositivo mobile
+        function isMobileDevice() {
+            return window.innerWidth <= MOBILE_BREAKPOINT || 
+                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        // Funzione per gestire il movimento del mouse
+        function handleMouseMove() {
+            // Annulla il timer del movimento del mouse
+            if (mouseMoveTimer) {
+                clearTimeout(mouseMoveTimer);
+            }
+            
+            // Mostra i controlli
+            showControls();
+            
+            // Imposta un timer per controllare se il mouse si è fermato
+            mouseMoveTimer = setTimeout(() => {
+                // Dopo che il mouse si è fermato, inizia il timer per nascondere i controlli
+                resetHideTimer();
+            }, 300);
+        }
 
         // Funzione per attivare/disattivare audio
         function toggleAudio() {
@@ -362,6 +455,9 @@
                 muted: isMuted,
                 timestamp: Date.now()
             });
+            
+            // Mostra i controlli quando si interagisce
+            showControls();
         }
 
         // Funzione per attivare/disattivare modalità immersiva
@@ -372,6 +468,9 @@
                 // Entra in modalità immersiva
                 body.classList.add('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Uscire';
+                
+                // Mostra i controlli all'entrata
+                showControls();
                 
                 // Cerca di entrare in fullscreen nativo
                 if (!document.fullscreenElement && !document.webkitFullscreenElement && 
@@ -394,6 +493,9 @@
                 // Esci dalla modalità immersiva
                 body.classList.remove('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Modalità Immersiva';
+                
+                // Mostra i controlli all'uscita
+                showControls();
                 
                 // Esci dal fullscreen nativo se attivo
                 if (document.exitFullscreen) {
@@ -431,10 +533,12 @@
                 isImmersive = true;
                 body.classList.add('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Uscire';
+                showControls();
             } else if (!isFullscreenNow && isImmersive) {
                 isImmersive = false;
                 body.classList.remove('immersive-mode');
                 immersiveBtn.querySelector('span').textContent = 'Modalità Immersiva';
+                showControls();
             }
         }
 
@@ -443,19 +547,50 @@
             if (e.key === 'Escape' && isImmersive) {
                 toggleImmersiveMode();
             }
+            // Mostra i controlli quando si preme un tasto
+            showControls();
         });
 
-        // Event listeners
+        // Event listeners per il movimento del mouse
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseenter', showControls);
+        
+        // Event listeners per i bottoni
         if (immersiveBtn) {
             immersiveBtn.addEventListener('click', toggleImmersiveMode);
+            immersiveBtn.addEventListener('mouseenter', showControls);
         }
         
         if (audioBtn) {
             audioBtn.addEventListener('click', toggleAudio);
+            audioBtn.addEventListener('mouseenter', showControls);
         }
         
         // Doppio click sul video per modalità immersiva
-        videoContainer.addEventListener('dblclick', toggleImmersiveMode);
+        videoContainer.addEventListener('dblclick', function(e) {
+            toggleImmersiveMode();
+            showControls();
+        });
+        
+        // Click sul video mostra i controlli
+        videoContainer.addEventListener('click', function(e) {
+            showControls();
+        });
+        
+        // Anche il questionario mostra i controlli quando interagito
+        const questionInput = document.querySelector('.question-input');
+        if (questionInput) {
+            questionInput.addEventListener('focus', showControls);
+            questionInput.addEventListener('input', showControls);
+        }
+        
+        const submitButton = document.querySelector('.submit-arrow');
+        if (submitButton) {
+            submitButton.addEventListener('click', showControls);
+        }
+        
+        // Inizializzazione: mostra i controlli all'avvio
+        setTimeout(showControls, 1000);
         
         console.log('▶️ Video VDO.Ninja avviato al centro');
     });
