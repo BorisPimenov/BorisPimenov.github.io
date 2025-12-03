@@ -15,11 +15,19 @@
       padding: 0;
       overflow: hidden;
       font-family: sans-serif;
+      height: 100vh;
     }
 
-    /* RESET DEL QUESTIONARIO PER RIMUOVERE CONFLITTI */
+    /* CONTENITORE PRINCIPALE */
+    #main-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* QUESTIONARIO CON POSIZIONE FISSA IN BASSO */
     #questionnaire.questionnaire-overlay {
-      position: fixed;
+      position: fixed !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       width: 90% !important;
@@ -31,6 +39,18 @@
       padding: 0 !important;
       z-index: 10000 !important;
       bottom: 30px !important;
+      pointer-events: auto !important;
+    }
+
+    /* In modalità fullscreen, assicuriamo che il questionario rimanga accessibile */
+    :fullscreen #questionnaire,
+    :-webkit-full-screen #questionnaire,
+    :-moz-full-screen #questionnaire,
+    :-ms-fullscreen #questionnaire {
+      position: fixed !important;
+      bottom: 30px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
     }
 
     .questionnaire-container {
@@ -93,25 +113,24 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    /* MODALITÀ SCHERMO INTERO COMPLETO */
-    .video-container.fullscreen-app {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      transform: none;
-      border-radius: 0;
-      z-index: 8000;
-      cursor: default;
-      border: none;
-      box-shadow: none;
+    /* MODALITÀ IMMERSIVA - TUTTO LO SCHERMO */
+    body.immersive-mode .video-container {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      transform: none !important;
+      border-radius: 0 !important;
+      z-index: 8000 !important;
+      cursor: default !important;
+      border: none !important;
+      box-shadow: none !important;
     }
     
-    /* Quando in modalità app, il video occupa tutto */
-    .video-container.fullscreen-app #backgroundVideo {
-      width: 100vw;
-      height: 100vh;
+    /* Quando in modalità immersiva, il questionario rimane sopra */
+    body.immersive-mode #questionnaire {
+      z-index: 10001 !important;
     }
     
     #backgroundVideo {
@@ -133,7 +152,7 @@
     }
     
     .video-container:hover .video-controls,
-    .video-container.fullscreen-app .video-controls {
+    body.immersive-mode .video-controls {
       opacity: 1;
     }
     
@@ -163,6 +182,33 @@
       height: 14px;
     }
     
+    /* PULSANTE ESC PER USCIRE DAL FULLSCREEN */
+    .exit-hint {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      z-index: 10002;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: none;
+      pointer-events: none;
+    }
+
+    body.immersive-mode .exit-hint {
+      display: block;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .video-container {
@@ -192,48 +238,9 @@
       }
     }
 
-    /* FULLSCREEN OVERRIDE PER BROWSER MOBILE */
-    :fullscreen .video-container,
-    :-webkit-full-screen .video-container,
-    :-moz-full-screen .video-container,
-    :-ms-fullscreen .video-container {
-      width: 100vw !important;
-      height: 100vh !important;
-      top: 0 !important;
-      left: 0 !important;
-      transform: none !important;
-      border-radius: 0 !important;
-    }
-
-    /* Nascondi UI browser in fullscreen */
-    :fullscreen {
-      background-color: black;
-    }
-
-    /* PULSANTE ESC PER USCIRE DAL FULLSCREEN */
-    .exit-fullscreen-hint {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 12px;
-      z-index: 10001;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 5px 10px;
-      border-radius: 4px;
-      display: none;
-    }
-
-    .video-container.fullscreen-app .exit-fullscreen-hint {
-      display: block;
-      animation: fadeInOut 3s ease-in-out;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; }
+    /* Nascondi la scrollbar in modalità immersiva */
+    body.immersive-mode {
+      overflow: hidden !important;
     }
   </style>
 </head>
@@ -244,47 +251,51 @@
     }
   </script>
 
-  <!-- CONTAINER VIDEO CON CONTROLLI -->
-  <div class="video-container">
-    <div class="video-controls">
-      <button class="video-btn" id="fullscreenBtn" title="Modalità Immersiva">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-        </svg>
-        <span>Modalità Immersiva</span>
-      </button>
-      <button class="video-btn" id="audioBtn" title="Attiva Audio">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 3v9.27c-.47-.17-.97-.27-1.5-.27C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/>
-        </svg>
-        <span>Audio OFF</span>
-      </button>
-    </div>
-    <div class="exit-fullscreen-hint">Premi ESC per uscire</div>
-    <iframe 
-      id="backgroundVideo"
-      src="https://vdo.ninja/?view=Ha93mG8&clean&autoplay&mute=1&noheader&nofooter&transparent&border=0&nochat&nofullscreenbutton" 
-      frameborder="0"
-      allow="autoplay; encrypted-media; fullscreen"
-      title="Live Stream">
-    </iframe>
-  </div>
-
-  <!-- QUESTIONARIO SEMPLIFICATO (centrato e trasparente) -->
-  <div id="questionnaire" class="questionnaire-overlay">
-    <div class="questionnaire-container">
-      <form id="questionsForm" class="questions-form">
-        <input type="text" class="question-input" name="message" 
-               placeholder="Scrivi qui il tuo messaggio..." 
-               maxlength="500" required
-               aria-label="Messaggio dello spettatore">
-        
-        <button type="submit" class="submit-arrow" title="Invia messaggio">
-          <svg viewBox="0 0 24 24" width="24" height="24">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+  <div id="main-container">
+    <!-- CONTAINER VIDEO CON CONTROLLI -->
+    <div class="video-container">
+      <div class="video-controls">
+        <button class="video-btn" id="immersiveBtn" title="Modalità Immersiva">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
           </svg>
+          <span>Modalità Immersiva</span>
         </button>
-      </form>
+        <button class="video-btn" id="audioBtn" title="Attiva Audio">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v9.27c-.47-.17-.97-.27-1.5-.27C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/>
+          </svg>
+          <span>Audio OFF</span>
+        </button>
+      </div>
+      <iframe 
+        id="backgroundVideo"
+        src="https://vdo.ninja/?view=Ha93mG8&clean&autoplay&mute=1&noheader&nofooter&transparent&border=0&nochat&nofullscreenbutton" 
+        frameborder="0"
+        allow="autoplay; encrypted-media; fullscreen"
+        title="Live Stream">
+      </iframe>
+    </div>
+
+    <!-- HINT PER USCITA -->
+    <div class="exit-hint">Premi ESC per uscire</div>
+
+    <!-- QUESTIONARIO SEMPLIFICATO (centrato e trasparente) -->
+    <div id="questionnaire" class="questionnaire-overlay">
+      <div class="questionnaire-container">
+        <form id="questionsForm" class="questions-form">
+          <input type="text" class="question-input" name="message" 
+                placeholder="Scrivi qui il tuo messaggio..." 
+                maxlength="500" required
+                aria-label="Messaggio dello spettatore">
+          
+          <button type="submit" class="submit-arrow" title="Invia messaggio">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -303,16 +314,17 @@
     }
     window.sendToTouchDesigner = sendToTouchDesigner;
 
-    // 2. GESTIONE VIDEO CON AUDIO E FULLSCREEN IMMERSIVO
+    // 2. GESTIONE VIDEO CON AUDIO E MODALITÀ IMMERSIVA
     document.addEventListener('DOMContentLoaded', function() {
         const videoContainer = document.querySelector('.video-container');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const immersiveBtn = document.getElementById('immersiveBtn');
         const audioBtn = document.getElementById('audioBtn');
         const videoIframe = document.getElementById('backgroundVideo');
         const audioSpan = audioBtn.querySelector('span');
+        const body = document.body;
         
         let isMuted = true;
-        let isFullscreen = false;
+        let isImmersive = false;
 
         // Funzione per attivare/disattivare audio
         function toggleAudio() {
@@ -352,29 +364,38 @@
             });
         }
 
-        // Funzione per attivare/disattivare modalità immersiva (fullscreen totale)
+        // Funzione per attivare/disattivare modalità immersiva
         function toggleImmersiveMode() {
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && !document.msFullscreenElement) {
+            isImmersive = !isImmersive;
+            
+            if (isImmersive) {
+                // Entra in modalità immersiva
+                body.classList.add('immersive-mode');
+                immersiveBtn.querySelector('span').textContent = 'Uscire';
                 
-                // ENTRARE IN FULLSCREEN
-                if (videoContainer.requestFullscreen) {
-                    videoContainer.requestFullscreen();
-                } else if (videoContainer.webkitRequestFullscreen) {
-                    videoContainer.webkitRequestFullscreen();
-                } else if (videoContainer.mozRequestFullScreen) {
-                    videoContainer.mozRequestFullScreen();
-                } else if (videoContainer.msRequestFullscreen) {
-                    videoContainer.msRequestFullscreen();
+                // Cerca di entrare in fullscreen nativo
+                if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                    !document.mozFullScreenElement && !document.msFullscreenElement) {
+                    
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    } else if (document.documentElement.webkitRequestFullscreen) {
+                        document.documentElement.webkitRequestFullscreen();
+                    } else if (document.documentElement.mozRequestFullScreen) {
+                        document.documentElement.mozRequestFullScreen();
+                    } else if (document.documentElement.msRequestFullscreen) {
+                        document.documentElement.msRequestFullscreen();
+                    }
                 }
                 
-                videoContainer.classList.add('fullscreen-app');
-                isFullscreen = true;
-                fullscreenBtn.querySelector('span').textContent = 'Uscire';
                 console.log('🔄 Modalità immersiva attivata');
                 
             } else {
-                // USCIREDAL FULLSCREEN
+                // Esci dalla modalità immersiva
+                body.classList.remove('immersive-mode');
+                immersiveBtn.querySelector('span').textContent = 'Modalità Immersiva';
+                
+                // Esci dal fullscreen nativo se attivo
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
@@ -384,10 +405,18 @@
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
+                
+                console.log('❌ Uscito dalla modalità immersiva');
             }
+            
+            sendToTouchDesigner({
+                type: "immersive_mode",
+                active: isImmersive,
+                timestamp: Date.now()
+            });
         }
 
-        // Gestione eventi fullscreen
+        // Gestione eventi fullscreen per sincronizzazione
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         document.addEventListener('mozfullscreenchange', handleFullscreenChange);
@@ -397,35 +426,28 @@
             const isFullscreenNow = !!(document.fullscreenElement || document.webkitFullscreenElement || 
                                      document.mozFullScreenElement || document.msFullscreenElement);
             
-            if (isFullscreenNow) {
-                videoContainer.classList.add('fullscreen-app');
-                isFullscreen = true;
-                fullscreenBtn.querySelector('span').textContent = 'Uscire';
-                console.log('✅ Modalità immersiva attiva');
-            } else {
-                videoContainer.classList.remove('fullscreen-app');
-                isFullscreen = false;
-                fullscreenBtn.querySelector('span').textContent = 'Modalità Immersiva';
-                console.log('❌ Uscito dalla modalità immersiva');
+            // Sincronizza lo stato della modalità immersiva con il fullscreen
+            if (isFullscreenNow && !isImmersive) {
+                isImmersive = true;
+                body.classList.add('immersive-mode');
+                immersiveBtn.querySelector('span').textContent = 'Uscire';
+            } else if (!isFullscreenNow && isImmersive) {
+                isImmersive = false;
+                body.classList.remove('immersive-mode');
+                immersiveBtn.querySelector('span').textContent = 'Modalità Immersiva';
             }
-            
-            sendToTouchDesigner({
-                type: "immersive_mode",
-                active: isFullscreenNow,
-                timestamp: Date.now()
-            });
         }
 
-        // Tasti ESC per uscire dal fullscreen
+        // Tasti ESC per uscire
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && isFullscreen) {
+            if (e.key === 'Escape' && isImmersive) {
                 toggleImmersiveMode();
             }
         });
 
         // Event listeners
-        if (fullscreenBtn) {
-            fullscreenBtn.addEventListener('click', toggleImmersiveMode);
+        if (immersiveBtn) {
+            immersiveBtn.addEventListener('click', toggleImmersiveMode);
         }
         
         if (audioBtn) {
