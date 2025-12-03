@@ -75,7 +75,7 @@
       fill: white !important;
     }
 
-    /* STILI PER IL VIDEO IN MINIATURA E SCHERMO INTERO */
+    /* VIDEO CONTAINER INIZIALE (al centro) */
     .video-container {
       position: fixed;
       top: 50%;
@@ -93,7 +93,8 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    .video-container.fullscreen {
+    /* MODALITÀ SCHERMO INTERO COMPLETO */
+    .video-container.fullscreen-app {
       position: fixed;
       top: 0;
       left: 0;
@@ -107,26 +108,32 @@
       box-shadow: none;
     }
     
+    /* Quando in modalità app, il video occupa tutto */
+    .video-container.fullscreen-app #backgroundVideo {
+      width: 100vw;
+      height: 100vh;
+    }
+    
     #backgroundVideo {
       width: 100%;
       height: 100%;
       border: none;
     }
     
-    /* CONTROLLI VIDEO */
+    /* CONTROLLI VIDEO - POSIZIONATI IN ALTO A DESTRA */
     .video-controls {
       position: absolute;
-      bottom: 10px;
-      right: 10px;
+      top: 20px;
+      right: 20px;
       display: flex;
       gap: 8px;
       z-index: 9001;
-      opacity: 0;
+      opacity: 0.7;
       transition: opacity 0.3s ease;
     }
     
     .video-container:hover .video-controls,
-    .video-container.fullscreen .video-controls {
+    .video-container.fullscreen-app .video-controls {
       opacity: 1;
     }
     
@@ -184,6 +191,50 @@
         font-size: 11px;
       }
     }
+
+    /* FULLSCREEN OVERRIDE PER BROWSER MOBILE */
+    :fullscreen .video-container,
+    :-webkit-full-screen .video-container,
+    :-moz-full-screen .video-container,
+    :-ms-fullscreen .video-container {
+      width: 100vw !important;
+      height: 100vh !important;
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      border-radius: 0 !important;
+    }
+
+    /* Nascondi UI browser in fullscreen */
+    :fullscreen {
+      background-color: black;
+    }
+
+    /* PULSANTE ESC PER USCIRE DAL FULLSCREEN */
+    .exit-fullscreen-hint {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      z-index: 10001;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .video-container.fullscreen-app .exit-fullscreen-hint {
+      display: block;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -196,11 +247,11 @@
   <!-- CONTAINER VIDEO CON CONTROLLI -->
   <div class="video-container">
     <div class="video-controls">
-      <button class="video-btn" id="fullscreenBtn" title="Schermo Intero">
+      <button class="video-btn" id="fullscreenBtn" title="Modalità Immersiva">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
         </svg>
-        <span>Schermo Intero</span>
+        <span>Modalità Immersiva</span>
       </button>
       <button class="video-btn" id="audioBtn" title="Attiva Audio">
         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -209,11 +260,12 @@
         <span>Audio OFF</span>
       </button>
     </div>
+    <div class="exit-fullscreen-hint">Premi ESC per uscire</div>
     <iframe 
       id="backgroundVideo"
       src="https://vdo.ninja/?view=Ha93mG8&clean&autoplay&mute=1&noheader&nofooter&transparent&border=0&nochat&nofullscreenbutton" 
       frameborder="0"
-      allow="autoplay; encrypted-media"
+      allow="autoplay; encrypted-media; fullscreen"
       title="Live Stream">
     </iframe>
   </div>
@@ -251,7 +303,7 @@
     }
     window.sendToTouchDesigner = sendToTouchDesigner;
 
-    // 2. GESTIONE VIDEO CON AUDIO E FULLSCREEN
+    // 2. GESTIONE VIDEO CON AUDIO E FULLSCREEN IMMERSIVO
     document.addEventListener('DOMContentLoaded', function() {
         const videoContainer = document.querySelector('.video-container');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -262,14 +314,12 @@
         let isMuted = true;
         let isFullscreen = false;
 
-        // Funzione per cambiare audio
+        // Funzione per attivare/disattivare audio
         function toggleAudio() {
             isMuted = !isMuted;
             
-            // Cambia testo e icona
             audioSpan.textContent = isMuted ? 'Audio OFF' : 'Audio ON';
             
-            // Cambia icona SVG
             const audioIcon = audioBtn.querySelector('svg');
             if (isMuted) {
                 audioIcon.innerHTML = '<path d="M12 3v9.27c-.47-.17-.97-.27-1.5-.27C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/>';
@@ -277,7 +327,6 @@
                 audioIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
             }
             
-            // Ricarica iframe con il nuovo stato audio
             const currentSrc = videoIframe.src;
             let newSrc;
             
@@ -303,48 +352,88 @@
             });
         }
 
-        // Funzione per cambiare fullscreen
-        function toggleFullscreen() {
-            isFullscreen = !isFullscreen;
-            videoContainer.classList.toggle('fullscreen', isFullscreen);
-            
-            const fullscreenSpan = fullscreenBtn.querySelector('span');
-            fullscreenSpan.textContent = isFullscreen ? 'Miniatura' : 'Schermo Intero';
-            
-            const fullscreenIcon = fullscreenBtn.querySelector('svg');
-            if (isFullscreen) {
-                fullscreenIcon.innerHTML = '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>';
+        // Funzione per attivare/disattivare modalità immersiva (fullscreen totale)
+        function toggleImmersiveMode() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && !document.msFullscreenElement) {
+                
+                // ENTRARE IN FULLSCREEN
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.mozRequestFullScreen) {
+                    videoContainer.mozRequestFullScreen();
+                } else if (videoContainer.msRequestFullscreen) {
+                    videoContainer.msRequestFullscreen();
+                }
+                
+                videoContainer.classList.add('fullscreen-app');
+                isFullscreen = true;
+                fullscreenBtn.querySelector('span').textContent = 'Uscire';
+                console.log('🔄 Modalità immersiva attivata');
+                
             } else {
-                fullscreenIcon.innerHTML = '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
+                // USCIREDAL FULLSCREEN
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        // Gestione eventi fullscreen
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+            const isFullscreenNow = !!(document.fullscreenElement || document.webkitFullscreenElement || 
+                                     document.mozFullScreenElement || document.msFullscreenElement);
+            
+            if (isFullscreenNow) {
+                videoContainer.classList.add('fullscreen-app');
+                isFullscreen = true;
+                fullscreenBtn.querySelector('span').textContent = 'Uscire';
+                console.log('✅ Modalità immersiva attiva');
+            } else {
+                videoContainer.classList.remove('fullscreen-app');
+                isFullscreen = false;
+                fullscreenBtn.querySelector('span').textContent = 'Modalità Immersiva';
+                console.log('❌ Uscito dalla modalità immersiva');
             }
             
-            console.log(`📺 Modalità ${isFullscreen ? 'schermo intero' : 'miniature'}`);
-            
             sendToTouchDesigner({
-                type: "video_mode",
-                mode: isFullscreen ? "fullscreen" : "miniature",
+                type: "immersive_mode",
+                active: isFullscreenNow,
                 timestamp: Date.now()
             });
         }
 
+        // Tasti ESC per uscire dal fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isFullscreen) {
+                toggleImmersiveMode();
+            }
+        });
+
         // Event listeners
         if (fullscreenBtn) {
-            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            fullscreenBtn.addEventListener('click', toggleImmersiveMode);
         }
         
         if (audioBtn) {
             audioBtn.addEventListener('click', toggleAudio);
         }
         
-        // Clic sul container video per toggle fullscreen
-        videoContainer.addEventListener('click', function(e) {
-            if (e.target === videoContainer || e.target === videoIframe) {
-                toggleFullscreen();
-            }
-        });
-        
-        // Doppio clic per fullscreen rapido
-        videoContainer.addEventListener('dblclick', toggleFullscreen);
+        // Doppio click sul video per modalità immersiva
+        videoContainer.addEventListener('dblclick', toggleImmersiveMode);
         
         console.log('▶️ Video VDO.Ninja avviato al centro');
     });
