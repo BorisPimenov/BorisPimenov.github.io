@@ -8,36 +8,95 @@
   <link rel="stylesheet" href="questionnaire-simple.css">
  
   <style>
-    /* STILI PER IL VIDEO A SCHERMO INTERO */
-    #videoOverlay {
+    /* STILI PER IL VIDEO IN MINIATURA E SCHERMO INTERO */
+    .video-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      height: 180px;
+      z-index: 9000;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: #000;
+    }
+    
+    .video-container.fullscreen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-    }
-    
-    #videoOverlay.hidden {
-      display: none;
+      bottom: auto;
+      right: auto;
+      border-radius: 0;
+      z-index: 8000;
+      cursor: default;
     }
     
     #backgroundVideo {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 9000 !important;
-      border: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      opacity: 0;
-      transition: opacity 1s ease;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .video-toggle-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.5);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 9001;
+      transition: all 0.2s ease;
+    }
+    
+    .video-toggle-btn:hover {
+      background: rgba(0,0,0,0.9);
+      border-color: white;
+    }
+    
+    /* Questionario sempre accessibile */
+    #questionnaire {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 500px;
+      z-index: 10000; /* Più alto del video in fullscreen */
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    
+    /* Quando il video è in miniatura, sposta il questionario se necessario */
+    .video-container:not(.fullscreen) + #questionnaire {
+      left: 20px;
+      transform: none;
+      right: 340px; /* Lascia spazio per il video in miniatura */
+      width: calc(100% - 380px);
+    }
+    
+    @media (max-width: 768px) {
+      .video-container {
+        width: 280px;
+        height: 160px;
+      }
+      
+      .video-container:not(.fullscreen) + #questionnaire {
+        right: 300px;
+        width: calc(100% - 340px);
+      }
     }
     
     /* Stili per i pannelli */
@@ -75,33 +134,19 @@
     }
   </script>
 
-  <!-- VIDEO DI SFONDO CON OVERLAY -->
-  <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;">
-    <!-- Overlay con bottone play -->
-    <div id="videoOverlay">
-      <div class="play-prompt">
-        <button class="play-button" id="playButton" style="background: rgba(0,0,0,0.8); border: 2px solid white; border-radius: 50%; padding: 30px; cursor: pointer;">
-          <svg width="80" height="80" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r="38" fill="rgba(0,0,0,0.5)" stroke="white" stroke-width="2"/>
-            <polygon points="30,22 30,58 58,40" fill="white"/>
-          </svg>
-          <span style="display: block; margin-top: 15px; color: white; font-size: 16px;">Clicca per avviare il video</span>
-        </button>
-      </div>
-    </div>
-    
-    <!-- Iframe del video -->
+  <!-- CONTAINER VIDEO CON CONTROLLO VDO.NINJA -->
+  <div class="video-container">
+    <button class="video-toggle-btn" id="videoToggleBtn">Schermo Intero</button>
     <iframe 
       id="backgroundVideo"
-      src="https://vdo.ninja/?view=Ha93mG8&clean&mute=1&transparent&nostart&noheader&nofooter" 
+      src="https://vdo.ninja/?view=Ha93mG8&clean&autoplay&mute=1&noheader&nofooter&transparent&border=0&nochat&nofullscreenbutton" 
       frameborder="0"
-      allow="autoplay; fullscreen; encrypted-media"
-      allowfullscreen
+      allow="autoplay; encrypted-media"
       title="Live Stream">
     </iframe>
   </div>
 
-  <!-- QUESTIONARIO SEMPLIFICATO -->
+  <!-- QUESTIONARIO SEMPLIFICATO (sempre accessibile) -->
   <div id="questionnaire" class="questionnaire-overlay">
     <div class="questionnaire-container">
       <form id="questionsForm" class="questions-form">
@@ -119,7 +164,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT PRINCIPALE CON VIDEO FUNZIONANTE -->
+  <!-- SCRIPT PRINCIPALE -->
   <script>
     // 1. FUNZIONI GLOBALI WEB SOCKET
     function sendToTouchDesigner(message) {
@@ -134,29 +179,53 @@
     }
     window.sendToTouchDesigner = sendToTouchDesigner;
 
-    // 2. GESTIONE VIDEO - VERSIONE SEMPLICE E FUNZIONANTE
+    // 2. GESTIONE VIDEO CON TOGGLE MINIATURA/SCHERMO INTERO
     document.addEventListener('DOMContentLoaded', function() {
-        const playButton = document.getElementById('playButton');
-        const videoOverlay = document.getElementById('videoOverlay');
+        const videoContainer = document.querySelector('.video-container');
+        const videoToggleBtn = document.getElementById('videoToggleBtn');
         const videoIframe = document.getElementById('backgroundVideo');
+        const questionnaire = document.getElementById('questionnaire');
         
-        if (playButton && videoOverlay && videoIframe) {
-            playButton.addEventListener('click', function() {
-                console.log('▶️ Avvio video...');
+        // Inizialmente parte in miniatura con VDO.Ninja attivo
+        console.log('▶️ Video VDO.Ninja avviato in miniatura');
+        
+        if (videoToggleBtn && videoContainer) {
+            videoToggleBtn.addEventListener('click', function() {
+                const isFullscreen = videoContainer.classList.toggle('fullscreen');
                 
-                // Nascondi l'overlay
-                videoOverlay.classList.add('hidden');
-                
-                // RICARICA l'iframe con parametri di autoplay
-                // NOTA: VDO.Ninja richiede che l'iframe sia ricaricato per l'autoplay
-                videoIframe.src = 'https://vdo.ninja/?view=Ha93mG8&clean&autoplay&mute=1&noheader&nofooter&transparent';
-                
-                // Mostra il video dopo un breve ritardo
-                setTimeout(() => {
-                    videoIframe.style.opacity = '1';
-                    console.log('✅ Video avviato a schermo intero');
-                }, 500);
+                if (isFullscreen) {
+                    videoToggleBtn.textContent = 'Miniatura';
+                    console.log('📺 Video passato a schermo intero');
+                    
+                    // Notifica TouchDesigner
+                    sendToTouchDesigner({
+                        type: "video_mode",
+                        mode: "fullscreen",
+                        timestamp: Date.now()
+                    });
+                } else {
+                    videoToggleBtn.textContent = 'Schermo Intero';
+                    console.log('🖼️ Video passato a miniatura');
+                    
+                    sendToTouchDesigner({
+                        type: "video_mode",
+                        mode: "miniature",
+                        timestamp: Date.now()
+                    });
+                }
             });
+            
+            // Clic sul container video per toggle (opzionale)
+            videoContainer.addEventListener('click', function(e) {
+                if (e.target === videoContainer || e.target === videoIframe) {
+                    videoToggleBtn.click();
+                }
+            });
+        }
+        
+        // Assicura che il questionario sia sempre cliccabile
+        if (questionnaire) {
+            questionnaire.style.pointerEvents = 'auto';
         }
     });
 
@@ -198,7 +267,8 @@
     ws.onmessage = function(event) {
         console.log('📩 Messaggio dal server:', event.data);
     };
-
+  </script>
+  
   <!-- QUESTIONNAIRE SCRIPT -->
   <script src="questionnaire-simple.js"></script>
   
