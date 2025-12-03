@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linea di Scan Rossa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #scanCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+        
+        .controls h3 {
+            margin-bottom: 10px;
+            color: #ff0000;
+        }
+        
+        .control-group {
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: inline-block;
+            width: 120px;
+        }
+        
+        input[type="range"] {
+            width: 180px;
+        }
+        
+        .value {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="scanCanvas"></canvas>
+        <div class="controls">
+            <h3>CONTROLLI SCAN</h3>
+            <div class="control-group">
+                <label for="speed">Velocità:</label>
+                <input type="range" id="speed" min="1" max="10" value="4">
+                <span class="value" id="speedValue">4</span>
+            </div>
+            <div class="control-group">
+                <label for="trail">Durata Scia:</label>
+                <input type="range" id="trail" min="10" max="100" value="40">
+                <span class="value" id="trailValue">40</span>
+            </div>
+            <div class="control-group">
+                <label for="bloom">Intensità Bloom:</label>
+                <input type="range" id="bloom" min="1" max="20" value="8">
+                <span class="value" id="bloomValue">8</span>
+            </div>
+            <div class="control-group">
+                <label for="thickness">Spessore Linea:</label>
+                <input type="range" id="thickness" min="1" max="10" value="3">
+                <span class="value" id="thicknessValue">3</span>
+            </div>
+            <button onclick="resetAnimation()" style="margin-top: 10px; padding: 5px 10px; background: #ff0000; color: white; border: none; border-radius: 3px; cursor: pointer;">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('scanCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Imposta le dimensioni del canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        // Variabili per l'animazione
+        let scanY = 0;
+        let direction = 1; // 1 = giù, -1 = su
+        let trail = []; // Array per memorizzare le posizioni della scia
+        let animationId;
+        
+        // Parametri configurabili
+        let config = {
+            speed: 4,
+            trailDuration: 40,
+            bloomIntensity: 8,
+            lineThickness: 3
+        };
+        
+        // Aggiorna i valori dei controlli
+        document.getElementById('speed').addEventListener('input', function(e) {
+            config.speed = parseInt(e.target.value);
+            document.getElementById('speedValue').textContent = config.speed;
+        });
+        
+        document.getElementById('trail').addEventListener('input', function(e) {
+            config.trailDuration = parseInt(e.target.value);
+            document.getElementById('trailValue').textContent = config.trailDuration;
+        });
+        
+        document.getElementById('bloom').addEventListener('input', function(e) {
+            config.bloomIntensity = parseInt(e.target.value);
+            document.getElementById('bloomValue').textContent = config.bloomIntensity;
+        });
+        
+        document.getElementById('thickness').addEventListener('input', function(e) {
+            config.lineThickness = parseInt(e.target.value);
+            document.getElementById('thicknessValue').textContent = config.lineThickness;
+        });
+        
+        // Funzione di reset
+        function resetAnimation() {
+            scanY = 0;
+            direction = 1;
+            trail = [];
+            resizeCanvas();
+        }
+        
+        // Disegna l'effetto di bloom per la linea
+        function drawBloomLine(x, y, width, height, intensity) {
+            // Crea un gradiente per l'effetto bloom
+            const gradient = ctx.createLinearGradient(0, y - intensity, 0, y + intensity);
+            
+            // Gradiente per il bloom rosso
+            gradient.addColorStop(0, 'rgba(255, 0, 0, 0)');
+            gradient.addColorStop(0.3, 'rgba(255, 0, 0, 0.2)');
+            gradient.addColorStop(0.5, 'rgba(255, 50, 50, 0.5)');
+            gradient.addColorStop(0.7, 'rgba(255, 0, 0, 0.2)');
+            gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+            
+            // Disegna il bloom
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x, y - intensity, width, intensity * 2);
+            
+            // Linea principale rossa
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(x, y - height/2, width, height);
+            
+            // Aggiungi un po' di luce centrale più intensa
+            const centerGradient = ctx.createLinearGradient(0, y - 1, 0, y + 1);
+            centerGradient.addColorStop(0, 'rgba(255, 100, 100, 0.8)');
+            centerGradient.addColorStop(0.5, '#ffffff');
+            centerGradient.addColorStop(1, 'rgba(255, 100, 100, 0.8)');
+            
+            ctx.fillStyle = centerGradient;
+            ctx.fillRect(x, y - 1, width, 2);
+        }
+        
+        // Funzione per disegnare la scia
+        function drawTrail() {
+            // Sfuma gradualmente lo sfondo per creare l'effetto di scia che svanisce
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Disegna ogni elemento della scia
+            for (let i = 0; i < trail.length; i++) {
+                const point = trail[i];
+                
+                // Calcola l'opacità in base all'età del punto nella scia
+                const age = point.age;
+                const opacity = 1 - (age / config.trailDuration);
+                
+                if (opacity > 0) {
+                    // Disegna la scia con opacità decrescente
+                    const gradient = ctx.createLinearGradient(0, point.y - 10, 0, point.y + 10);
+                    gradient.addColorStop(0, `rgba(255, 0, 0, ${opacity * 0.2})`);
+                    gradient.addColorStop(0.5, `rgba(255, 50, 50, ${opacity * 0.5})`);
+                    gradient.addColorStop(1, `rgba(255, 0, 0, ${opacity * 0.2})`);
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, point.y - 10, canvas.width, 20);
+                    
+                    // Aggiorna l'età del punto
+                    point.age += 1;
+                }
+            }
+            
+            // Rimuovi i punti troppo vecchi
+            trail = trail.filter(point => point.age < config.trailDuration);
+        }
+        
+        // Funzione di animazione principale
+        function animate() {
+            // Aggiungi la posizione corrente alla scia
+            trail.push({
+                y: scanY,
+                age: 0
+            });
+            
+            // Disegna la scia
+            drawTrail();
+            
+            // Disegna la linea di scan principale
+            drawBloomLine(0, scanY, canvas.width, config.lineThickness, config.bloomIntensity * 2);
+            
+            // Aggiorna la posizione della linea
+            scanY += direction * config.speed;
+            
+            // Inverte la direzione quando raggiunge i bordi
+            if (scanY >= canvas.height || scanY <= 0) {
+                direction *= -1;
+            }
+            
+            // Continua l'animazione
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Inizializza e avvia l'animazione
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            animate();
+        });
+        
+        // Ridimensiona il canvas quando la finestra cambia dimensione
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+        
+        // Pulisci l'animazione quando la pagina viene chiusa
+        window.addEventListener('beforeunload', () => {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        });
+    </script>
+</body>
+</html>
