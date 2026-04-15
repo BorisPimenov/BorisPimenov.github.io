@@ -218,11 +218,16 @@
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
-      .video-container {
-        width: 280px;
-        height: 157px;
-      }
+   @media (max-width: 768px) {
+  .video-container {
+    width: calc(100vw - 24px);
+    height: calc((100vw - 24px) * 9 / 16);
+    max-height: 40vh;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+  }
       
       #questionnaire.questionnaire-overlay {
         width: 85% !important;
