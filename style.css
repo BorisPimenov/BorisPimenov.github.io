@@ -323,3 +323,33 @@ body.force-mobile .video-container {
   margin-top: 15px;
   font-weight: 500;
 }
+/* YOUTUBE BACKGROUND */
+#yt-background {
+  position: fixed;
+  inset: 0;
+  z-index: 1;           /* dietro */
+  overflow: hidden;
+  background: #000;
+  pointer-events: none; /* non intercetta tocchi/click */
+}
+
+/* Tecnica "cover" per iframe video */
+#yt-background iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 177.78vh;  /* 16:9 cover */
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 56.25vw;
+  transform: translate(-50%, -50%);
+  border: 0;
+  opacity: 0.35;    /* puoi alzare/abbassare */
+  filter: saturate(0.9) contrast(1.05);
+}
+
+/* Porta il resto sopra il background */
+#main-container {
+  position: relative;
+  z-index: 2;
+}
