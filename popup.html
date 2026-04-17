@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Popup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --overlay: rgba(0,0,0,0.85);
+      --text: #ffffff;
+      --btn-bg: #ffffff;
+      --btn-text: #000000;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: var(--overlay);
+      z-index: 9999;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .overlay.is-open {
+      display: flex;
+    }
+
+    .modal {
+      max-width: 720px;
+      width: 100%;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .modal p {
+      margin: 0 0 20px 0;
+      font-size: 18px;
+      line-height: 1.4;
+      font-weight: 400;
+    }
+
+    .modal button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      cursor: pointer;
+    }
+
+    .hint {
+      margin-top: 18px;
+      opacity: 0.75;
+      font-size: 13px;
+    }
+
+    code {
+      background: rgba(255,255,255,0.12);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="popupOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Popup informativo">
+    <div class="modal">
+      <p>
+        Quando appare questo simbolo accompagnato da una domanda puoi intergaire con la perfomance e scrivere.
+      </p>
+      <button id="popupOkBtn" type="button">Ho capito</button>
+      <div class="hint">Apri il popup chiamando <code>openPopup()</code>.</div>
+    </div>
+  </div>
+
+  <script>
+    // Public API
+    function openPopup() {
+      document.getElementById('popupOverlay').classList.add('is-open');
+    }
+
+    function closePopup() {
+      document.getElementById('popupOverlay').classList.remove('is-open');
+    }
+
+    // Button
+    document.getElementById('popupOkBtn').addEventListener('click', closePopup);
+
+    // Optional: close on ESC
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePopup();
+    });
+
+    // Demo: if you want it to appear immediately when this page is opened after QR scan,
+    // uncomment the following line:
+    // openPopup();
+  </script>
+</body>
+</html>
