@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Istruzioni</title>
 
-  <!-- Poppins font -->
+  <!-- Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
   <style>
     :root { color-scheme: dark; }
-
     * { box-sizing: border-box; }
 
     body{
@@ -20,38 +19,50 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
+      padding: clamp(16px, 4vw, 32px);
       background: #000;
       color: #fff;
-      font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      padding: 24px;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      text-align: center;
     }
 
     .wrap{
       width: 100%;
-      max-width: 900px;
+      max-width: 920px;
+      padding: clamp(16px, 4vw, 28px);
+      border-radius: 18px;
       border: 1px solid rgba(255,255,255,.14);
-      border-radius: 16px;
-      padding: 28px;
       background: rgba(255,255,255,.04);
     }
 
+    /* Simbolo responsive */
+    .symbol{
+      display: block;
+      width: min(180px, 55vw);
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto clamp(10px, 2.6vw, 16px);
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.45));
+    }
+
     h1{
-      margin: 0 0 12px;
-      font-size: 22px;
+      margin: 0 0 10px;
+      font-size: clamp(18px, 4.8vw, 24px);
       font-weight: 600;
       letter-spacing: .2px;
     }
 
     p{
       margin: 0;
-      font-size: 18px;
-      line-height: 1.6;
+      font-size: clamp(15px, 4.2vw, 18px);
+      line-height: 1.7;
       opacity: .95;
     }
 
     .actions{
-      margin-top: 20px;
+      margin-top: clamp(14px, 3.5vw, 18px);
       display: flex;
+      justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -60,28 +71,42 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 14px;
+      padding: 12px 14px;
       border-radius: 12px;
       text-decoration: none;
       font-weight: 600;
       border: 1px solid rgba(255,255,255,.18);
-      color: #000;
       background: #fff;
+      color: #000;
+      min-height: 44px; /* tap target mobile */
     }
 
     a.btn.secondary{
       background: transparent;
       color: #fff;
     }
+
+    /* Mobile: bottoni più grandi e a tutta larghezza */
+    @media (max-width: 480px){
+      .actions{
+        gap: 10px;
+      }
+      a.btn{
+        width: 100%;
+      }
+      .wrap{
+        border-radius: 16px;
+      }
+    }
   </style>
 </head>
 
 <body>
   <main class="wrap">
+    <img class="symbol" src="simbolo.png" alt="Simbolo" />
+
     <h1>Istruzioni</h1>
-    <p>
-      Quando appare questo simbolo accompagnato da una domanda puoi intergaire con la perfomance e scrivere.
-    </p>
+    <p>Quando appare questo simbolo accompagnato da una domanda puoi intergaire con la perfomance e scrivere.</p>
 
     <div class="actions">
       <a class="btn" href="index.html">Torna alla Home</a>
