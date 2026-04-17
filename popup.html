@@ -1,66 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Popup Example</title>
+  <title>Istruzioni</title>
 
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; }
-
-    #popupOverlay{
-      display:none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.5);
-      justify-content: center;
-      align-items: center;
+    :root{
+      --bg: #0b1220;
+      --card: #111a2e;
+      --text: #e8eefc;
+      --muted: #b9c4df;
+      --accent: #4f8cff;
+      --border: rgba(255,255,255,.12);
     }
-    .popupContent{
-      background: #fff;
-      padding: 20px;
+
+    * { box-sizing: border-box; }
+    body{
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, #13244a 0%, var(--bg) 60%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header{
+      padding: 28px 18px 8px;
+      text-align: center;
+    }
+
+    header h1{
+      margin: 0 0 6px;
+      font-size: 28px;
+      letter-spacing: .3px;
+    }
+
+    header p{
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    main{
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .card{
+      background: rgba(17,26,46,.9);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      margin-bottom: 14px;
+    }
+
+    .grid{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 860px){
+      .grid{
+        grid-template-columns: 1.2fr .8fr;
+        align-items: start;
+      }
+    }
+
+    h2{
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    ul{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text);
+    }
+
+    li{ margin: 8px 0; }
+
+    .muted{ color: var(--muted); }
+
+    .buttons{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn{
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: 10px 14px;
       border-radius: 10px;
-      min-width: 280px;
-      max-width: 90vw;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(79,140,255,.95), rgba(79,140,255,.7));
+      border-color: rgba(79,140,255,.35);
+      color: #061028;
+      font-weight: 700;
+    }
+
+    .btn:hover{
+      filter: brightness(1.06);
+    }
+
+    .note{
+      border-left: 4px solid var(--accent);
+      padding: 10px 12px;
+      background: rgba(79,140,255,.10);
+      border-radius: 10px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    footer{
+      text-align: center;
+      padding: 10px 18px 22px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    code.kbd{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 2px 8px;
+      border-radius: 8px;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
     }
   </style>
-
-  <script>
-    function openPopup() {
-      document.getElementById('popupOverlay').style.display = 'flex';
-    }
-
-    function closePopup() {
-      document.getElementById('popupOverlay').style.display = 'none';
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const okBtn = document.getElementById('popupOkBtn');
-      if (okBtn) {
-        okBtn.addEventListener('click', function() {
-          closePopup();
-          window.location.href = 'index.html';
-        });
-      }
-    });
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") closePopup();
-    });
-  </script>
 </head>
 
 <body>
-  <h1>Pagina popup</h1>
-  <button onclick="openPopup()">Apri popup</button>
+  <header>
+    <h1>Istruzioni per il pubblico</h1>
+    <p>Pagina semplice (non popup). Se vedi questa schermata, il file funziona.</p>
+  </header>
 
-  <div id="popupOverlay">
-    <div class="popupContent">
-      <h2>Popup Title</h2>
-      <p>This is some content in the popup.</p>
-      <button id="popupOkBtn">OK</button>
-      <button onclick="closePopup()">Cancel</button>
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h2>Cosa fare</h2>
+        <ul>
+          <li>Leggi attentamente le istruzioni qui sotto.</li>
+          <li>Quando hai finito, premi <strong>“Vai alla Home”</strong> per tornare alla pagina principale.</li>
+          <li>Se ti perdi, torna qui e ripeti i passaggi.</li>
+        </ul>
+
+        <div class="note">
+          Suggerimento: puoi salvare questa pagina nei preferiti. Premi <code class="kbd">Ctrl</code> + <code class="kbd">D</code> (Windows) o <code class="kbd">Cmd</code> + <code class="kbd">D</code> (Mac).
+        </div>
+
+        <div class="buttons">
+          <a class="btn primary" href="index.html">Vai alla Home</a>
+          <button class="btn" id="printBtn" type="button">Stampa / Salva PDF</button>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h2>Contatti / Info</h2>
+        <p class="muted">
+          Qui puoi mettere un testo breve: orari, regole, contatti, link utili, ecc.
+        </p>
+
+        <ul>
+          <li><strong>Email:</strong> <span class="muted">inserisci@email.it</span></li>
+          <li><strong>Telefono:</strong> <span class="muted">+39 ...</span></li>
+        </ul>
+
+        <div class="note">
+          Vuoi che le istruzioni siano diverse (più brevi, con immagini, con un elenco numerato)? Dimmi cosa vuoi scritto e te lo formatto.
+        </div>
+      </aside>
     </div>
-  </div>
+  </main>
+
+  <footer>
+    <span class="muted">© Istruzioni — aggiornate</span>
+  </footer>
+
+  <script>
+    document.getElementById('printBtn').addEventListener('click', function () {
+      window.print();
+    });
+  </script>
 </body>
 </html>
