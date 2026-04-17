@@ -1,41 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popup Example</title>
-    <script>
-        function openPopup() {
-            document.getElementById('popupOverlay').style.display = 'block';
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Popup Example</title>
 
-        function closePopup() {
-            document.getElementById('popupOverlay').style.display = 'none';
-        }
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
 
-        // Modified click handler for popupOkBtn
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('popupOkBtn').addEventListener('click', function() {
-                closePopup(); // optional call
-                window.location.href = 'index.html'; // navigation to index.html
-            });
+    #popupOverlay{
+      display:none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .popupContent{
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      min-width: 280px;
+      max-width: 90vw;
+    }
+  </style>
+
+  <script>
+    function openPopup() {
+      document.getElementById('popupOverlay').style.display = 'flex';
+    }
+
+    function closePopup() {
+      document.getElementById('popupOverlay').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const okBtn = document.getElementById('popupOkBtn');
+      if (okBtn) {
+        okBtn.addEventListener('click', function() {
+          closePopup();
+          window.location.href = 'index.html';
         });
+      }
+    });
 
-        document.addEventListener('keypress', function(e) {
-            if (e.key === "Escape") {
-                closePopup(); // keep ESC closing behavior
-            }
-        });
-    </script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") closePopup();
+    });
+  </script>
 </head>
+
 <body>
-    <div id="popupOverlay" style="display:none;">
-        <div class="popupContent">
-            <h2>Popup Title</h2>
-            <p>This is some content in the popup.</p>
-            <button id="popupOkBtn">OK</button>
-            <button onclick="closePopup()">Cancel</button>
-        </div>
+  <h1>Pagina popup</h1>
+  <button onclick="openPopup()">Apri popup</button>
+
+  <div id="popupOverlay">
+    <div class="popupContent">
+      <h2>Popup Title</h2>
+      <p>This is some content in the popup.</p>
+      <button id="popupOkBtn">OK</button>
+      <button onclick="closePopup()">Cancel</button>
     </div>
+  </div>
 </body>
 </html>
